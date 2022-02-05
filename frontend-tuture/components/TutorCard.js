@@ -48,22 +48,23 @@ export default function TutorCard({
       >
         <img
           src={profileImg}
-          className="rounded-lg h-full sm:w-48 w-24 object-cover drag flex-1"
+          alt="Profile picture of the tutor"
+          className="rounded-lg sm:w-48 w-24 object-cover flex-1"
           loading="lazy"
         />
-        <div className="inline-flex flex-col justify-between p-4 sm:w-96">
-          <h3 className="font-bold dark:text-amber-500 dark:hover:text-white text-xl max-w-fit sm:w-64 w-40 whitespace-nowrap overflow-hidden overflow-ellipsis hover:text-amber-500 hover:cursor-pointer transition-colors">
+        <div className="inline-flex flex-col justify-between p-4 sm:w-96 w-64">
+          <h3 className="font-bold text-md dark:text-amber-500 dark:hover:text-white sm:text-xl max-w-fit sm:w-80 xs:w-52 w-40 whitespace-nowrap overflow-hidden overflow-ellipsis hover:text-amber-500 hover:cursor-pointer transition-colors">
             {name}
           </h3>
-          <p className="text-md dark:text-white selection:bg-amber-300 cursor-default">
+          <p className="sm:text-base text-sm dark:text-white selection:bg-amber-300 cursor-default">
             <FontAwesomeIcon size="sm" icon={faBookOpen} fixedWidth />{" "}
             {subjects.join(", ")}
           </p>
-          <p className="text-md dark:text-white selection:bg-amber-300 cursor-default">
+          <p className="sm:text-base text-sm dark:text-white selection:bg-amber-300 cursor-default">
             <FontAwesomeIcon size="sm" icon={faGraduationCap} fixedWidth />{" "}
             {levels.join(", ")}
           </p>
-          <p className="text-md dark:text-white selection:bg-amber-300 cursor-default">
+          <p className="sm:text-base text-sm dark:text-white selection:bg-amber-300 cursor-default">
             <FontAwesomeIcon size="sm" icon={faDollarSign} fixedWidth />{" "}
             {`${price.min} - ${price.max} baht/hr`}
           </p>
