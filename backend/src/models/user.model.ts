@@ -34,7 +34,6 @@ export const UserSchema = new mongoose.Schema(
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
-
 export interface User {
   first_name: string;
   last_name: string;
