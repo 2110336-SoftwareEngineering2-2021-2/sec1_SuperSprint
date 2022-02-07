@@ -7,73 +7,64 @@ function Matching() {
   return (
     <Layout title="Matching">
       <div className="flex flex-col items-center">
-        <h2 className="font-bold text-2xl mb-6">Matching</h2>
+        <h2 className="mb-6 text-2xl font-bold">Matching</h2>
         <form className="w-full max-w-2xl p-2">
-          <div className="flex flex-wrap -mx-3 mb-6">
-            <div className="relative w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <label
-                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                for="grid-subject"
-              >
-                Subject <span className="text-red-500">*</span>
+          <div className="-mx-3 mb-6 flex flex-wrap">
+            <div className="relative mb-6 w-full px-3 md:mb-0 md:w-1/2">
+              <label className="label" for="grid-subject">
+                <span className="label-text">
+                  Subject <span className="label-text text-red-500">*</span>
+                </span>
               </label>
-              <div className="relative">
+              <div>
                 <select
-                  className="block appearance-none w-full bg-white border border-gray-200 hover:border-amber-300 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-amber-300 transition-all"
+                  className="select select-bordered select-primary w-full"
                   id="grid-subject"
                   required
                 >
-                  <option value="" disabled selected className="text-gray-400"> Select your subject </option>
+                  <option value="" disabled selected className="text-gray-400">
+                    {" "}
+                    Select your subject{" "}
+                  </option>
                   {subjects.map((e, idx) => (
                     <option key={idx}>{e}</option>
                   ))}
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  <svg
-                    className="fill-current h-4 w-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                  </svg>
-                </div>
               </div>
               {/* <p className="text-red-500 text-xs italic">
                 Please fill out this field.
               </p> */}
             </div>
-            <div className="relative w-full md:w-1/2 px-3">
-              <label
-                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                for="grid-level"
-              >
-                Education Level <span className="text-red-500">*</span>
+            <div className="w-full px-3 md:w-1/2">
+              <label className="label" for="grid-level">
+                <span className="label-text">
+                  Education Level{" "}
+                  <span className="label-text text-red-500">*</span>
+                </span>
               </label>
               <div className="relative">
                 <select
-                  className="block appearance-none w-full bg-white border border-gray-200 hover:border-amber-300 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-amber-300 transition-all"
+                  className="select select-bordered select-primary w-full"
                   id="grid-level"
                   required
                 >
-                  <option value="" disabled selected> Select your education level </option>
+                  <option value="" disabled selected>
+                    {" "}
+                    Select your education level{" "}
+                  </option>
                   {levels.map((e, idx) => (
                     <option key={idx}>{e}</option>
                   ))}
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  <svg
-                    className="fill-current h-4 w-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                  </svg>
-                </div>
               </div>
             </div>
           </div>
-          <div className="w-full flex justify-center">
-            <input type="submit" className="btn-primary" value="Match" />
+          <div className="flex w-full justify-center">
+            <input
+              type="submit"
+              className="btn btn-primary btn-sm rounded-full"
+              value="Match"
+            />
           </div>
         </form>
       </div>
