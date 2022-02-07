@@ -42,7 +42,7 @@ export default function TutorCard({
       leaveTo="opacity-0 scale-95"
     >
       <div
-        className="flex w-auto max-w-3xl justify-between rounded-lg bg-white shadow-lg transition-all hover:scale-105 hover:shadow-amber-400/40"
+        className="bg-base-100 flex w-auto max-w-3xl justify-between rounded-lg shadow-lg transition-all hover:scale-105 hover:shadow-amber-400/40"
         onClick={onCardClick ?? null}
         tabIndex={0}
       >
@@ -53,18 +53,18 @@ export default function TutorCard({
           loading="lazy"
         />
         <div className="inline-flex w-64 flex-col justify-between p-4 sm:w-96">
-          <h3 className="text-md xs:w-52 hover:text-primary-focus w-40 max-w-fit overflow-hidden overflow-ellipsis whitespace-nowrap font-bold transition-colors hover:cursor-pointer sm:w-80 sm:text-xl">
+          <h3 className="text-md text-base-content xs:w-52 hover:text-primary-focus w-40 max-w-fit overflow-hidden overflow-ellipsis whitespace-nowrap font-bold transition-colors hover:cursor-pointer sm:w-80 sm:text-xl">
             {name}
           </h3>
-          <p className="selection:bg-primary cursor-default text-sm sm:text-base">
+          <p className="selection:bg-primary text-base-content cursor-default text-sm text-opacity-80 sm:text-base">
             <FontAwesomeIcon size="sm" icon={faBookOpen} fixedWidth />{" "}
             {subjects.join(", ")}
           </p>
-          <p className="selection:bg-primary cursor-default text-sm sm:text-base">
+          <p className="selection:bg-primary text-base-content cursor-default text-sm text-opacity-80 sm:text-base">
             <FontAwesomeIcon size="sm" icon={faGraduationCap} fixedWidth />{" "}
             {levels.join(", ")}
           </p>
-          <p className="selection:bg-primary cursor-default text-sm sm:text-base">
+          <p className="selection:bg-primary text-base-content cursor-default text-sm text-opacity-80 sm:text-base">
             <FontAwesomeIcon size="sm" icon={faDollarSign} fixedWidth />{" "}
             {`${price.min} - ${price.max} baht/hr`}
           </p>
