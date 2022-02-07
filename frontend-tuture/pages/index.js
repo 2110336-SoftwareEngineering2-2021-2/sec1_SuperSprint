@@ -1,9 +1,8 @@
 import Layout from "../components/Layout";
-
+import Navbar from "../components/Navbar";
 export default function Home() {
   return (
-    <Layout title='Home'>
-      <h1 className="w-full font-bold text-4xl">Hello</h1>
-    </Layout>
+      <Navbar>
+      </Navbar>
   );
 }
