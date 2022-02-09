@@ -4,6 +4,7 @@ import Layout from "../../components/Layout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import "rc-slider/assets/index.css";
+import { useRouter } from "next/router";
 
 const { Range } = Slider;
 const subjects = ["Mathmetic", "Physic", "Biology", "English"];
@@ -67,6 +68,7 @@ function Matching() {
   const [availFormVals, setAvailFormVals] = useState([
     { avail_date: "", avail_time_from: "", avail_time_to: "" },
   ]);
+  const router = useRouter();
 
   function setMinPriceRange(event) {
     let newPriceRange = [...priceRange];
@@ -80,15 +82,16 @@ function Matching() {
     setPriceRange(newPriceRange);
   }
 
-  function submitMatching(event) {
-    event.preventDefault();
-    console.log(event.target);
-  }
-
   function validatePriceRange() {
     let newPriceRange = [...priceRange];
-    newPriceRange[0] = Math.min(newPriceRange[1], Math.max(newPriceRange[0], MIN_PRICE));
-    newPriceRange[1] = Math.max(newPriceRange[0], Math.min(newPriceRange[1], MAX_PRICE));
+    newPriceRange[0] = Math.min(
+      newPriceRange[1],
+      Math.max(newPriceRange[0], MIN_PRICE)
+    );
+    newPriceRange[1] = Math.max(
+      newPriceRange[0],
+      Math.min(newPriceRange[1], MAX_PRICE)
+    );
     setPriceRange(newPriceRange);
   }
 
@@ -106,16 +109,33 @@ function Matching() {
   }
 
   function handleAvailFieldChange(idx, event) {
-    console.log(idx, event.target);
     let newFormVals = [...availFormVals];
     newFormVals[idx][event.target.id] = event.target.value;
     setAvailFormVals(newFormVals);
+  }
+
+  function submitMatching(event) {
+    event.preventDefault();
+    console.log(event.target);
+    // console.log(event.target.avail_time_from[0].value);
+    router.push(
+      {
+        pathname: "/matching/result/[result]",
+        query: {
+          result: JSON.stringify({
+            study_subject: event.target.study_subject.value,
+          })
+        },
+      },
+      "/matching/result/"
+    );
   }
 
   return (
     <Layout title="Matching">
       <div className="flex flex-col items-center">
         <h2 className="mb-6 text-2xl font-bold">Matching</h2>
+
         <form
           className="w-full max-w-2xl p-2"
           id="matching_form"
@@ -123,7 +143,7 @@ function Matching() {
         >
           <div className="-mx-3 mb-2 flex flex-wrap">
             <div className="relative mb-2 w-full px-3 sm:mb-0 sm:w-1/2">
-              <label className="label" for="study_subject">
+              <label className="label" htmlFor="study_subject">
                 <span className="label-text">
                   Subject <span className="label-text text-red-500">*</span>
                 </span>
@@ -132,9 +152,10 @@ function Matching() {
                 <select
                   className="select select-bordered select-primary w-full"
                   id="study_subject"
+                  defaultValue=""
                   required
                 >
-                  <option value="" disabled selected className="text-gray-400">
+                  <option value="" disabled>
                     {" "}
                     Select your subject{" "}
                   </option>
@@ -148,7 +169,7 @@ function Matching() {
               </p> */}
             </div>
             <div className="w-full px-3 sm:w-1/2">
-              <label className="label" for="edu_level">
+              <label className="label" htmlFor="edu_level">
                 <span className="label-text">
                   Education Level{" "}
                   <span className="label-text text-red-500">*</span>
@@ -158,9 +179,10 @@ function Matching() {
                 <select
                   className="select select-bordered select-primary w-full"
                   id="edu_level"
+                  defaultValue=""
                   required
                 >
-                  <option value="" disabled selected>
+                  <option value="" disabled>
                     {" "}
                     Select your education level{" "}
                   </option>
@@ -174,7 +196,7 @@ function Matching() {
           <div className="divider" />
 
           <div className="m-auto">
-            <label for="price_range" className="label">
+            <label htmlFor="price_range" className="label">
               <span className="label-text">Price Range</span>
             </label>
             <div className="m-auto mb-4 w-11/12">
@@ -185,7 +207,7 @@ function Matching() {
                 step={10}
                 value={priceRange}
                 allowCross={false}
-                onChange={setPriceRange}
+                onChange={(val) => setPriceRange(val)}
                 trackStyle={[{ backgroundColor: "#ffc400" }]}
                 handleStyle={[
                   { borderColor: "#ffc400" },
@@ -196,7 +218,7 @@ function Matching() {
             <div className="flex w-full items-center justify-between">
               <label
                 className="input-group input-group-xs w-5/12 sm:w-3/12"
-                for="price_min"
+                htmlFor="price_min"
               >
                 <input
                   id="price_min"
@@ -213,7 +235,7 @@ function Matching() {
               <span className="select-none">-</span>
               <label
                 className="input-group input-group-xs right-0 w-5/12 sm:w-3/12"
-                for="price-max"
+                htmlFor="price-max"
               >
                 <input
                   id="price-max"
