@@ -9,8 +9,8 @@ const { Range } = Slider;
 const subjects = ["Mathmetic", "Physic", "Biology", "English"];
 const levels = ["Middle School", "High School"];
 
-const minPrice = 0;
-const maxPrice = 10000;
+const MIN_PRICE = 0;
+const MAX_PRICE = 10000;
 
 function AvailabilityForm({
   formVal,
@@ -37,7 +37,7 @@ function AvailabilityForm({
           onChange={(e) => onFieldChange(e)}
           className="input input-primary input-bordered input-sm col-span-5 inline-block sm:w-32"
         />
-        <span className="col-span-1 text-center w-4">-</span>
+        <span className="col-span-1 w-4 text-center">-</span>
         <input
           type="time"
           id="avail_time_to"
@@ -68,18 +68,28 @@ function Matching() {
     { avail_date: "", avail_time_from: "", avail_time_to: "" },
   ]);
 
-  function test(e) {
-    setPriceRange(e);
-    console.log(priceRange);
+  function setMinPriceRange(event) {
+    let newPriceRange = [...priceRange];
+    newPriceRange[0] = event.target.value;
+    setPriceRange(newPriceRange);
   }
 
-  function onSetPriceRange(event) {
-    console.log(event.target.value);
+  function setMaxPriceRange(event) {
+    let newPriceRange = [...priceRange];
+    newPriceRange[1] = event.target.value;
+    setPriceRange(newPriceRange);
   }
 
   function submitMatching(event) {
     event.preventDefault();
-    console.log(event);
+    console.log(event.target);
+  }
+
+  function validatePriceRange() {
+    let newPriceRange = [...priceRange];
+    newPriceRange[0] = Math.min(newPriceRange[1], Math.max(newPriceRange[0], MIN_PRICE));
+    newPriceRange[1] = Math.max(newPriceRange[0], Math.min(newPriceRange[1], MAX_PRICE));
+    setPriceRange(newPriceRange);
   }
 
   function addAvailField() {
@@ -170,12 +180,12 @@ function Matching() {
             <div className="m-auto mb-4 w-11/12">
               <Range
                 id="price_range"
-                min={minPrice}
-                max={maxPrice}
+                min={MIN_PRICE}
+                max={MAX_PRICE}
                 step={10}
                 value={priceRange}
                 allowCross={false}
-                onChange={test}
+                onChange={setPriceRange}
                 trackStyle={[{ backgroundColor: "#ffc400" }]}
                 handleStyle={[
                   { borderColor: "#ffc400" },
@@ -185,7 +195,7 @@ function Matching() {
             </div>
             <div className="flex w-full items-center justify-between">
               <label
-                className="input-group input-group-xs w-5/12 sm:w-1/5"
+                className="input-group input-group-xs w-5/12 sm:w-3/12"
                 for="price_min"
               >
                 <input
@@ -193,15 +203,16 @@ function Matching() {
                   type="number"
                   value={priceRange[0]}
                   className="input input-primary input-bordered input-sm min-w-2/3 sm:min-w-1/2 w-full"
-                  onChange={onSetPriceRange}
-                  min={minPrice}
-                  max={maxPrice}
+                  onChange={(event) => setMinPriceRange(event)}
+                  onBlur={validatePriceRange}
+                  min={MIN_PRICE}
+                  max={MAX_PRICE}
                 />
                 <span>THB</span>
               </label>
               <span className="select-none">-</span>
               <label
-                className="input-group input-group-xs right-0 w-5/12 sm:w-1/5"
+                className="input-group input-group-xs right-0 w-5/12 sm:w-3/12"
                 for="price-max"
               >
                 <input
@@ -209,8 +220,10 @@ function Matching() {
                   type="number"
                   value={priceRange[1]}
                   className="input input-primary input-bordered input-sm min-w-2/3 sm:min-w-1/2 w-full"
-                  min={minPrice}
-                  max={maxPrice}
+                  onChange={(event) => setMaxPriceRange(event)}
+                  onBlur={validatePriceRange}
+                  min={MIN_PRICE}
+                  max={MAX_PRICE}
                 />
                 <span>THB</span>
               </label>
