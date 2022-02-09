@@ -2,11 +2,11 @@ import * as mongoose from 'mongoose';
 
 export const UserSchema = new mongoose.Schema(
   {
-    first_name: {
+    firstName: {
       type: String,
       required: true,
     },
-    last_name: {
+    lastName: {
       type: String,
       required: true,
     },
@@ -26,7 +26,7 @@ export const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    user_type: {
+    userType: {
       type: String,
       required: true,
     },
@@ -35,11 +35,11 @@ export const UserSchema = new mongoose.Schema(
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
 export interface User {
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   username: string;
-  user_type: string;
+  userType: string;
   gender: string;
 }

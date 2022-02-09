@@ -1,9 +1,20 @@
-import { Controller, Body, Get, Post } from '@nestjs/common';
+import { Controller, Body, Get, Post, Injectable } from '@nestjs/common';
 import { StudentService } from './student.service';
+import { TutorService } from '../tutor/tutor.service';
 
 @Controller('student')
 export class StudentController {
-  constructor(private readonly studentService: StudentService) {}
+  constructor(
+    private readonly studentService: StudentService,
+    private readonly tutorService: TutorService,
+  ) {}
+  // constructor(private readonly tutorService: TutorService) {}
+  @Get()
+  async recommendTutor(@Body('studentId') studentId: string) {
+    const subjects = await this.studentService.getPreferredSubject(studentId);
+    const result = await this.tutorService.recommendTutor(subjects);
+    return { tutorList: result };
+  }
 
   @Post()
   chooseTutor(

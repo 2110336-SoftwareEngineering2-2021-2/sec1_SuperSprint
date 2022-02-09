@@ -1,19 +1,27 @@
 import * as mongoose from 'mongoose';
-// import { Schema } from 'mongoose';
 import { UserSchema } from '../models/user.model';
+
+const Schema = mongoose.Schema;
 
 export const StudentSchema = new mongoose.Schema({
   ...UserSchema.obj,
   studentId: String,
+  preferredSubject: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Subject',
+    },
+  ],
 });
 
 export interface Student {
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   username: string;
-  user_type: string;
+  userType: string;
   gender: string;
   studentId: string;
+  preferredSubject: Array<string>;
 }
