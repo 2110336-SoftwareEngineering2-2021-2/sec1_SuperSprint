@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-export const TestSchema = new mongoose.Schema(
+export const ScoreSchema = new mongoose.Schema(
   {
     tutorId: {
       type: Schema.Types.ObjectId,
@@ -29,7 +29,7 @@ export const TestSchema = new mongoose.Schema(
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
-export interface Test {
+export interface Score {
   tutorId: string;
   subjectId: string;
   score: number;
