@@ -69,7 +69,7 @@ const NavBar = (props) => {
             <div className="drawer drawer-side fixed h-screen w-full" >
                 <input id="my-drawer" type="checkbox" className="drawer-toggle" checked={sideBar} />
 
-                <div className="drawer-content mx-auto pt-8 h-screen w-screen"> 
+                <div className="drawer-content mx-auto pt-8 h-screen w-screen pb-10"> 
                     {props.children}
                 </div>
 
