@@ -4,7 +4,7 @@ import { SubjectService } from './subject.service';
 @Controller('subject')
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
-  // constructor(private readonly tutorService: TutorService) {}
+
   @Get()
   async getSubject(@Body('subjectId') subjectId: string) {
     const name = await this.subjectService.getName(subjectId);

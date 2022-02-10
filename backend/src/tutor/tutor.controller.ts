@@ -14,7 +14,6 @@ export class TutorController {
     @Body('username') username: string,
     @Body('userType') userType: string,
     @Body('gender') gender: string,
-    @Body('tutorId') tutorId: string,
     @Body('avgRating') avgRating: number,
     @Body('successMatch') successMatch: number,
     @Body('teachSubject') teachSubject: Array<string>,
@@ -27,10 +26,14 @@ export class TutorController {
       username,
       userType,
       gender,
-      tutorId,
       avgRating,
       successMatch,
       teachSubject,
     );
+  }
+
+  @Get('/search')
+  searchTutor(@Body('text') text: string): any {
+    return this.tutorService.searchTutor(text);
   }
 }

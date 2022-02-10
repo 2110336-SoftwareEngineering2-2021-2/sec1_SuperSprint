@@ -36,6 +36,30 @@ export class StudentService {
     return 'pending';
   }
 
+  async insertStudent(
+    firstName,
+    lastName,
+    email,
+    phone,
+    username,
+    userType,
+    gender,
+    preferredSubject,
+  ): Promise<any> {
+    const newStudent = new this.studentModel({
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phone: phone,
+      username: username,
+      userType: userType,
+      gender: gender,
+      preferredSubject: preferredSubject,
+    });
+    await newStudent.save();
+    return { studentId: newStudent.id };
+  }
+
   private async findStudent(id: string): Promise<Student> {
     let student;
     try {

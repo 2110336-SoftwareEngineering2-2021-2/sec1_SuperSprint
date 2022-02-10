@@ -14,7 +14,7 @@ export const ScoreSchema = new mongoose.Schema(
       ref: 'Subject',
       required: true,
     },
-    score: {
+    currentScore: {
       type: Number,
       required: true,
     },
@@ -30,9 +30,10 @@ export const ScoreSchema = new mongoose.Schema(
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
 export interface Score {
+  _id: string;
   tutorId: string;
   subjectId: string;
-  score: number;
+  currentScore: number;
   maxScore: number;
   year: number;
 }

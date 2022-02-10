@@ -18,6 +18,7 @@ export const SubjectSchema = new mongoose.Schema(
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
 export interface Subject {
+  _id: string;
   title: string;
   level: string;
   description: string;

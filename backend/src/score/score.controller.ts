@@ -4,12 +4,7 @@ import { ScoreService } from './score.service';
 @Controller('score')
 export class ScoreController {
   constructor(private readonly scoreService: ScoreService) {}
-  // constructor(private readonly tutorService: TutorService) {}
-  //   @Get()
-  //   async getSubject(@Body('subjectId') subjectId: string) {
-  //     const name = await this.subjectService.getName(subjectId);
-  //     return { id: name };
-  //   }
+
   @Post()
   async addScore(
     @Body('tutorId') tutorId: string,

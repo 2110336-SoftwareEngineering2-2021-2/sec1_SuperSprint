@@ -20,11 +20,10 @@ export class TutorService {
     username,
     userType,
     gender,
-    tutorId,
     avgRating,
     successMatch,
     teachSubject,
-  ): Promise<string> {
+  ): Promise<any> {
     const newTutor = new this.tutorModel({
       firstName: firstName,
       lastName: lastName,
@@ -33,13 +32,12 @@ export class TutorService {
       username: username,
       userType: userType,
       gender: gender,
-      tutorId: tutorId,
       avgRating: avgRating,
       successMatch: successMatch,
       teachSubject: teachSubject,
     });
     await newTutor.save();
-    return 'Inserted tutor';
+    return { tutorId: newTutor._id };
   }
 
   async findTutors(): Promise<Tutor[]> {
@@ -48,37 +46,65 @@ export class TutorService {
   }
 
   async getTutor(tutorId: string) {
-    const tutor = await this.findTutor(tutorId);
+    const tutor = await this.tutorModel
+      .find({ _id: tutorId })
+      .select({
+        _id: 1,
+        firstName: 1,
+        lastName: 1,
+      })
+      .exec();
     return {
-      tutorId: tutor.tutorId,
-      firstName: tutor.firstName,
-      lastName: tutor.lastName,
+      tutor,
     };
   }
 
+  async searchTutor(text: string): Promise<Tutor[]> {
+    const tutors = await this.tutorModel
+      .aggregate()
+      .search({
+        index: 'tutor-search',
+        text: {
+          query: text,
+          path: {
+            wildcard: '*',
+          },
+        },
+      })
+      .lookup({
+        from: 'subjects',
+        localField: 'teachSubject',
+        foreignField: '_id',
+        as: 'teachSubject',
+      });
+
+    return tutors;
+  }
+
   async recommendTutor(subjects: Array<string>): Promise<Tutor[]> {
-    let results: [Tutor];
-    for (const subjectId in subjects) {
-      const tutorIds = this.tutorModel
+    const results: Tutor[] = [];
+    for (const sIndex in subjects) {
+      const subjectId = subjects[sIndex];
+      const tutorIds = await this.tutorModel
         .find({ teachSubject: { $in: [subjectId] } })
         .exec();
-      for (const tutorId in tutorIds) {
-        const tutor = await this.findTutor(tutorId);
-        let result: [number, Tutor][];
+      const result: [number, Tutor][] = [];
+      for (const tIndex in tutorIds) {
+        const tutor = tutorIds[tIndex];
         const score = await this.calculateCredibility(tutor, subjectId);
         result.push([score, tutor]);
-        const sortedResult = result.sort((n1, n2) => {
-          if (n1[0] > n2[0]) return -1;
-          if (n1[0] < n2[0]) return 1;
-          return 0;
-        });
-        for (
-          let i = 0, length = Math.min(sortedResult.length, 10);
-          i < length;
-          i++
-        ) {
-          results.push(sortedResult[i][1]);
-        }
+      }
+      const sortedResult = result.sort((n1, n2) => {
+        if (n1[0] > n2[0]) return -1;
+        else if (n1[0] < n2[0]) return 1;
+        return 0;
+      });
+      for (
+        let i = 0, length = Math.min(sortedResult.length, 1);
+        i < length;
+        i++
+      ) {
+        results.push(sortedResult[i][1]);
       }
     }
     return results;

@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 
 export const StudentSchema = new mongoose.Schema({
   ...UserSchema.obj,
-  studentId: String,
   preferredSubject: [
     {
       type: Schema.Types.ObjectId,
@@ -15,6 +14,7 @@ export const StudentSchema = new mongoose.Schema({
 });
 
 export interface Student {
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -22,6 +22,5 @@ export interface Student {
   username: string;
   userType: string;
   gender: string;
-  studentId: string;
   preferredSubject: Array<string>;
 }

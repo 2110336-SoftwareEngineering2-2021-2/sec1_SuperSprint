@@ -24,4 +24,27 @@ export class StudentController {
     const status = this.studentService.chooseTutor(studentId, tutorId);
     return { appoinmentStatus: status };
   }
+
+  @Post('addStudent')
+  addStudent(
+    @Body('firstName') firstName: string,
+    @Body('lastName') lastName: string,
+    @Body('email') email: string,
+    @Body('phone') phone: string,
+    @Body('username') username: string,
+    @Body('userType') userType: string,
+    @Body('gender') gender: string,
+    @Body('preferredSubject') preferredSubject: Array<string>,
+  ): Promise<string> {
+    return this.studentService.insertStudent(
+      firstName,
+      lastName,
+      email,
+      phone,
+      username,
+      userType,
+      gender,
+      preferredSubject,
+    );
+  }
 }

@@ -12,12 +12,12 @@ export class ScoreService {
 
   async getScore(tutor: Tutor, sId: string) {
     const res = await this.findScore(tutor, sId);
-    return res.score;
+    return res;
   }
 
-  private async findScore(tutor: Tutor, sId: string): Promise<Score> {
+  private async findScore(tutor: Tutor, sId: string): Promise<number> {
     let score;
-    const tId = tutor.tutorId;
+    const tId = tutor._id;
     try {
       score = await this.scoreModel
         .find({ tutorId: tId, subjectId: sId })
@@ -25,10 +25,10 @@ export class ScoreService {
     } catch (error) {
       throw new NotFoundException('Could not find score.');
     }
-    if (!score) {
-      throw new NotFoundException('Could not find score.');
+    if (score.length === 0) {
+      return 0;
     }
-    return score;
+    return score.currentScore;
   }
 
   async insertScore(
@@ -37,7 +37,7 @@ export class ScoreService {
     score: number,
     maxScore: number,
     year: number,
-  ) {
+  ): Promise<any> {
     const newScore = new this.scoreModel({
       tutorId,
       subjectId,
@@ -45,7 +45,7 @@ export class ScoreService {
       maxScore,
       year,
     });
-    const result = await newScore.save();
-    return result.id as string;
+    await newScore.save();
+    return { scoreId: newScore.id };
   }
 }

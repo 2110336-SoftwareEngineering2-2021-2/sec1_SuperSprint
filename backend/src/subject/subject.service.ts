@@ -34,7 +34,7 @@ export class SubjectService {
       level,
       description,
     });
-    const result = await newSubject.save();
-    return result.id as string;
+    await newSubject.save();
+    return { subjectId: newSubject._id };
   }
 }
