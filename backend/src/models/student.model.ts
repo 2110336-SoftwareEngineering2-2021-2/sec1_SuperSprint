@@ -14,14 +14,15 @@ export const StudentSchema = new mongoose.Schema({
   ],
 });
 
-export interface Student {
-  firstName: string;
-  lastName: string;
+
+export interface Student extends mongoose.Document{
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   username: string;
-  userType: string;
+  user_type: string;
   gender: string;
-  studentId: string;
+  id: string;
   preferredSubject: Array<string>;
 }
