@@ -8,7 +8,7 @@ export class StudentController {
     private readonly studentService: StudentService,
     private readonly tutorService: TutorService,
   ) {}
-  // constructor(private readonly tutorService: TutorService) {}
+
   @Get()
   async recommendTutor(@Body('studentId') studentId: string) {
     const subjects = await this.studentService.getPreferredSubject(studentId);
