@@ -2,9 +2,16 @@ import { useReducer, useState } from "react";
 import Slider from "rc-slider";
 import Layout from "../../components/Layout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faMinus,
+  faPlus,
+  faObjectGroup,
+} from "@fortawesome/free-solid-svg-icons";
 import "rc-slider/assets/index.css";
 import { useRouter } from "next/router";
+import * as yup from "yup";
+import moment from "moment";
+import { number, boolean } from "yup/lib/locale";
 
 const { Range } = Slider;
 const subjects = ["Mathmetic", "Physic", "Biology", "English"];
@@ -69,6 +76,19 @@ function Matching() {
     { avail_date: "", avail_time_from: "", avail_time_to: "" },
   ]);
   const router = useRouter();
+  const schema = yup.object().shape({
+    avail_date: yup.date(),
+    avail_time_from: yup.string().required(),
+    avail_time_to: yup
+      .string()
+      .required()
+      .test("is-greater", "end time should be greater", function (value) {
+        const { avail_time_from } = this.parent;
+        return moment(value, "HH:mm").isSameOrAfter(
+          moment(avail_time_from, "HH:mm")
+        );
+      }),
+  });
 
   function setMinPriceRange(event) {
     let newPriceRange = [...priceRange];
@@ -113,18 +133,54 @@ function Matching() {
     newFormVals[idx][event.target.id] = event.target.value;
     setAvailFormVals(newFormVals);
   }
-
-  function submitMatching(event) {
+  async function validateForm(event) {
+    const total = availFormVals.length;
+    var notError = true;
+    for (const e of availFormVals) {
+      if (
+        e.avail_date === "" &&
+        e.avail_time_from === "" &&
+        e.avail_time_to === "" &&
+        total === 1
+      ) {
+        continue;
+      } else if (
+        e.avail_date !== "" &&
+        e.avail_time_from !== "" &&
+        e.avail_time_to !== ""
+      ) {
+        await schema
+          .validate({
+            avail_date: e.avail_date,
+            avail_time_from: e.avail_time_from,
+            avail_time_to: e.avail_time_to,
+          })
+          .catch((err) => {
+            alert(err.message);
+            notError = false;
+          });
+      } else {
+        return false;
+      }
+    }
+    return notError;
+  }
+  async function submitMatching(event) {
     event.preventDefault();
-    console.log(event.target);
-    // console.log(event.target.avail_time_from[0].value);
+    if (!(await validateForm(event))) {
+      return;
+    }
     router.push(
       {
         pathname: "/matching/result/[result]",
         query: {
           result: JSON.stringify({
             study_subject: event.target.study_subject.value,
-          })
+            levels: event.target.edu_level.value,
+            price_min: event.target.price_min.value,
+            price_max: event.target.price_max.value,
+            availability: availFormVals,
+          }),
         },
       },
       "/matching/result/"
@@ -235,10 +291,10 @@ function Matching() {
               <span className="select-none">-</span>
               <label
                 className="input-group input-group-xs right-0 w-5/12 sm:w-3/12"
-                htmlFor="price-max"
+                htmlFor="price_max"
               >
                 <input
-                  id="price-max"
+                  id="price_max"
                   type="number"
                   value={priceRange[1]}
                   className="input input-primary input-bordered input-sm min-w-2/3 sm:min-w-1/2 w-full"
