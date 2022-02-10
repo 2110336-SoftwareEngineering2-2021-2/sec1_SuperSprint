@@ -1,6 +1,7 @@
 import React from 'react';
 import TutorCard from '../../components/TutorCard';
 import Layout from '../../components/Layout';
+import { sideBarData } from '../../components/SideBar';
 
 export default function MatchingResultPage() {
 
@@ -43,9 +44,13 @@ export default function MatchingResultPage() {
     {/* <div className="flex flex-col items-center my-5 gap-5">
       {temp}
     </div> */}
-    <div className="grid grid-cols-1 md:grid-cols-2 items-center my-10 gap-x-5">
+    {/* <div className="grid grid-cols-1 md:grid-cols-2 items-center my-10 gap-x-5">
       <div className="grid gap-y-5">{temp}</div>
       <div className="grid gap-y-5">{temp}</div>
+    </div> */}
+    <div className="flex flex-wrap justify-center items-center my-10 gap-5">
+      <div className="flex flex-col gap-5">{temp}</div>
+      <div className="flex flex-col gap-5">{temp}</div>
     </div>
   </Layout>
   )
