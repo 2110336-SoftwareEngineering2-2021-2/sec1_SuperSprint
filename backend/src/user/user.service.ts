@@ -19,12 +19,6 @@ export class UserService {
       gender: 'male',
     });
     await newUser.save();
-    // const data = await this.userModel.find();
-    // console.log(data);
     return 'Hello World!2';
   }
-
-  // async findAll(): Promise<User[]> {
-  //   return await this.userModel.find().exec();
-  // }
 }
