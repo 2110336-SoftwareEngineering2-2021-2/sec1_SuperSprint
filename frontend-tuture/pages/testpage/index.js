@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Switch, Transition } from "@headlessui/react";
 import Layout from "../../components/Layout";
 import TutorCard from "../../components/TutorCard";
+import ProfileDropdown from "../../components/ProfileDropdown";
 
 const names = [
   "Adam Benson",
@@ -34,8 +35,11 @@ export default function Testpage() {
 
   return (
     <Layout title={"test page"}>
+      <div className="w-fit ml-auto mr-0">
+        <ProfileDropdown name="Phusaratisasdfadsl;kjfasdlkf Jong" profileImg="http://daisyui.com/tailwind-css-component-profile-1@56w.png" />
+      </div>
 
-      <div className="flex flex-wrap justify-center gap-4 my-2">{temp}</div>
+      <div className="my-2 flex flex-wrap justify-center gap-4">{temp}</div>
 
       <Switch.Group>
         <div className="flex items-center">
@@ -45,12 +49,12 @@ export default function Testpage() {
             onChange={setEnabled}
             className={`${
               enabled ? "bg-amber-500" : "bg-gray-200"
-            } relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-700`}
+            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-amber-700 focus:ring-offset-2`}
           >
             <span
               className={`${
                 enabled ? "translate-x-6" : "translate-x-1"
-              } inline-block w-4 h-4 transform bg-white rounded-full transition-transform`}
+              } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
             />
           </Switch>
         </div>
