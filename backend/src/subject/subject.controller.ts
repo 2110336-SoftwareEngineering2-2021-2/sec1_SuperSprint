@@ -11,4 +11,10 @@ export class SubjectController {
     return {id: generatedId};
   }
 
+  @Get('titleandlvl')
+  async findByTitleAndLevel(@Body('title') title : string , @Body('level')lvl:string){
+    const subject = await this.subjectService.findByTitleAndLevel(title,lvl);
+    return subject;
+  }
+
 }

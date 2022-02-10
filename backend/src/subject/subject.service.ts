@@ -17,4 +17,8 @@ export class SubjectService {
 
   }
 
+  async findByTitleAndLevel(title:string , level:string){
+    return await this.SubjectModel.findOne({title:title,level:level})
+  }
+
 }
