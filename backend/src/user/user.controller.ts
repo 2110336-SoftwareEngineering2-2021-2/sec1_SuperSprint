@@ -6,8 +6,15 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
+  async getAllUsers(){
+    return await this.userService.getAllUsers();
+  }
+
+  @Get('test')
   getHello(): Promise<string> {
     console.log(123);
     return this.userService.getHello();
   }
+
+  
 }

@@ -8,10 +8,14 @@ import { UserModule } from './user/user.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGO_DB_URI),
+    MongooseModule.forRoot('mongodb://localhost/tuture_yod'),
     UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
+
+
+
+

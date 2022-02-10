@@ -24,7 +24,18 @@ export class UserService {
     return 'Hello World!2';
   }
 
-  // async findAll(): Promise<User[]> {
-  //   return await this.userModel.find().exec();
-  // }
+
+  async getAllUsers(): Promise<User[]> {
+    const Users = await this.userModel.find().exec();
+    return Users.map((e) => ({
+      first_name: e.first_name,
+      last_name: e.last_name,
+      email: e.email,
+      phone: e.phone,
+      username: e.username,
+      user_type: e.user_type,
+      gender: e.gender
+    }));
+  }
+
 }
