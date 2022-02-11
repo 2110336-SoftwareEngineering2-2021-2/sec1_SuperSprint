@@ -36,7 +36,7 @@ module.exports = {
           'accent-content': '#ffffff',
           'neutral': '#181830',
           'neutral-focus': '#000000',
-          'neutral-content': '#ffffff',
+          'neutral-content': '#000000',
           'base-100': '#ffffff',
           'base-200': '#f5f5f5',
           'base-300': '#e3e3e3',
