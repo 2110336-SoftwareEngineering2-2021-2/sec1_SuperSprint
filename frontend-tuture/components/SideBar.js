@@ -6,17 +6,20 @@ import {
   } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-export const sideBarData = [
+export const sidebarData = [
     {
         name: "Home",
-        icon: faHouseUser
+        icon: faHouseUser,
+        link: "/"
     },
     {
         name: "Schedule",
-        icon: faCalendarDay
+        icon: faCalendarDay,
+        link: "/matching/schedule"
     },
     {
         name: "Match History",
-        icon: faHistory
+        icon: faHistory,
+        link: "/matching/history"
     }
 ]

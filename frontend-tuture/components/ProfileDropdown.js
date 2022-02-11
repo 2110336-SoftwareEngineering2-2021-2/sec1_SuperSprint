@@ -10,22 +10,20 @@ import Link from "next/link";
 
 function ProfileDropdown({ name, profileImg }) {
   return (
-    <div className="dropdown dropdown-end z-40">
-      <div tabIndex="0" className="">
-        <div tabIndex="0" className="avatar">
-          <div className="hover:border-primary-focus h-12 w-12 cursor-pointer rounded-full border-2 border-white transition-colors">
-            <img src={profileImg} />
-          </div>
+    <div className="dropdown-end dropdown h-10 w-10 xs:h-12 xs:w-12">
+      <div tabIndex="0" className="avatar">
+        <div className="h-10 w-10 cursor-pointer rounded-full border-2 border-white transition-colors hover:border-primary-focus xs:h-12 xs:w-12">
+          <img src={profileImg} />
         </div>
       </div>
       <ul
         tabIndex="0"
-        className="menu sm:menu-normal menu-compact dropdown-content bg-base-100 rounded-box shadow-secondary/20 w-56 p-2 shadow-md sm:w-64"
+        className="dropdown-content menu rounded-box menu-compact w-56 bg-base-100 p-2 shadow-md shadow-secondary/20 sm:menu-normal sm:w-64"
       >
         <li className="menu-title">
           <div className="mb-2 flex w-full items-center justify-around gap-2">
-            <div tabIndex="0" className="avatar flex-0">
-              <div className="xs:w-12 xs:h-12 xs:visible invisible w-0 min-w-fit rounded-full md:h-14 md:w-14">
+            <div tabIndex="0" className="flex-0 avatar">
+              <div className="invisible w-0 min-w-fit rounded-full xs:visible xs:h-12 xs:w-12 md:h-14 md:w-14">
                 <img src={profileImg} />
               </div>
             </div>
