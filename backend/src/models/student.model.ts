@@ -4,7 +4,35 @@ import { UserSchema } from '../models/user.model';
 const Schema = mongoose.Schema;
 
 export const StudentSchema = new mongoose.Schema({
-  ...UserSchema.obj,
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    lowercase: true,
+    required: true,
+    unique: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+    minlength: 10,
+    maxlength: 10,
+  },
+  username: {
+    type: String,
+    required: true,
+  },
+  userType: {
+    type: String,
+    required: true,
+  },
+  gender: { type: String },
   preferredSubject: [
     {
       type: Schema.Types.ObjectId,
@@ -13,7 +41,7 @@ export const StudentSchema = new mongoose.Schema({
   ],
 });
 
-export interface Student {
+export interface Student  {
   _id: string;
   firstName: string;
   lastName: string;

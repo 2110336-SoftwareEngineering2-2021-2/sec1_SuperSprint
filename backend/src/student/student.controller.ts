@@ -9,14 +9,14 @@ export class StudentController {
     private readonly tutorService: TutorService,
   ) {}
 
-  @Get()
+  @Get('recommend')
   async recommendTutor(@Body('studentId') studentId: string) {
     const subjects = await this.studentService.getPreferredSubject(studentId);
     const result = await this.tutorService.recommendTutor(subjects);
     return { tutorList: result };
   }
 
-  @Post()
+  @Post('chooseTutor')
   chooseTutor(
     @Body('studentId') studentId: string,
     @Body('tutorId') tutorId: string,
@@ -46,5 +46,10 @@ export class StudentController {
       gender,
       preferredSubject,
     );
+  }
+
+  @Get()
+  getAllStudents() {
+    return this.studentService.getStudents();
   }
 }

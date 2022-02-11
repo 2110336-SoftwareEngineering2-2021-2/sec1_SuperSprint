@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import { timestamp } from 'rxjs';
 import { UserSchema } from '../models/user.model';
 
 const Schema = mongoose.Schema;
@@ -35,12 +36,15 @@ export const TutorSchema = new mongoose.Schema({
   gender: { type: String },
   avgRating: Number,
   successMatch: Number,
+  priceMax: Number,
+  priceMin: Number,
   teachSubject: [
     {
       type: Schema.Types.ObjectId,
       ref: 'Subject',
     },
   ],
+  dutyTime: [{ start: Date, end: Date }], // free time of tutor
 });
 
 export interface Tutor {
@@ -55,4 +59,7 @@ export interface Tutor {
   avgRating: number;
   successMatch: number;
   teachSubject: Array<string>;
+  priceMax: number;
+  priceMin: number;
+  dutyTime: Array<{ start: Date; end: Date }>;
 }

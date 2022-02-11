@@ -25,6 +25,11 @@ export class StudentService {
     };
   }
 
+  async getStudents(){
+    const students = await this.studentModel.find();
+    return students;
+  }
+
   async getPreferredSubject(studentId: string): Promise<Array<string>> {
     console.log(['getPreferredSubject', studentId]);
     const student = await this.findStudent(studentId);
