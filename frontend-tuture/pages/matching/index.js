@@ -54,7 +54,7 @@ function AvailabilityForm({
           className="input input-primary input-bordered input-sm col-span-5 inline-block sm:w-32"
         />
       </div>
-      <button
+      {/* <button
         type="button"
         className="btn btn-primary xs:btn-sm btn-xs btn-outline mx-2 inline-block w-fit grow-0 rounded-full text-center"
         onClick={onButtonClick}
@@ -65,7 +65,7 @@ function AvailabilityForm({
           icon={lastElement ? faPlus : faMinus}
           fixedWidth
         />
-      </button>
+      </button> */}
     </div>
   );
 }
@@ -312,7 +312,7 @@ function Matching() {
 
           <div className="m-auto w-full">
             <label className="label mb-4">
-              <span className="label-text">Availability (max 10)</span>
+              <span className="label-text">Availability (max 1)</span>
             </label>
             <div className="m-auto w-fit px-2">
               {/* Slice for shallow copy and reverse, making original array unchanged */}
@@ -322,7 +322,7 @@ function Matching() {
                     key={idx}
                     formVal={item}
                     lastElement={idx === availFormVals.length - 1}
-                    reactMax={availFormVals.length === 10}
+                    reactMax={availFormVals.length === 1}
                     onButtonClick={
                       idx === availFormVals.length - 1
                         ? addAvailField
