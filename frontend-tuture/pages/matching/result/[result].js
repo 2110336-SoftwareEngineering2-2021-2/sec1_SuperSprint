@@ -49,7 +49,7 @@ function MatchingResult({ tutors }) {
     <Layout>
       <StudentSortingDropdown
         sortingCallback={onChangeSorting}
-        className="ml-auto mr-0 w-fit"
+        className="ml-auto mr-2 w-fit"
       />
       <div className="my-2 flex flex-wrap justify-center gap-4">
         {tutors.sort(sortedOption.option.func)[sortedOption.asc ? 'slice' : 'reverse']().map((item, idx) => (

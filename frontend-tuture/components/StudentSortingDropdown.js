@@ -46,9 +46,9 @@ function StudentSortingDropdown({ className, sortingCallback }) {
     <div className={`flex items-center ${className}`}>
       <div className="dropdown">
         <div>
-          <label className="w-full">Sorted by: </label>
-          <button tabIndex="0" className="btn btn-primary btn-outline m-1 w-44">
-            {selectedSortMode.title}
+          <label className="w-full sm:text-base text-sm">Sorted by: </label>
+          <button tabIndex="0" className="btn btn-primary btn-outline m-1 sm:w-44 w-36 sm:btn-md btn-sm">
+            <span className="sm:text-base text-sm">{selectedSortMode.title}</span>
           </button>
         </div>
         <ul
@@ -65,7 +65,7 @@ function StudentSortingDropdown({ className, sortingCallback }) {
         </ul>
       </div>
       <div>
-        <button className="btn btn-primary" onClick={toggleArrow}>
+        <button className="btn btn-primary sm:btn-md btn-sm" onClick={toggleArrow}>
           <FontAwesomeIcon
             size="sm"
             icon={isAsc ? faArrowDown : faArrowUp}

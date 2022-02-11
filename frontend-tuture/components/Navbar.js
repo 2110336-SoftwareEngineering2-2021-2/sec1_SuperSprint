@@ -50,7 +50,7 @@ const Navbar = (props) => {
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="input sm:input-md input-sm text-base-content sm:w-96 xs:w-48 w-56"
+                  className="input sm:input-md input-sm text-base-content md:w-96 sm:w-72 xs:w-48 w-56"
                   value={tutureName}
                   onInput={(e) => setTutureName(e.target.value)}
                 ></input>
