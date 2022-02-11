@@ -10,7 +10,7 @@ import Link from "next/link";
 
 function ProfileDropdown({ name, profileImg }) {
   return (
-    <div className="dropdown dropdown-end">
+    <div className="dropdown dropdown-end z-40">
       <div tabIndex="0" className="">
         <div tabIndex="0" className="avatar">
           <div className="hover:border-primary-focus h-12 w-12 cursor-pointer rounded-full border-2 border-white transition-colors">
