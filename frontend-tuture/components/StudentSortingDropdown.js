@@ -3,13 +3,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import react, { useEffect, useState } from "react";
 
 const SORT_OPTION = [
+  // {
+  //   title: "Credibility Score",
+  //   key: "credit",
+  // },
   {
-    title: "Credibility Score",
-    key: "credit",
-  },
-  {
-    title: "Review Score",
-    key: "review",
+    title: "Rating",
+    key: "rating",
   },
   {
     title: "Price Range",
@@ -35,7 +35,7 @@ function StudentSortingDropdown({ className, sortingCallback }) {
 
   function changeSortMode(event) {
     const selected = event.target.getAttribute("note");
-    setSelectedSortMode(SORT_OPTION.find((item) => item.key == selected));
+    setSelectedSortMode(SORT_OPTION.find((item) => item.key === selected));
   }
 
   function toggleArrow() {
@@ -44,16 +44,16 @@ function StudentSortingDropdown({ className, sortingCallback }) {
 
   return (
     <div className={`flex items-center ${className}`}>
-      <div class="dropdown">
+      <div className="dropdown">
         <div>
           <label className="w-full">Sorted by: </label>
-          <button tabindex="0" class="btn btn-primary btn-outline m-1 w-44">
+          <button tabIndex="0" className="btn btn-primary btn-outline m-1 w-44">
             {selectedSortMode.title}
           </button>
         </div>
         <ul
-          tabindex="0"
-          class="menu dropdown-content bg-base-100 rounded-box ml-20 w-52 p-2 shadow"
+          tabIndex="0"
+          className="menu dropdown-content bg-base-100 rounded-box ml-20 w-52 p-2 shadow"
         >
           {SORT_OPTION.map((item, idx) => (
             <li key={idx}>
@@ -65,10 +65,10 @@ function StudentSortingDropdown({ className, sortingCallback }) {
         </ul>
       </div>
       <div>
-        <button class="btn btn-primary" onClick={toggleArrow}>
+        <button className="btn btn-primary" onClick={toggleArrow}>
           <FontAwesomeIcon
             size="sm"
-            icon={isAsc ? faArrowUp : faArrowDown}
+            icon={isAsc ? faArrowDown : faArrowUp}
             fixedWidth
           />
         </button>
