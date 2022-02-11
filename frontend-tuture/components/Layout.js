@@ -1,6 +1,6 @@
 import React from 'react';
 import Head from 'next/Head';
-import Navbar from './NavBar';
+import Navbar from './Navbar';
 
 export default function Layout({title, children}) {
   return (
