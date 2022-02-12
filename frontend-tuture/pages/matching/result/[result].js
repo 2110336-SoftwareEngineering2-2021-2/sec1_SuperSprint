@@ -4,13 +4,13 @@ import StudentSortingDropdown from "../../../components/StudentSortingDropdown";
 import TutorCard from "../../../components/TutorCard";
 
 const SORT_OPTION = [
-  // {
-  //   key: "credit",
-  //   func: (a,b) => a.credit - b.credit
-  // },
   {
     sortMode: "rating",
     func: (a, b) => a.rating - b.rating,
+  },
+  {
+    sortMode: "credit",
+    func: (a, b) => a.credit - b.credit,
   },
   {
     sortMode: "price",
@@ -45,6 +45,16 @@ function MatchingResult({ tutors }) {
     setSortedOption({ option: sortingOption, asc: option.asc });
   }
 
+  async function cardClickHandling(tutorId) {
+    try {
+      const test = await fetch(`/api/test/${tutorId}`);
+      console.log(test);
+      alert("yay");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <Layout>
       <StudentSortingDropdown
@@ -52,49 +62,76 @@ function MatchingResult({ tutors }) {
         className="ml-auto mr-2 w-fit"
       />
       <div className="my-2 flex flex-wrap justify-center gap-4">
-        {tutors.sort(sortedOption.option.func)[sortedOption.asc ? 'slice' : 'reverse']().map((item, idx) => (
-          <TutorCard
-            key={idx}
-            name={item.name}
-            profileImg={item.profileImg}
-            subjects={item.subjects}
-            levels={item.levels}
-            rating={item.rating}
-            price={item.price}
-            onCardClick={() => console.log(`Card click ${item.name}`)}
-            onChooseClick={() =>
-              console.log(`Choose button click ${item.name}`)
-            }
-          />
-        ))}
+        {tutors.length > 0 ? (
+          tutors
+            .sort(sortedOption.option.func)
+            [sortedOption.asc ? "slice" : "reverse"]()
+            .map((item, idx) => (
+              <TutorCard
+                key={idx}
+                name={item.name}
+                profileImg={item.profileImg}
+                subjects={item.subjects}
+                levels={item.levels}
+                rating={item.rating}
+                price={item.price}
+                onCardClick={() => console.log(`Card click ${item.name}`)}
+                onChooseClick={() => cardClickHandling(item.tutor_id)}
+              />
+            ))
+        ) : (
+          <p className="text-lg">{"No result :("}</p>
+        )}
       </div>
     </Layout>
   );
 }
 
 export async function getServerSideProps(context) {
-  // const { result } = context.query;
-  // const queryResult = JSON.parse(result);
-  // console.log(queryResult);
+  const { result } = context.query;
+  const json = JSON.parse(result);
+  console.log(json);
+  const body = JSON.stringify({
+    subjectName: json.study_subject,
+    level: json.levels,
+    priceMin: json.price_min,
+    priceMax: json.price_max,
+    availabilityStudent: json.availability.map((e) => {
+      return {
+        availabilityDate: e.avail_date,
+        availabilityTimeFrom: e.avail_time_from,
+        availabilityTimeTo: e.avail_time_to,
+      };
+    }),
+  });
+  console.log(body);
+  const res = await fetch(`http://${process.env.API_URL}/tutor/match`, {
+    method: "POST",
+    mode: "cors",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: body,
+  });
+  const data = await res.json();
+  console.log(data);
 
-  const tutors = new Array(10);
-  for (var i = 0; i < 10; i++)
-    tutors[i] = {
-      name:
-        Math.random().toString(36).slice(2) +
-        " " +
-        Math.random().toString(36).slice(2),
+  const tutors = data.tutorList.map((item) => {
+    return {
+      name: `${item.firstName} ${item.lastName}`,
+      tutor_id: item._id,
       profileImg:
-        "https://www.chicagotribune.com/resizer/a-16fPYl-SK8W6HPnzjOHK1rqho=/800x551/top/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/IEYVMAFZ7BBXHM46GFNLWRN3ZA.jpg",
-      subjects: ["Physics", "Chemistry"],
-      levels: ["High school", "Middle school"],
-      rating: Math.random() * 5,
-      price: {
-        min: 100 + Math.floor(Math.random() * 1000),
-        max: 2000 + Math.floor(Math.random() * 1000),
-      },
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTQeke6GCoBbq9Mni1fnPLP8CapwRFRgx29w",
+      subjects: item.teachSubject.map((e) => e.title),
+      levels: Array.from(new Set(item.teachSubject.map((e) => e.level))),
+      rating: item.avgRating,
+      price: { min: item.priceMin, max: item.priceMax },
+      credit: item.score,
     };
-  // console.log(query);
+  });
+
+  // const tutors = new Array(10).fill(temp);
 
   return {
     props: { tutors },

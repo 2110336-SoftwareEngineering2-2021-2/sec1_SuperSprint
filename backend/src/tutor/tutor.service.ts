@@ -67,34 +67,34 @@ export class TutorService {
     };
   }
 
-  async searchTutor(text: string): Promise<Tutor[]> {
+  async searchTutor(text: string): Promise<{tutorList:Array<Tutor>}> {
+    const regex = new RegExp(`.*${text.split(' ').join('|')}.*`,'i');
     const tutors = await this.tutorModel
       .aggregate()
-      .search({
-        index: 'tutor-search',
-        text: {
-          query: text,
-          path: {
-            wildcard: '*',
-          },
-        },
-      })
       .lookup({
         from: 'subjects',
         localField: 'teachSubject',
         foreignField: '_id',
         as: 'teachSubject',
-      });
+      }).match({
+        $or:[
+            {firstName :regex},
+            {lastName:regex},
+            {'teachSubject.title':regex}
+          ]
+        })
+      .exec();
 
-    return tutors;
+    return {tutorList: tutors};
   }
 
-  async recommendTutor(subjects: Array<string>): Promise<Tutor[]> {
-    const results: Tutor[] = [];
+  async recommendTutor(subjects: Array<string>): Promise<any> {
+    const results: [number, Tutor][] = [];
     for (const sIndex in subjects) {
       const subjectId = subjects[sIndex];
       const tutorIds = await this.tutorModel
         .find({ teachSubject: { $in: [subjectId] } })
+        .populate('teachSubject')
         .exec();
       const result: [number, Tutor][] = [];
       for (const tIndex in tutorIds) {
@@ -108,16 +108,49 @@ export class TutorService {
         return 0;
       });
       for (
-        let i = 0, length = Math.min(sortedResult.length, 1);
+        let i = 0, length = Math.min(sortedResult.length, 10);
         i < length;
         i++
       ) {
-        results.push(sortedResult[i][1]);
+        results.push(sortedResult[i]);
       }
     }
-    return results;
-  }
+    const sortedResults = results.sort((n1, n2) => {
+      if (n1[0] > n2[0]) return -1;
+      else if (n1[0] < n2[0]) return 1;
+      return 0;
+    });
 
+    return sortedResults.map((e) => {
+        const {
+          _id,
+          firstName,
+          lastName,
+          username,
+          // gender,
+          avgRating,
+          teachSubject,
+          priceMin,
+          priceMax,
+          // dutyTime,
+        } = e[1];
+  
+        return {
+          _id,
+          firstName,
+          lastName,
+          username,
+          // gender,
+          avgRating,
+          teachSubject,
+          priceMin,
+          priceMax,
+          // dutyTime,
+          score: e[0],
+        };
+      })
+  }
+  
   async matchTutor(
     subjectName: string,
     level: string,
@@ -129,10 +162,14 @@ export class TutorService {
       availabilityTimeTo: string;
     }[],
   ) {
+
+    console.log(subjectName, level, priceMin, priceMax, availabilityStudent);
     const subject = await this.subjectService.findByTitleAndLevel(
       subjectName,
       level,
     );
+
+    console.log(subject);
 
     const datetimeFrom = new Date(
       availabilityStudent[0].availabilityDate +
@@ -146,11 +183,12 @@ export class TutorService {
         availabilityStudent[0].availabilityTimeTo,
     );
     datetimeTo.setHours(datetimeTo.getHours() + 7);
+    console.log(datetimeFrom, datetimeTo);
 
     const tutors = await this.tutorModel
       .find({
         $and: [
-          { teachSubject: { $in: [subject.id] } },
+          { teachSubject: { $in: [subject._id] } },
           { price: { $gte: priceMin } }, //ราคาเด็ก ครอบ ราคาติวเตอร์
           { price: { $lte: priceMax } },
           //{ 'dutyTime.start': { $lte: datetimeFrom } },
@@ -164,7 +202,7 @@ export class TutorService {
           //   },
           // },
         ],
-      })
+      }).populate('teachSubject')
       .exec();
 
     console.log(tutors);
@@ -181,8 +219,11 @@ export class TutorService {
         studentTimeTo = datetimeTo;
         tutorTimeFrom = times[i].start;
         tutorTimeTo = times[i].end;
-        //console.log(tutorTimeFrom <= studentTimeFrom);
-        //console.log(tutorTimeTo >= studentTimeTo);
+
+
+        console.log(1,tutorTimeFrom <= studentTimeFrom);
+        console.log(2,tutorTimeTo >= studentTimeTo);
+
         if (tutorTimeFrom <= studentTimeFrom && tutorTimeTo >= studentTimeTo) {
           oncondition = true;
           break;
@@ -193,7 +234,7 @@ export class TutorService {
 
     const tutor_send = await Promise.all(
       tutor_temp.map(async (e) => {
-        const score = await this.calculateCredibility(e, subject.id);
+        const score = await this.calculateCredibility(e, subject._id);
 
         const {
           _id,
@@ -202,7 +243,7 @@ export class TutorService {
           username,
           gender,
           avgRating,
-          // teachSubject,
+          teachSubject,
           priceMin,
           priceMax,
           dutyTime,
@@ -215,7 +256,7 @@ export class TutorService {
           username,
           gender,
           avgRating,
-          // teachSubject,
+          teachSubject,
           priceMin,
           priceMax,
           dutyTime,
@@ -223,8 +264,7 @@ export class TutorService {
         };
       }),
     );
-
-    return tutor_send;
+    return {tutorList: tutor_send};
   }
 
   async updateTutor(

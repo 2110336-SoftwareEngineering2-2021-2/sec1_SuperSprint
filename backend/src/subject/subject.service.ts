@@ -15,6 +15,16 @@ export class SubjectService {
     return subject.title;
   }
 
+  async getSubjects() {
+    const title= await this.subjectModel.find().distinct('title')
+    return title
+  }
+
+  async getLevels() {
+    const level= await this.subjectModel.find().distinct('level')
+    return level
+  }
+
   private async findSubject(id: string): Promise<Subject> {
     let subject;
     try {

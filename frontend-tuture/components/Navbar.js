@@ -8,11 +8,11 @@ import { faBars, faBell, faSearch } from "@fortawesome/free-solid-svg-icons";
 import ProfileDropdown from "./ProfileDropdown";
 
 const Navbar = (props) => {
-  const [tutureName, setTutureName] = useState("");
   const router = useRouter();
 
-  function submitSearch() {
-    router.push(`/search?result=${tutureName}`);
+  function submitSearch(event) {
+    event.preventDefault();
+    router.push(`/search?result=${event.target.search_term.value}`);
   }
 
   return (
@@ -20,11 +20,11 @@ const Navbar = (props) => {
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
 
       <div className="drawer-content mx-auto h-full w-screen">
-        <div className="navbar bg-primary text-neutral-content sticky top-0 z-50 w-full shadow-lg">
+        <div className="navbar sticky top-0 z-50 w-full bg-primary text-neutral-content shadow-lg">
           <div className="navbar-start">
             <label
               htmlFor="my-drawer"
-              className="btn sm:btn-md btn-sm btn-ghost drawer-button btn-square"
+              className="btn btn-ghost drawer-button btn-square btn-sm sm:btn-md"
             >
               <FontAwesomeIcon
                 fixedWidth
@@ -33,35 +33,43 @@ const Navbar = (props) => {
                 size="lg"
               />
             </label>
-            <span className="xs:block text-base-100 mx-2 hidden select-none text-lg font-bold sm:text-xl">
-              Tuture
-            </span>
+            <Link href="/">
+              <button className="btn btn-ghost hidden  text-lg font-bold normal-case text-primary-content xs:block sm:text-xl">
+                Tuture
+              </button>
+            </Link>
           </div>
           {/* sa wad dee krub taan sa ma chik chom lom kon chob frontend */}
           <div className="navbar-center">
             <div className="form-control">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="input sm:input-md input-sm text-base-content xs:w-48 w-56 sm:w-72 md:w-96"
-                value={tutureName}
-                onInput={(e) => setTutureName(e.target.value)}
-              ></input>
+              <form onSubmit={(e) => submitSearch(e)} className="relative">
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="input-bordered input-primary input input-sm w-56 border border-secondary text-base-content xs:w-48 sm:input-md sm:w-72 md:w-96"
+                  id="search_term"
+                />
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-square btn-sm absolute top-0 right-0 rounded-l-none border border-secondary text-xs sm:btn-md sm:text-base"
+                >
+                  <FontAwesomeIcon
+                    fixedWidth
+                    icon={faSearch}
+                    className="text-primary-content"
+                  />
+                </button>
+              </form>
             </div>
-            <button
-              className="btn btn-ghost btn-square sm:btn-md btn-sm"
-              onClick={submitSearch}
-            >
-              <FontAwesomeIcon
-                fixedWidth
-                icon={faSearch}
-                className="text-primary-content"
-              />
-            </button>
           </div>
 
           <div className="navbar-end flex items-center">
-            <button className="btn sm:btn-md btn-sm btn-ghost btn-square">
+            <Link href="/matching">
+              <a className="btn btn-ghost btn-sm text-primary-content sm:btn-md">
+                Match
+              </a>
+            </Link>
+            <button className="btn btn-ghost btn-square btn-sm sm:btn-md">
               <FontAwesomeIcon
                 fixedWidth
                 icon={faBell}
@@ -81,7 +89,7 @@ const Navbar = (props) => {
 
       <div className="drawer-side">
         <label htmlFor="my-drawer" className="drawer-overlay" />
-        <ul className="menu bg-base-100 w-80 overflow-y-auto p-4">
+        <ul className="menu w-80 overflow-y-auto bg-base-100 p-4">
           {sidebarData.map((item, index) => {
             return (
               <li key={index}>

@@ -38,12 +38,12 @@ export class TutorController {
     );
   }
 
-  @Get('search')
+  @Post('search')
   searchTutor(@Body('text') text: string): any {
     return this.tutorService.searchTutor(text);
   }
 
-  @Get('match')
+  @Post('match')
   async matchTutor(
     @Body('subjectName') subjectName: string,
     @Body('level') level: string,

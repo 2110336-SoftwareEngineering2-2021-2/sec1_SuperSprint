@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Layout from "../components/Layout";
 import Recommend from "../components/Recommend";
 
@@ -24,23 +23,32 @@ export default function Home({ tutors }) {
   );
 }
 
-const temp = {
-  name: "Haha Mama",
-  profileImg:
-    "https://www.chicagotribune.com/resizer/a-16fPYl-SK8W6HPnzjOHK1rqho=/800x551/top/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/IEYVMAFZ7BBXHM46GFNLWRN3ZA.jpg",
-  subjects: ["Physics", "Chemistry"],
-  levels: ["High school", "Middle school"],
-  rating: Math.random() * 5,
-  price: { min: 300, max: 500 },
-};
-
 export async function getServerSideProps(context) {
-  const { query } = context;
-  // const res = await fetch(``);
-  // const data = await res.json();
+  console.log(`${process.env.API_URL}/student/recommend`);
+  const res = await fetch(`http://${process.env.API_URL}/student/recommend`, {
+    method: "POST",
+    mode: "cors",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      studentId: "62051ce13dd882be338c2d2b",
+    }),
+  });
+  const data = await res.json();
 
-  const tutors = new Array(10).fill(temp);
-  console.log(query);
+  const tutors = data.tutorList.map((item) => {
+    return {
+      name: `${item.firstName} ${item.lastName}`,
+      profileImg:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTQeke6GCoBbq9Mni1fnPLP8CapwRFRgx29w",
+      subjects: item.teachSubject.map((e) => e.title),
+      levels: Array.from(new Set(item.teachSubject.map((e) => e.level))),
+      rating: item.avgRating,
+      price: { min: item.priceMin, max: item.priceMax },
+    };
+  });
 
   return {
     props: { tutors },

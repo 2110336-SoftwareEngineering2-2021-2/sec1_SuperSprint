@@ -3,13 +3,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import react, { useEffect, useState } from "react";
 
 const SORT_OPTION = [
-  // {
-  //   title: "Credibility Score",
-  //   key: "credit",
-  // },
   {
     title: "Rating",
     key: "rating",
+  },
+  {
+    title: "Credibility",
+    key: "credit",
   },
   {
     title: "Price Range",

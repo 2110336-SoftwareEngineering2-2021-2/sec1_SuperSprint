@@ -9,7 +9,7 @@ export class StudentController {
     private readonly tutorService: TutorService,
   ) {}
 
-  @Get('recommend')
+  @Post('recommend')
   async recommendTutor(@Body('studentId') studentId: string) {
     const subjects = await this.studentService.getPreferredSubject(studentId);
     const result = await this.tutorService.recommendTutor(subjects);

@@ -68,7 +68,7 @@ function AvailabilityForm({
   );
 }
 
-function Matching() {
+function Matching({subjects, levels}) {
   const [priceRange, setPriceRange] = useState([2000, 4500]);
   const [availFormVals, setAvailFormVals] = useState([
     { avail_date: "", avail_time_from: "", avail_time_to: "" },
@@ -352,6 +352,20 @@ function Matching() {
       </div>
     </Layout>
   );
+}
+
+export async function getServerSideProps(context) {
+  const subjectsRes = await fetch(`http://${process.env.API_URL}/subject/getSubjects`);
+  const subjectsData = await subjectsRes.json();
+  const levelsRes = await fetch(`http://${process.env.API_URL}/subject/getLevels`);
+  const levelsData = await levelsRes.json();
+
+  return {
+    props: {
+      subjects: subjectsData.subjects,
+      levels: levelsData.levels
+    }
+  }
 }
 
 export default Matching;
