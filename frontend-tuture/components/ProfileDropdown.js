@@ -6,9 +6,12 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 
 function ProfileDropdown({ name, profileImg }) {
+  const { theme, setTheme } = useTheme();
+
   return (
     <div className="dropdown-end dropdown h-10 w-10 xs:h-12 xs:w-12">
       <div tabIndex="0" className="avatar">
@@ -41,7 +44,7 @@ function ProfileDropdown({ name, profileImg }) {
           </Link>
         </li>
         <li>
-          <a>
+          <a onClick={() => setTheme(theme === 'default' ? 'default-dark' : 'default')}>
             <FontAwesomeIcon fixedWidth icon={faAdjust} className="mr-2" />
             Current Theme: {"Light"}
           </a>
