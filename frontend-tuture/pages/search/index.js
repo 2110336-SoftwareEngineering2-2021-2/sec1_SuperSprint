@@ -6,7 +6,7 @@ function SearchResult({ tutors, query }) {
   return (
     <Layout>
       <h1 className="mx-auto mb-6 text-center text-2xl font-bold">
-        Result: {query.s}
+        Result: {query.result}
       </h1>
       <div className="divider" />
       <div className="my-2 flex flex-wrap justify-center gap-4">

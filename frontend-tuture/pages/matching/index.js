@@ -1,17 +1,15 @@
-import { useReducer, useState } from "react";
+import { useState } from "react";
 import Slider from "rc-slider";
 import Layout from "../../components/Layout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMinus,
   faPlus,
-  faObjectGroup,
 } from "@fortawesome/free-solid-svg-icons";
 import "rc-slider/assets/index.css";
 import { useRouter } from "next/router";
 import * as yup from "yup";
 import moment from "moment";
-import { number, boolean } from "yup/lib/locale";
 
 const { Range } = Slider;
 const subjects = ["Mathmetic", "Physic", "Biology", "English"];
