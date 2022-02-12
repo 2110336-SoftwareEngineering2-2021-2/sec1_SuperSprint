@@ -46,7 +46,7 @@ function ProfileDropdown({ name, profileImg }) {
         <li>
           <a onClick={() => setTheme(theme === 'default' ? 'default-dark' : 'default')}>
             <FontAwesomeIcon fixedWidth icon={faAdjust} className="mr-2" />
-            Current Theme: {"Light"}
+            Current Theme: {theme === 'default' ? 'Light' : 'Dark'}
           </a>
         </li>
         <li>
