@@ -37,4 +37,8 @@ export class SubjectService {
     await newSubject.save();
     return { subjectId: newSubject._id };
   }
+
+  async findByTitleAndLevel(title: string, level: string) {
+    return await this.subjectModel.findOne({ title: title, level: level });
+  }
 }
