@@ -68,7 +68,7 @@ export class TutorService {
   }
 
   async searchTutor(text: string): Promise<{tutorList:Array<Tutor>}> {
-    const regex = new RegExp(`.*${text.split(' ').join('|')}.*`,'i');
+    const regex = new RegExp(`${text.split(' ').join('|')}`, 'i');
     const tutors = await this.tutorModel
       .aggregate()
       .lookup({
@@ -76,13 +76,71 @@ export class TutorService {
         localField: 'teachSubject',
         foreignField: '_id',
         as: 'teachSubject',
-      }).match({
-        $or:[
-            {firstName :regex},
-            {lastName:regex},
-            {'teachSubject.title':regex}
-          ]
-        })
+      })
+      .addFields({
+        count: {
+          $sum: {
+            $add: [
+              {
+                $size: {
+                  $regexFindAll: {
+                    input: { $toString: '$firstName' },
+                    regex: regex,
+                  },
+                },
+              },
+              {
+                $size: {
+                  $regexFindAll: {
+                    input: { $toString: '$lastName' },
+                    regex: regex,
+                  },
+                },
+              },
+              {
+                $size: {
+                  $regexFindAll: {
+                    input: {
+                      $reduce: {
+                        input: {
+                          $concatArrays: '$teachSubject.title',
+                        },
+                        initialValue: '',
+                        in: {
+                          $concat: ['$$value', ' ', '$$this'],
+                        },
+                      },
+                    },
+                    regex: regex,
+                  },
+                },
+              },
+              {
+                $size: {
+                  $regexFindAll: {
+                    input: {
+                      $reduce: {
+                        input: {
+                          $concatArrays: '$teachSubject.level',
+                        },
+                        initialValue: '',
+                        in: {
+                          $concat: ['$$value', ' ', '$$this'],
+                        },
+                      },
+                    },
+                    regex: regex,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      })
+      .sort({
+        count: -1,
+      })
+      .limit(10)
       .exec();
 
     return {tutorList: tutors};
