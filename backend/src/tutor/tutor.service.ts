@@ -67,7 +67,7 @@ export class TutorService {
     };
   }
 
-  async searchTutor(text: string): Promise<{tutorList:Array<Tutor>}> {
+  async searchTutor(text: string): Promise<{ tutorList: Array<Tutor> }> {
     const regex = new RegExp(`${text.split(' ').join('|')}`, 'i');
     const tutors = await this.tutorModel
       .aggregate()
@@ -141,9 +141,12 @@ export class TutorService {
         count: -1,
       })
       .limit(10)
+      .match({
+        count: { $ne: 0 },
+      })
       .exec();
 
-    return {tutorList: tutors};
+    return { tutorList: tutors };
   }
 
   async recommendTutor(subjects: Array<string>): Promise<any> {
@@ -180,35 +183,35 @@ export class TutorService {
     });
 
     return sortedResults.map((e) => {
-        const {
-          _id,
-          firstName,
-          lastName,
-          username,
-          // gender,
-          avgRating,
-          teachSubject,
-          priceMin,
-          priceMax,
-          // dutyTime,
-        } = e[1];
-  
-        return {
-          _id,
-          firstName,
-          lastName,
-          username,
-          // gender,
-          avgRating,
-          teachSubject,
-          priceMin,
-          priceMax,
-          // dutyTime,
-          score: e[0],
-        };
-      })
+      const {
+        _id,
+        firstName,
+        lastName,
+        username,
+        // gender,
+        avgRating,
+        teachSubject,
+        priceMin,
+        priceMax,
+        // dutyTime,
+      } = e[1];
+
+      return {
+        _id,
+        firstName,
+        lastName,
+        username,
+        // gender,
+        avgRating,
+        teachSubject,
+        priceMin,
+        priceMax,
+        // dutyTime,
+        score: e[0],
+      };
+    });
   }
-  
+
   async matchTutor(
     subjectName: string,
     level: string,
@@ -220,7 +223,6 @@ export class TutorService {
       availabilityTimeTo: string;
     }[],
   ) {
-
     console.log(subjectName, level, priceMin, priceMax, availabilityStudent);
     const subject = await this.subjectService.findByTitleAndLevel(
       subjectName,
@@ -260,7 +262,8 @@ export class TutorService {
           //   },
           // },
         ],
-      }).populate('teachSubject')
+      })
+      .populate('teachSubject')
       .exec();
 
     console.log(tutors);
@@ -278,9 +281,8 @@ export class TutorService {
         tutorTimeFrom = times[i].start;
         tutorTimeTo = times[i].end;
 
-
-        console.log(1,tutorTimeFrom <= studentTimeFrom);
-        console.log(2,tutorTimeTo >= studentTimeTo);
+        console.log(1, tutorTimeFrom <= studentTimeFrom);
+        console.log(2, tutorTimeTo >= studentTimeTo);
 
         if (tutorTimeFrom <= studentTimeFrom && tutorTimeTo >= studentTimeTo) {
           oncondition = true;
@@ -322,7 +324,7 @@ export class TutorService {
         };
       }),
     );
-    return {tutorList: tutor_send};
+    return { tutorList: tutor_send };
   }
 
   async updateTutor(
