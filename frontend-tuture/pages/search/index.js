@@ -4,7 +4,7 @@ import TutorCard from "../../components/TutorCard";
 
 function SearchResult({ tutors, query }) {
   return (
-    <Layout>
+    <Layout title={`${query.result} | Tuture`}>
       <h1 className="mx-auto mb-6 text-center text-2xl font-bold">
         Result: {query.result}
       </h1>

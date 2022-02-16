@@ -35,7 +35,7 @@ const SORT_OPTION = [
 function MatchingResult({ tutors }) {
   const [sortedOption, setSortedOption] = useState({
     option: SORT_OPTION[0],
-    asc: true,
+    asc: false,
   });
 
   function onChangeSorting(option) {
@@ -56,7 +56,7 @@ function MatchingResult({ tutors }) {
   }
 
   return (
-    <Layout>
+    <Layout title="Matching | Tuture">
       <StudentSortingDropdown
         sortingCallback={onChangeSorting}
         className="ml-auto mr-2 w-fit"

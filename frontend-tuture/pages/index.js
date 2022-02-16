@@ -3,7 +3,7 @@ import Recommend from "../components/Recommend";
 
 export default function Home({ tutors }) {
   return (
-    <Layout title="Home">
+    <Layout title="Home | Tuture">
       {/* <h1 className="w-full text-4xl font-bold">Hello</h1>
       <Link href="/matching">
         <a className="block">Matching</a>
@@ -38,11 +38,12 @@ export async function getServerSideProps(context) {
   });
   const data = await res.json();
 
-  const tutors = data.tutorList.map((item) => {
+  
+  const profilePicData = await (await fetch(`https://randomuser.me/api/?inc=picture&results=${data.tutorList.length}`)).json();
+  const tutors = data.tutorList.map((item,idx) => {
     return {
       name: `${item.firstName} ${item.lastName}`,
-      profileImg:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTQeke6GCoBbq9Mni1fnPLP8CapwRFRgx29w",
+      profileImg: profilePicData.results[idx].picture.large,
       subjects: item.teachSubject.map((e) => e.title),
       levels: Array.from(new Set(item.teachSubject.map((e) => e.level))),
       rating: item.avgRating,

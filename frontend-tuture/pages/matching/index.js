@@ -186,7 +186,7 @@ function Matching({subjects, levels}) {
   }
 
   return (
-    <Layout title="Matching">
+    <Layout title="Matching | Tuture">
       <div className="flex flex-col items-center">
         <h2 className="mb-6 text-2xl font-bold">Matching</h2>
 
@@ -258,7 +258,7 @@ function Matching({subjects, levels}) {
                 id="price_range"
                 min={MIN_PRICE}
                 max={MAX_PRICE}
-                step={10}
+                step={50}
                 value={priceRange}
                 allowCross={false}
                 onChange={(val) => setPriceRange(val)}
