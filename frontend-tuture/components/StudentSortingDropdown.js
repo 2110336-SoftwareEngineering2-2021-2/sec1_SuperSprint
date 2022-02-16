@@ -23,7 +23,7 @@ const SORT_OPTION = [
 
 function StudentSortingDropdown({ className, sortingCallback }) {
   const [selectedSortMode, setSelectedSortMode] = useState(SORT_OPTION[0]);
-  const [isAsc, setAsc] = useState(true);
+  const [isAsc, setAsc] = useState(false);
 
   useEffect(() => {
     try {
@@ -68,7 +68,7 @@ function StudentSortingDropdown({ className, sortingCallback }) {
         <button className="btn btn-primary sm:btn-md btn-sm" onClick={toggleArrow}>
           <FontAwesomeIcon
             size="sm"
-            icon={isAsc ? faArrowDown : faArrowUp}
+            icon={isAsc ? faArrowUp : faArrowDown}
             fixedWidth
           />
         </button>
