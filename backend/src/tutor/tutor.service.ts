@@ -249,18 +249,8 @@ export class TutorService {
       .find({
         $and: [
           { teachSubject: { $in: [subject._id] } },
-          { price: { $gte: priceMin } }, //ราคาเด็ก ครอบ ราคาติวเตอร์
-          { price: { $lte: priceMax } },
-          //{ 'dutyTime.start': { $lte: datetimeFrom } },
-          //{ 'dutyTime.end': { $gte: datetimeTo } },
-          // {
-          //   dutyTime: {
-          //     $elemMatch: {
-          //       start: { $lte: datetimeFrom.toISOString() },
-          //       end: { $gte: datetimeTo.toISOString() },
-          //     },
-          //   },
-          // },
+          { priceMin: { $gte: priceMin } }, //ราคาเด็ก ครอบ ราคาติวเตอร์
+          { priceMax: { $lte: priceMax } },
         ],
       })
       .populate('teachSubject')
