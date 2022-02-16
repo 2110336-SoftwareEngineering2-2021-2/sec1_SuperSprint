@@ -20,7 +20,7 @@ jobs:
           git subtree push --prefix backend heroku-api main
       - name: Add frontend remote origin
         run: |
-          git remote add heroku-frontend https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/tuture-frontend.git
+          git remote add heroku-web https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/tuture-frontend.git
       - name: Deploy frontend to Heroku
         run: |
           git subtree push --prefix frontend-tuture heroku-web main
