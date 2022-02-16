@@ -49,7 +49,7 @@ export default function TutorCard({
         <img
           src={profileImg}
           alt="Profile picture of the tutor"
-          className="w-24 flex-1 rounded-lg object-cover sm:w-48"
+          className="w-24 h-36 flex-1 rounded-lg object-cover sm:w-48"
           loading="lazy"
         />
         <div className="inline-flex w-64 flex-col justify-between p-4 sm:w-96">

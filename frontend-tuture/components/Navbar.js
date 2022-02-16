@@ -77,7 +77,7 @@ const Navbar = (props) => {
               />
             </button>
             <ProfileDropdown
-              name={"Pracha Chan-o-yutto"}
+              name={"Phusaratis Jong"}
               profileImg={
                 "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTQeke6GCoBbq9Mni1fnPLP8CapwRFRgx29w"
               }
