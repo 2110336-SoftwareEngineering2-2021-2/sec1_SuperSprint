@@ -37,18 +37,13 @@ export async function getServerSideProps(context) {
       }),
     });
     const data = await res.json();
-
-    const profilePicData = await (
-      await fetch(
-        `https://randomuser.me/api/?inc=picture&results=${data.tutorList.length}`
-      )
-    ).json();
+    
     const tutors = data.tutorList.map((item, idx) => {
       return {
         first_name: item.firstName,
         last_name: item.lastName,
         tutor_id: item._id,
-        profileImg: profilePicData.results[idx].picture.large,
+        profileImg: `https://api.lorem.space/image/face?w=150&h=150&hash=${Math.random()}`,
         subjects: item.teachSubject.map((e) => e.title),
         levels: Array.from(new Set(item.teachSubject.map((e) => e.level))),
         rating: item.avgRating,

@@ -14,12 +14,12 @@ function ProfileDropdown({ name, profileImg }) {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="dropdown-end dropdown h-10 w-10 xs:h-12 xs:w-12">
-      <div tabIndex="0" className="avatar">
-        <div className="h-10 w-10 cursor-pointer rounded-full border-2 border-white transition-colors hover:border-primary-focus xs:h-12 xs:w-12">
+    <div className="dropdown-end dropdown">
+      <label tabIndex="0" className="btn btn-ghost btn-circle avatar">
+        <div className="w-10 rounded-full xs:w-12">
           <img alt="User profile picture" src={profileImg} />
         </div>
-      </div>
+      </label>
       <ul
         tabIndex="0"
         className="dropdown-content menu rounded-box menu-compact w-56 bg-base-100 p-2 shadow-md shadow-secondary/20 sm:menu-normal sm:w-64"
