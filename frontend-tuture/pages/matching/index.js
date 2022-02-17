@@ -332,9 +332,9 @@ function Matching({subjects, levels}) {
                   />
                 ))
                 .reverse()
-                .reduce((prev, curr) => [
+                .reduce((prev, curr, idx) => [
                   prev,
-                  <div className="divider" />,
+                  <div key={idx} className="divider" />,
                   curr,
                 ])}
             </div>
