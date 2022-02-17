@@ -44,7 +44,7 @@ const Navbar = (props) => {
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="input-bordered input-primary input input-sm w-56 border border-secondary text-base-content xs:w-48 sm:input-md sm:w-72 md:w-96"
+                  className="input-bordered input-primary input input-sm w-52 border border-secondary text-base-content xs:w-48 sm:input-md sm:w-72 md:w-96"
                   id="search_term"
                 />
                 <button
