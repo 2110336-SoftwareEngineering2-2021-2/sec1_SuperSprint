@@ -70,5 +70,6 @@ module.exports = {
         },
       },
     ],
+    darkTheme: "default-dark"
   },
 };
