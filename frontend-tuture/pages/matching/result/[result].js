@@ -1,29 +1,29 @@
-import { useState } from "react";
-import Layout from "../../../components/Layout";
-import StudentSortingDropdown from "../../../components/StudentSortingDropdown";
-import TutorCard from "../../../components/TutorCard";
+import { useState } from 'react';
+import Layout from '../../../components/Layout';
+import StudentSortingDropdown from '../../../components/StudentSortingDropdown';
+import TutorCard from '../../../components/TutorCard';
 
 const SORT_OPTION = [
   {
-    sortMode: "rating",
+    sortMode: 'rating',
     func: (a, b) => a.rating - b.rating,
   },
   {
-    sortMode: "credit",
+    sortMode: 'credit',
     func: (a, b) => a.credit - b.credit,
   },
   {
-    sortMode: "price",
+    sortMode: 'price',
     func: (a, b) => {
       if (a.price.min !== b.price.min) return a.price.min - b.price.min;
       return a.price.max - b.price.max;
     },
   },
   {
-    sortMode: "name",
+    sortMode: 'name',
     func: (a, b) => {
-      const a_name = a.name.split(" ");
-      const b_name = b.name.split(" ");
+      const a_name = a.name.split(' ');
+      const b_name = b.name.split(' ');
 
       if (a_name[0] !== b_name[0]) return a_name[0] < b_name[0] ? -1 : 1;
       if (a_name[1] !== b_name[1]) return a_name[1] < b_name[1] ? -1 : 1;
@@ -49,7 +49,7 @@ function MatchingResult({ tutors }) {
     try {
       const test = await fetch(`/api/test/${tutorId}`);
       console.log(test);
-      alert("yay");
+      alert('yay');
     } catch (error) {
       console.error(error);
     }
@@ -65,7 +65,7 @@ function MatchingResult({ tutors }) {
         {tutors.length > 0 ? (
           tutors
             .sort(sortedOption.option.func)
-            [sortedOption.asc ? "slice" : "reverse"]()
+            [sortedOption.asc ? 'slice' : 'reverse']()
             .map((item, idx) => (
               <TutorCard
                 key={idx}
@@ -80,7 +80,7 @@ function MatchingResult({ tutors }) {
               />
             ))
         ) : (
-          <p className="text-lg">{"No result :("}</p>
+          <p className="text-lg">{'No result :('}</p>
         )}
       </div>
     </Layout>
@@ -106,11 +106,11 @@ export async function getServerSideProps(context) {
   });
   console.log(body);
   const res = await fetch(`http://${process.env.API_URL}/tutor/match`, {
-    method: "POST",
-    mode: "cors",
-    credentials: "same-origin",
+    method: 'POST',
+    mode: 'cors',
+    credentials: 'same-origin',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: body,
   });
@@ -122,7 +122,7 @@ export async function getServerSideProps(context) {
       name: `${item.firstName} ${item.lastName}`,
       tutor_id: item._id,
       profileImg:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTQeke6GCoBbq9Mni1fnPLP8CapwRFRgx29w",
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTQeke6GCoBbq9Mni1fnPLP8CapwRFRgx29w',
       subjects: item.teachSubject.map((e) => e.title),
       levels: Array.from(new Set(item.teachSubject.map((e) => e.level))),
       rating: item.avgRating,

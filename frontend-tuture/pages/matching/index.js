@@ -1,19 +1,14 @@
-import { useState } from "react";
-import Slider from "rc-slider";
-import Layout from "../../components/Layout";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faMinus,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
-import "rc-slider/assets/index.css";
-import { useRouter } from "next/router";
-import * as yup from "yup";
-import moment from "moment";
+import { useState } from 'react';
+import Slider from 'rc-slider';
+import Layout from '../../components/Layout';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import 'rc-slider/assets/index.css';
+import { useRouter } from 'next/router';
+import * as yup from 'yup';
+import moment from 'moment';
 
 const { Range } = Slider;
-const subjects = ["Mathmetic", "Physic", "Biology", "English"];
-const levels = ["Middle School", "High School"];
 
 const MIN_PRICE = 0;
 const MAX_PRICE = 10000;
@@ -31,25 +26,25 @@ function AvailabilityForm({
         <input
           type="date"
           id="avail_date"
-          min={new Date().toISOString().split("T")[0]}
-          value={formVal.avail_date || ""}
+          min={new Date().toISOString().split('T')[0]}
+          value={formVal.avail_date || ''}
           onChange={(e) => onFieldChange(e)}
-          className="input input-primary input-bordered input-sm col-span-11 inline-block"
+          className="input-bordered input-primary input input-sm col-span-11 inline-block"
         />
         <input
           type="time"
           id="avail_time_from"
-          value={formVal.avail_time_from || ""}
+          value={formVal.avail_time_from || ''}
           onChange={(e) => onFieldChange(e)}
-          className="input input-primary input-bordered input-sm col-span-5 inline-block sm:w-32"
+          className="input-bordered input-primary input input-sm col-span-5 inline-block sm:w-32"
         />
         <span className="col-span-1 w-4 text-center">-</span>
         <input
           type="time"
           id="avail_time_to"
-          value={formVal.avail_time_to || ""}
+          value={formVal.avail_time_to || ''}
           onChange={(e) => onFieldChange(e)}
-          className="input input-primary input-bordered input-sm col-span-5 inline-block sm:w-32"
+          className="input-bordered input-primary input input-sm col-span-5 inline-block sm:w-32"
         />
       </div>
       {/* <button
@@ -68,10 +63,10 @@ function AvailabilityForm({
   );
 }
 
-function Matching({subjects, levels}) {
+function Matching({ subjects, levels }) {
   const [priceRange, setPriceRange] = useState([2000, 4500]);
   const [availFormVals, setAvailFormVals] = useState([
-    { avail_date: "", avail_time_from: "", avail_time_to: "" },
+    { avail_date: '', avail_time_from: '', avail_time_to: '' },
   ]);
   const router = useRouter();
   const schema = yup.object().shape({
@@ -80,10 +75,10 @@ function Matching({subjects, levels}) {
     avail_time_to: yup
       .string()
       .required()
-      .test("is-greater", "end time should be greater", function (value) {
+      .test('is-greater', 'end time should be greater', function (value) {
         const { avail_time_from } = this.parent;
-        return moment(value, "HH:mm").isSameOrAfter(
-          moment(avail_time_from, "HH:mm")
+        return moment(value, 'HH:mm').isSameOrAfter(
+          moment(avail_time_from, 'HH:mm')
         );
       }),
   });
@@ -116,7 +111,7 @@ function Matching({subjects, levels}) {
   function addAvailField() {
     setAvailFormVals([
       ...availFormVals,
-      { avail_date: "", avail_time_from: "", avail_time_to: "" },
+      { avail_date: '', avail_time_from: '', avail_time_to: '' },
     ]);
   }
 
@@ -136,16 +131,16 @@ function Matching({subjects, levels}) {
     var notError = true;
     for (const e of availFormVals) {
       if (
-        e.avail_date === "" &&
-        e.avail_time_from === "" &&
-        e.avail_time_to === "" &&
+        e.avail_date === '' &&
+        e.avail_time_from === '' &&
+        e.avail_time_to === '' &&
         total === 1
       ) {
         continue;
       } else if (
-        e.avail_date !== "" &&
-        e.avail_time_from !== "" &&
-        e.avail_time_to !== ""
+        e.avail_date !== '' &&
+        e.avail_time_from !== '' &&
+        e.avail_time_to !== ''
       ) {
         await schema
           .validate({
@@ -170,7 +165,7 @@ function Matching({subjects, levels}) {
     }
     router.push(
       {
-        pathname: "/matching/result/[result]",
+        pathname: '/matching/result/[result]',
         query: {
           result: JSON.stringify({
             study_subject: event.target.study_subject.value,
@@ -181,7 +176,7 @@ function Matching({subjects, levels}) {
           }),
         },
       },
-      "/matching/result/"
+      '/matching/result/'
     );
   }
 
@@ -204,14 +199,14 @@ function Matching({subjects, levels}) {
               </label>
               <div>
                 <select
-                  className="select select-bordered select-primary w-full"
+                  className="select-bordered select-primary select w-full"
                   id="study_subject"
                   defaultValue=""
                   required
                 >
                   <option value="" disabled>
-                    {" "}
-                    Select your subject{" "}
+                    {' '}
+                    Select your subject{' '}
                   </option>
                   {subjects.map((e, idx) => (
                     <option key={idx}>{e}</option>
@@ -225,20 +220,20 @@ function Matching({subjects, levels}) {
             <div className="w-full px-3 sm:w-1/2">
               <label className="label" htmlFor="edu_level">
                 <span className="label-text">
-                  Education Level{" "}
+                  Education Level{' '}
                   <span className="label-text text-red-500">*</span>
                 </span>
               </label>
               <div className="relative">
                 <select
-                  className="select select-bordered select-primary w-full"
+                  className="select-bordered select-primary select w-full"
                   id="edu_level"
                   defaultValue=""
                   required
                 >
                   <option value="" disabled>
-                    {" "}
-                    Select your education level{" "}
+                    {' '}
+                    Select your education level{' '}
                   </option>
                   {levels.map((e, idx) => (
                     <option key={idx}>{e}</option>
@@ -262,23 +257,23 @@ function Matching({subjects, levels}) {
                 value={priceRange}
                 allowCross={false}
                 onChange={(val) => setPriceRange(val)}
-                trackStyle={[{ backgroundColor: "#ffc400" }]}
+                trackStyle={[{ backgroundColor: '#ffc400' }]}
                 handleStyle={[
-                  { borderColor: "#ffc400" },
-                  { borderColor: "#ffc400" },
+                  { borderColor: '#ffc400' },
+                  { borderColor: '#ffc400' },
                 ]}
               />
             </div>
             <div className="flex w-full items-center justify-between">
               <label
-                className="input-group input-group-xs w-5/12 sm:w-3/12"
+                className="input-group-xs input-group w-5/12 sm:w-3/12"
                 htmlFor="price_min"
               >
                 <input
                   id="price_min"
                   type="number"
                   value={priceRange[0]}
-                  className="input input-primary input-bordered input-sm min-w-2/3 sm:min-w-1/2 w-full"
+                  className="min-w-2/3 sm:min-w-1/2 input-bordered input-primary input input-sm w-full"
                   onChange={(event) => setMinPriceRange(event)}
                   onBlur={validatePriceRange}
                   min={MIN_PRICE}
@@ -288,14 +283,14 @@ function Matching({subjects, levels}) {
               </label>
               <span className="select-none">-</span>
               <label
-                className="input-group input-group-xs right-0 w-5/12 sm:w-3/12"
+                className="input-group-xs input-group right-0 w-5/12 sm:w-3/12"
                 htmlFor="price_max"
               >
                 <input
                   id="price_max"
                   type="number"
                   value={priceRange[1]}
-                  className="input input-primary input-bordered input-sm min-w-2/3 sm:min-w-1/2 w-full"
+                  className="min-w-2/3 sm:min-w-1/2 input-bordered input-primary input input-sm w-full"
                   onChange={(event) => setMaxPriceRange(event)}
                   onBlur={validatePriceRange}
                   min={MIN_PRICE}
@@ -355,17 +350,21 @@ function Matching({subjects, levels}) {
 }
 
 export async function getServerSideProps(context) {
-  const subjectsRes = await fetch(`http://${process.env.API_URL}/subject/getSubjects`);
+  const subjectsRes = await fetch(
+    `http://${process.env.API_URL}/subject/getSubjects`
+  );
   const subjectsData = await subjectsRes.json();
-  const levelsRes = await fetch(`http://${process.env.API_URL}/subject/getLevels`);
+  const levelsRes = await fetch(
+    `http://${process.env.API_URL}/subject/getLevels`
+  );
   const levelsData = await levelsRes.json();
 
   return {
     props: {
       subjects: subjectsData.subjects,
-      levels: levelsData.levels
-    }
-  }
+      levels: levelsData.levels,
+    },
+  };
 }
 
 export default Matching;

@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
-import { Switch, Transition } from "@headlessui/react";
-import Layout from "../../components/Layout";
-import TutorCard from "../../components/TutorCard";
-import ProfileDropdown from "../../components/ProfileDropdown";
+import { useEffect, useState } from 'react';
+import { Switch, Transition } from '@headlessui/react';
+import Layout from '../../components/Layout';
+import TutorCard from '../../components/TutorCard';
+import ProfileDropdown from '../../components/ProfileDropdown';
 
 const names = [
-  "Adam Benson",
-  "Clare Donaldsdfadsfdsfson",
-  "Phusaratis Jong",
-  "Donald Clarkson",
+  'Adam Benson',
+  'Clare Donaldsdfadsfdsfson',
+  'Phusaratis Jong',
+  'Donald Clarkson',
 ];
 
 export default function Testpage() {
@@ -21,10 +21,10 @@ export default function Testpage() {
         key={i}
         name={names[i]}
         profileImg={
-          "https://www.chicagotribune.com/resizer/a-16fPYl-SK8W6HPnzjOHK1rqho=/800x551/top/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/IEYVMAFZ7BBXHM46GFNLWRN3ZA.jpg"
+          'https://www.chicagotribune.com/resizer/a-16fPYl-SK8W6HPnzjOHK1rqho=/800x551/top/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/IEYVMAFZ7BBXHM46GFNLWRN3ZA.jpg'
         }
-        subjects={["Physics", "Chemistry"]}
-        levels={["High school", "Middle school"]}
+        subjects={['Physics', 'Chemistry']}
+        levels={['High school', 'Middle school']}
         rating={Math.random() * 5}
         price={{ min: 300, max: 500 }}
         onCardClick={() => console.log(`Card click ${names[i]}`)}
@@ -34,9 +34,12 @@ export default function Testpage() {
   }
 
   return (
-    <Layout title={"test page"}>
-      <div className="w-fit ml-auto mr-0">
-        <ProfileDropdown name="Phusaratisasdfadsl;kjfasdlkf Jong" profileImg="http://daisyui.com/tailwind-css-component-profile-1@56w.png" />
+    <Layout title={'test page'}>
+      <div className="ml-auto mr-0 w-fit">
+        <ProfileDropdown
+          name="Phusaratisasdfadsl;kjfasdlkf Jong"
+          profileImg="http://daisyui.com/tailwind-css-component-profile-1@56w.png"
+        />
       </div>
 
       <div className="my-2 flex flex-wrap justify-center gap-4">{temp}</div>
@@ -48,12 +51,12 @@ export default function Testpage() {
             checked={enabled}
             onChange={setEnabled}
             className={`${
-              enabled ? "bg-amber-500" : "bg-gray-200"
+              enabled ? 'bg-amber-500' : 'bg-gray-200'
             } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-amber-700 focus:ring-offset-2`}
           >
             <span
               className={`${
-                enabled ? "translate-x-6" : "translate-x-1"
+                enabled ? 'translate-x-6' : 'translate-x-1'
               } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
             />
           </Switch>

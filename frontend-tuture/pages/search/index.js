@@ -1,6 +1,5 @@
-import { useRouter } from "next/router";
-import Layout from "../../components/Layout";
-import TutorCard from "../../components/TutorCard";
+import Layout from '../../components/Layout';
+import TutorCard from '../../components/TutorCard';
 
 function SearchResult({ tutors, query }) {
   return (
@@ -27,32 +26,22 @@ function SearchResult({ tutors, query }) {
             />
           ))
         ) : (
-          <p className="text-lg">{"No result :("}</p>
+          <p className="text-lg">{'No result :('}</p>
         )}
       </div>
     </Layout>
   );
 }
 
-const temp = {
-  name: "Haha Mama",
-  profileImg:
-    "https://www.chicagotribune.com/resizer/a-16fPYl-SK8W6HPnzjOHK1rqho=/800x551/top/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/IEYVMAFZ7BBXHM46GFNLWRN3ZA.jpg",
-  subjects: ["Physics", "Chemistry"],
-  levels: ["High school", "Middle school"],
-  rating: Math.random() * 5,
-  price: { min: 300, max: 500 },
-};
-
 export async function getServerSideProps(context) {
   const { query } = context;
   console.log(`${process.env.API_URL}/tutor/search`);
   const res = await fetch(`http://${process.env.API_URL}/tutor/search`, {
-    method: "POST",
-    mode: "cors",
-    credentials: "same-origin",
+    method: 'POST',
+    mode: 'cors',
+    credentials: 'same-origin',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       text: query.result,
@@ -65,7 +54,7 @@ export async function getServerSideProps(context) {
     return {
       name: `${item.firstName} ${item.lastName}`,
       profileImg:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTQeke6GCoBbq9Mni1fnPLP8CapwRFRgx29w",
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTQeke6GCoBbq9Mni1fnPLP8CapwRFRgx29w',
       subjects: item.teachSubject.map((e) => e.title),
       levels: Array.from(new Set(item.teachSubject.map((e) => e.level))),
       rating: item.avgRating,

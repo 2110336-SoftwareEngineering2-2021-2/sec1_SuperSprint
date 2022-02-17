@@ -1,23 +1,23 @@
-import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import react, { useEffect, useState } from "react";
+import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect, useState } from 'react';
 
 const SORT_OPTION = [
   {
-    title: "Rating",
-    key: "rating",
+    title: 'Rating',
+    key: 'rating',
   },
   {
-    title: "Credibility",
-    key: "credit",
+    title: 'Credibility',
+    key: 'credit',
   },
   {
-    title: "Price Range",
-    key: "price",
+    title: 'Price Range',
+    key: 'price',
   },
   {
-    title: "Tutor Name",
-    key: "name",
+    title: 'Tutor Name',
+    key: 'name',
   },
 ];
 
@@ -31,10 +31,10 @@ function StudentSortingDropdown({ className, sortingCallback }) {
     } catch (error) {
       console.error(error.msg);
     }
-  }, [selectedSortMode, isAsc]);
+  }, [selectedSortMode, isAsc, sortingCallback]);
 
   function changeSortMode(event) {
-    const selected = event.target.getAttribute("note");
+    const selected = event.target.getAttribute('note');
     setSelectedSortMode(SORT_OPTION.find((item) => item.key === selected));
   }
 
@@ -46,14 +46,19 @@ function StudentSortingDropdown({ className, sortingCallback }) {
     <div className={`flex items-center ${className}`}>
       <div className="dropdown">
         <div>
-          <label className="w-full sm:text-base text-sm">Sorted by: </label>
-          <button tabIndex="0" className="btn btn-primary btn-outline m-1 sm:w-44 w-36 sm:btn-md btn-sm">
-            <span className="sm:text-base text-sm">{selectedSortMode.title}</span>
+          <label className="w-full text-sm sm:text-base">Sorted by: </label>
+          <button
+            tabIndex="0"
+            className="btn-outline btn btn-primary btn-sm m-1 w-36 sm:btn-md sm:w-44"
+          >
+            <span className="text-sm sm:text-base">
+              {selectedSortMode.title}
+            </span>
           </button>
         </div>
         <ul
           tabIndex="0"
-          className="menu dropdown-content bg-base-100 rounded-box ml-20 w-52 p-2 shadow"
+          className="dropdown-content menu rounded-box ml-20 w-52 bg-base-100 p-2 shadow"
         >
           {SORT_OPTION.map((item, idx) => (
             <li key={idx}>
@@ -65,7 +70,10 @@ function StudentSortingDropdown({ className, sortingCallback }) {
         </ul>
       </div>
       <div>
-        <button className="btn btn-primary sm:btn-md btn-sm" onClick={toggleArrow}>
+        <button
+          className="btn btn-primary btn-sm sm:btn-md"
+          onClick={toggleArrow}
+        >
           <FontAwesomeIcon
             size="sm"
             icon={isAsc ? faArrowUp : faArrowDown}

@@ -1,11 +1,9 @@
-import { useState } from "react";
-import { sidebarData } from "./Sidebar";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { faBars, faBell, faSearch } from "@fortawesome/free-solid-svg-icons";
-import ProfileDropdown from "./ProfileDropdown";
+import { sidebarData } from './Sidebar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { faBars, faBell, faSearch } from '@fortawesome/free-solid-svg-icons';
+import ProfileDropdown from './ProfileDropdown';
 
 const Navbar = (props) => {
   const router = useRouter();
@@ -33,7 +31,7 @@ const Navbar = (props) => {
                 size="lg"
               />
             </label>
-            <Link href="/">
+            <Link href="/" passHref>
               <button className="btn btn-ghost hidden  text-lg font-bold normal-case text-primary-content xs:block sm:text-xl">
                 Tuture
               </button>
@@ -77,9 +75,9 @@ const Navbar = (props) => {
               />
             </button>
             <ProfileDropdown
-              name={"Phusaratis Jong"}
+              name={'Phusaratis Jong'}
               profileImg={
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTQeke6GCoBbq9Mni1fnPLP8CapwRFRgx29w"
+                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTQeke6GCoBbq9Mni1fnPLP8CapwRFRgx29w'
               }
             />
           </div>

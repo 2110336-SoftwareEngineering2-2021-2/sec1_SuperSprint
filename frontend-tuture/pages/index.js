@@ -1,5 +1,5 @@
-import Layout from "../components/Layout";
-import Recommend from "../components/Recommend";
+import Layout from '../components/Layout';
+import Recommend from '../components/Recommend';
 
 export default function Home({ tutors }) {
   return (
@@ -13,7 +13,7 @@ export default function Home({ tutors }) {
       </Link> */}
       <div className="px-8">
         <h1 className="mx-auto text-2xl font-bold">
-          Hello, {"Phusaratis Jong"}
+          Hello, {'Phusaratis Jong'}
         </h1>
         <div className="divider" />
         {/* <h2>your recommendation</h2> */}
@@ -26,21 +26,24 @@ export default function Home({ tutors }) {
 export async function getServerSideProps(context) {
   console.log(`${process.env.API_URL}/student/recommend`);
   const res = await fetch(`http://${process.env.API_URL}/student/recommend`, {
-    method: "POST",
-    mode: "cors",
-    credentials: "same-origin",
+    method: 'POST',
+    mode: 'cors',
+    credentials: 'same-origin',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      studentId: "62051ce13dd882be338c2d2b",
+      studentId: '62051ce13dd882be338c2d2b',
     }),
   });
   const data = await res.json();
 
-  
-  const profilePicData = await (await fetch(`https://randomuser.me/api/?inc=picture&results=${data.tutorList.length}`)).json();
-  const tutors = data.tutorList.map((item,idx) => {
+  const profilePicData = await (
+    await fetch(
+      `https://randomuser.me/api/?inc=picture&results=${data.tutorList.length}`
+    )
+  ).json();
+  const tutors = data.tutorList.map((item, idx) => {
     return {
       name: `${item.firstName} ${item.lastName}`,
       profileImg: profilePicData.results[idx].picture.large,
