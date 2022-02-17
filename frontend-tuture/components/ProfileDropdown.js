@@ -55,7 +55,6 @@ function ProfileDropdown({ name, profileImg }) {
                 theme === 'default' ? 'swap-active' : ''
               }`}
             >
-              <input type="checkbox" />
               <FontAwesomeIcon fixedWidth icon={faSun} className="swap-on" />
               <FontAwesomeIcon fixedWidth icon={faMoon} className="swap-off" />
             </label>
