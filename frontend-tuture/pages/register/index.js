@@ -1,36 +1,49 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import React from 'react';
 import Layout from '../../components/Layout';
+import TutorImage from '../../public/images/sir-teaching-maths-in-the-class-2127160-2127160.svg'
+import StudentImage from '../../public/images/students-studying-physics-in-classroom-2140100-2140100.svg'
 
 function Register() {
   return (
     <Layout title="Register | Tuture" signedIn={false}>
-      <div className="m-auto container flex flex-col gap-4">
-        <h1 className="text-center font-bold xl:text-2xl text-xl text-primary">Sign Up</h1>
-        <div className="m-auto flex justify-center w-full px-2">
+      <div className="container m-auto flex flex-col gap-4">
+        <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
+          Sign Up
+        </h1>
+        <div className="m-auto flex w-full justify-center px-2">
           <div className="card glass w-96 transition-all hover:scale-105">
-            <figure>
-              <img
-                src="https://api.lorem.space/image/car?w=400&h=225"
-                alt="car!"
-              />
+            <figure className='px-2 pt-2'>
+              <div className="relative w-[400px] h-[225px]">
+                <Image
+                  src={StudentImage}
+                  alt="car!"
+                  layout="fill" // required
+                  objectFit="cover" // change to suit your needs
+                />
+              </div>
             </figure>
             <div className="card-body items-center text-center">
               <h2 className="card-title">Student</h2>
               <div className="card-actions">
-                <Link href="/register/student">
+                <Link href="/register/student" passHref>
                   <button className="btn btn-primary btn-sm">Select</button>
                 </Link>
               </div>
             </div>
           </div>
-          <div class="divider-horizontal divider">OR</div>
+          <div className="divider divider-horizontal">OR</div>
           <div className="card glass w-96 transition-all hover:scale-105">
-            <figure>
-              <img
-                src="https://api.lorem.space/image/car?w=400&h=225"
-                alt="car!"
-              />
+            <figure className='px-2 pt-2'>
+              <div className="relative w-[400px] h-[225px]">
+                <Image
+                  src={TutorImage}
+                  alt="car!"
+                  layout="fill" // required
+                  objectFit="cover" // change to suit your needs
+                />
+              </div>
             </figure>
             <div className="card-body items-center text-center">
               <h2 className="card-title">Tutor</h2>
@@ -42,7 +55,7 @@ function Register() {
             </div>
           </div>
         </div>
-        <p className="text-center sm:text-base text-sm">Choose Account Type</p>
+        <p className="text-center text-sm sm:text-base">Choose Account Type</p>
       </div>
     </Layout>
   );
