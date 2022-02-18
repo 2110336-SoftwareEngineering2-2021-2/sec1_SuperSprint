@@ -84,40 +84,40 @@ function StudentRegister() {
           <p
             className={`max-w-xs text-right ${
               METER_TEXT_COLOR[password.score]
-            } text-sm transition-colors `}
+            } ${password.password.length === 0 ? 'invisible' : 'visible'} text-sm transition-all `}
           >
             {PWD_STRENGTH[password.score]}
           </p>
           <ul className="ml-8 list-disc">
             <li
-              className={`text-sm ${
-                password.password.length >= 8 ? 'text-zinc-500' : 'text-error'
+              className={`text-sm transition-colors ${
+                password.password.length === 0 || password.password.length >= 8 ? 'text-zinc-500/70' : 'text-error'
               }`}
             >
               Contains at least 8 characters
             </li>
             <li
-              className={`text-sm ${
-                uppercaseRegex.test(password.password)
-                  ? 'text-zinc-500'
+              className={`text-sm transition-colors ${
+                password.password.length === 0 || uppercaseRegex.test(password.password)
+                  ? 'text-zinc-500/70'
                   : 'text-error'
               }`}
             >
               Contains at least 1 uppercase letters
             </li>
             <li
-              className={`text-sm ${
-                lowercaseRegex.test(password.password)
-                  ? 'text-zinc-500'
+              className={`text-sm transition-colors ${
+                password.password.length === 0 || lowercaseRegex.test(password.password)
+                  ? 'text-zinc-500/70'
                   : 'text-error'
               }`}
             >
               Contains at least 1 lowercase letters
             </li>
             <li
-              className={`text-sm ${
-                specialCharRegex.test(password.password)
-                  ? 'text-zinc-500'
+              className={`text-sm transition-colors ${
+                password.password.length === 0 || specialCharRegex.test(password.password)
+                  ? 'text-zinc-500/70'
                   : 'text-error'
               }`}
             >
