@@ -2,8 +2,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import React from 'react';
 import Layout from '../../components/Layout';
-import TutorImage from '../../public/images/sir-teaching-maths-in-the-class-2127160-2127160.svg'
-import StudentImage from '../../public/images/students-studying-physics-in-classroom-2140100-2140100.svg'
+import TutorImage from '../../public/images/sir-teaching-maths-in-the-class-2127160-2127160.svg';
+import StudentImage from '../../public/images/students-studying-physics-in-classroom-2140100-2140100.svg';
 
 function Register() {
   return (
@@ -13,9 +13,9 @@ function Register() {
           Sign Up
         </h1>
         <div className="m-auto flex w-full justify-center px-2">
-          <div className="card glass w-96 transition-all hover:scale-105">
-            <figure className='px-2 pt-2'>
-              <div className="relative w-[400px] h-[225px]">
+          <div className="card glass w-96 transition-all duration-300 hover:shadow-lg shadow-sm hover:shadow-primary-focus/20">
+            <figure className="px-2 pt-2">
+              <div className="relative h-[225px] w-[400px]">
                 <Image
                   src={StudentImage}
                   alt="car!"
@@ -34,9 +34,9 @@ function Register() {
             </div>
           </div>
           <div className="divider divider-horizontal">OR</div>
-          <div className="card glass w-96 transition-all hover:scale-105">
-            <figure className='px-2 pt-2'>
-              <div className="relative w-[400px] h-[225px]">
+          <div className="card glass w-96 transition-all duration-300 hover:shadow-lg shadow-sm hover:shadow-primary-focus/20">
+            <figure className="px-2 pt-2">
+              <div className="relative h-[225px] w-[400px]">
                 <Image
                   src={TutorImage}
                   alt="car!"
