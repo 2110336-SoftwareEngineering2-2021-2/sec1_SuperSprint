@@ -32,10 +32,10 @@ function StudentRegister() {
 
   return (
     <Layout title="Register Student | Tuture" signedIn={false}>
-      <div className="container m-auto">
-        <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-          Create Student Account
-        </h1>
+      <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
+        Create Student Account
+      </h1>
+      <div className="container m-auto shadow-md rounded-md">
         <form
           className="form-control mx-auto w-full max-w-2xl p-2"
           id="student_register_form"
