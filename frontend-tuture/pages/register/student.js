@@ -1,5 +1,8 @@
 // import Multiselect from 'multiselect-react-dropdown';
-import { useState } from 'react';
+import { faCamera } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useCallback, useEffect, useState } from 'react';
+import Dropzone from 'react-dropzone';
 import zxcvbn from 'zxcvbn';
 import Layout from '../../components/Layout';
 
@@ -19,17 +22,39 @@ const METER_TEXT_COLOR = [
 ];
 const PWD_STRENGTH = ['weak', 'weak', 'okay', 'good', 'strong'];
 
-function StudentRegister() {
+function StudentRegister({ subjects, levels, avatarSeed }) {
   const specialCharRegex = /.*[!@#\$%\^\&*\)\(+=._-].*/g;
   const uppercaseRegex = /.*[A-Z].*/g;
   const lowercaseRegex = /.*[a-z].*/g;
   const [password, setPassword] = useState({ password: '', score: 0 });
+  const [avatarFile, setAvatarFile] = useState({ preview: '', name: '' });
+  const [firstName, setFirstName] = useState('');
+
+  function onAvatarDrop(acceptedFiles) {
+    try {
+      setAvatarFile(
+        Object.assign(acceptedFiles[0], {
+          preview: URL.createObjectURL(acceptedFiles[0]),
+        })
+      );
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+
+  useEffect(() => {
+    return () => URL.revokeObjectURL(avatarFile.preview);
+  }, [avatarFile]);
 
   function onPasswordChange(event) {
     const newPassword = event.target.value;
     const evaluation = zxcvbn(newPassword);
     setPassword({ password: newPassword, score: evaluation.score });
   }
+
+  const fallbackAvatar =
+    'https://ui-avatars.com/api/?background=random&&length=1' +
+    (firstName !== '' ? '&&name=' + firstName[0] + `${avatarSeed}` : '');
 
   return (
     <Layout title="Register Student | Tuture" signedIn={false}>
@@ -43,110 +68,156 @@ function StudentRegister() {
           // onSubmit={submitMatching}
         >
           <h2 className="-mx-4 my-3 text-xl font-bold">Account</h2>
-          <label className="label" htmlFor="username">
-            <span className="label-text">
-              Username <span className="label-text text-red-500">*</span>
-            </span>
-          </label>
-          <input
-            className="input-bordered input-primary input w-full max-w-xs"
-            id="username"
-            placeholder="Enter Username"
-            autoComplete="username"
-            required
-          />
-          <label className="label" htmlFor="new_password">
-            <span className="label-text">
-              Password <span className="label-text text-red-500">*</span>
-            </span>
-          </label>
-          <input
-            type="password"
-            className="input-bordered input-primary input w-full max-w-xs"
-            id="new_password"
-            placeholder="Enter Password"
-            autoComplete="new-password"
-            required
-            value={password.password}
-            onChange={onPasswordChange}
-          />
-          <div className="my-2 flex max-w-xs">
-            {[...Array(5)].map((e, idx) => (
-              <div key={idx} className="w-1/5 px-1">
-                <div
-                  className={`h-2 rounded-xl ${
-                    password.score !== 0 && password.score >= idx
-                      ? METER_BG_COLOR[password.score]
-                      : 'bg-base-300'
-                  } transition-colors`}
-                ></div>
+          <div className="flex flex-wrap gap-4">
+            <div className="w-full flex-[2] sm:w-2/3">
+              <label className="label" htmlFor="username">
+                <span className="label-text">
+                  Username <span className="label-text text-red-500">*</span>
+                </span>
+              </label>
+              <input
+                className="input-bordered input-primary input w-full max-w-xs"
+                id="username"
+                placeholder="Enter Username"
+                autoComplete="username"
+                required
+              />
+              <label className="label" htmlFor="new_password">
+                <span className="label-text">
+                  Password <span className="label-text text-red-500">*</span>
+                </span>
+              </label>
+              <input
+                type="password"
+                className="input-bordered input-primary input w-full max-w-xs"
+                id="new_password"
+                placeholder="Enter Password"
+                autoComplete="new-password"
+                required
+                value={password.password}
+                onChange={onPasswordChange}
+              />
+              <div className="my-2 flex max-w-xs">
+                {[...Array(5)].map((e, idx) => (
+                  <div key={idx} className="w-1/5 px-1">
+                    <div
+                      className={`h-2 rounded-xl ${
+                        password.score !== 0 && password.score >= idx
+                          ? METER_BG_COLOR[password.score]
+                          : 'bg-base-300'
+                      } transition-colors`}
+                    ></div>
+                  </div>
+                ))}
               </div>
-            ))}
+              <p
+                className={`max-w-xs text-right ${
+                  METER_TEXT_COLOR[password.score]
+                } ${
+                  password.password.length === 0 ? 'invisible' : 'visible'
+                } text-sm transition-all `}
+              >
+                {PWD_STRENGTH[password.score]}
+              </p>
+              <ul className="ml-8 list-disc">
+                <li
+                  className={`text-sm transition-colors ${
+                    password.password.length === 0 ||
+                    password.password.length >= 8
+                      ? 'text-zinc-500/70'
+                      : 'text-error'
+                  }`}
+                >
+                  Contains at least 8 characters
+                </li>
+                <li
+                  className={`text-sm transition-colors ${
+                    password.password.length === 0 ||
+                    uppercaseRegex.test(password.password)
+                      ? 'text-zinc-500/70'
+                      : 'text-error'
+                  }`}
+                >
+                  Contains at least 1 uppercase letters
+                </li>
+                <li
+                  className={`text-sm transition-colors ${
+                    password.password.length === 0 ||
+                    lowercaseRegex.test(password.password)
+                      ? 'text-zinc-500/70'
+                      : 'text-error'
+                  }`}
+                >
+                  Contains at least 1 lowercase letters
+                </li>
+                <li
+                  className={`text-sm transition-colors ${
+                    password.password.length === 0 ||
+                    specialCharRegex.test(password.password)
+                      ? 'text-zinc-500/70'
+                      : 'text-error'
+                  }`}
+                >
+                  Contains at least 1 special letters
+                </li>
+              </ul>
+              <label className="label" htmlFor="new_password_confirm">
+                <span className="label-text">
+                  Confirm Password{' '}
+                  <span className="label-text text-red-500">*</span>
+                </span>
+              </label>
+              <input
+                type="password"
+                className="input-bordered input-primary input w-full max-w-xs"
+                id="new_password_confirm"
+                placeholder="Confirm Password"
+                autoComplete="new-password"
+                required
+              />
+            </div>
+            <div className="flex w-full flex-1 flex-col items-center sm:w-1/3">
+              <label className="label w-fit">
+                <span className="label-text">Profile picture </span>
+              </label>
+              <Dropzone onDrop={onAvatarDrop} multiple={false}>
+                {({ getRootProps, getInputProps }) => (
+                  <div className="w-fit">
+                    <div className="avatar">
+                      <div className="relative w-24 rounded-full sm:w-40">
+                        <div
+                          className="absolute rounded-full"
+                          {...getRootProps()}
+                        >
+                          <input {...getInputProps()} />
+                          <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 text-primary opacity-0 transition-all hover:border-primary hover:opacity-100 sm:h-40 sm:w-40">
+                            <FontAwesomeIcon
+                              fixedWidth
+                              icon={faCamera}
+                              size="2x"
+                            />
+                          </div>
+                        </div>
+                        <img
+                          src={
+                            avatarFile.preview !== ''
+                              ? avatarFile.preview
+                              : fallbackAvatar
+                          }
+                          alt={
+                            avatarFile.preview !== ''
+                              ? avatarFile.name
+                              : 'Avatar'
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </Dropzone>
+              <p className="text-xs">Click or drop here to upload</p>
+            </div>
           </div>
-          <p
-            className={`max-w-xs text-right ${
-              METER_TEXT_COLOR[password.score]
-            } ${
-              password.password.length === 0 ? 'invisible' : 'visible'
-            } text-sm transition-all `}
-          >
-            {PWD_STRENGTH[password.score]}
-          </p>
-          <ul className="ml-8 list-disc">
-            <li
-              className={`text-sm transition-colors ${
-                password.password.length === 0 || password.password.length >= 8
-                  ? 'text-zinc-500/70'
-                  : 'text-error'
-              }`}
-            >
-              Contains at least 8 characters
-            </li>
-            <li
-              className={`text-sm transition-colors ${
-                password.password.length === 0 ||
-                uppercaseRegex.test(password.password)
-                  ? 'text-zinc-500/70'
-                  : 'text-error'
-              }`}
-            >
-              Contains at least 1 uppercase letters
-            </li>
-            <li
-              className={`text-sm transition-colors ${
-                password.password.length === 0 ||
-                lowercaseRegex.test(password.password)
-                  ? 'text-zinc-500/70'
-                  : 'text-error'
-              }`}
-            >
-              Contains at least 1 lowercase letters
-            </li>
-            <li
-              className={`text-sm transition-colors ${
-                password.password.length === 0 ||
-                specialCharRegex.test(password.password)
-                  ? 'text-zinc-500/70'
-                  : 'text-error'
-              }`}
-            >
-              Contains at least 1 special letters
-            </li>
-          </ul>
-          <label className="label" htmlFor="new_password_confirm">
-            <span className="label-text">
-              Confirm Password{' '}
-              <span className="label-text text-red-500">*</span>
-            </span>
-          </label>
-          <input
-            type="password"
-            className="input-bordered input-primary input w-full max-w-xs"
-            id="new_password_confirm"
-            placeholder="Confirm Password"
-            autoComplete="new-password"
-            required
-          />
 
           <div className="divider"></div>
 
@@ -164,6 +235,8 @@ function StudentRegister() {
                 id="first_name"
                 placeholder="Enter First name"
                 autoComplete="given-name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
                 required
               />
             </div>
@@ -246,37 +319,43 @@ function StudentRegister() {
             ]} // Options to display in the dropdown
             displayValue="name"
           /> */}
+          <div className="flex w-full justify-center">
+            <input type="submit" className="btn btn-primary" value="Sign Up" />
+          </div>
         </form>
       </div>
     </Layout>
   );
 }
 
-// export async function getServerSideProps(context) {
-//   try {
-//     const subjectsRes = await fetch(
-//       `http://${process.env.API_URL}/subject/getSubjects`
-//     );
-//     const subjectsData = await subjectsRes.json();
-//     const levelsRes = await fetch(
-//       `http://${process.env.API_URL}/subject/getLevels`
-//     );
-//     const levelsData = await levelsRes.json();
+export async function getServerSideProps(context) {
+  const avatarSeed = String.fromCharCode(Math.floor(Math.random()*26) + 'A'.charCodeAt(0));
+  try {
+    const subjectsRes = await fetch(
+      `http://${process.env.API_URL}/subject/getSubjects`
+    );
+    const subjectsData = await subjectsRes.json();
+    const levelsRes = await fetch(
+      `http://${process.env.API_URL}/subject/getLevels`
+    );
+    const levelsData = await levelsRes.json();
 
-//     return {
-//       props: {
-//         subjects: subjectsData.subjects,
-//         levels: levelsData.levels,
-//       },
-//     };
-//   } catch (error) {
-//     return {
-//       props: {
-//         subjects: ['Mathmetic', 'Physic', 'Biology', 'English'],
-//         levels: ['Middle School', 'High School'],
-//       },
-//     };
-//   }
-// }
+    return {
+      props: {
+        subjects: subjectsData.subjects,
+        levels: levelsData.levels,
+        avatarSeed: avatarSeed
+      },
+    };
+  } catch (error) {
+    return {
+      props: {
+        subjects: ['Mathmetic', 'Physic', 'Biology', 'English'],
+        levels: ['Middle School', 'High School'],
+        avatarSeed: avatarSeed
+      },
+    };
+  }
+}
 
 export default StudentRegister;
