@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 
-const AnonNavbar = (props) => {
+const AnonNavbar = ({ children }) => {
   const { theme, setTheme } = useTheme();
 
   return (
@@ -18,7 +18,7 @@ const AnonNavbar = (props) => {
         </div>
 
         <div className="flex flex-none items-center">
-          <label className="swap swap-rotate btn btn-ghost btn-sm sm:btn-md ">
+          <label className="swap btn btn-ghost swap-rotate btn-sm sm:btn-md ">
             <input
               type="checkbox"
               onClick={() =>
@@ -28,7 +28,7 @@ const AnonNavbar = (props) => {
             <FontAwesomeIcon fixedWidth icon={faSun} className="swap-off" />
             <FontAwesomeIcon fixedWidth icon={faMoon} className="swap-on" />
           </label>
-          <div className="divider-horizontal divider"></div>
+          <div className="divider divider-horizontal"></div>
           <Link href="/login">
             <a className="w-20 min-w-fit text-center text-sm normal-case text-base-content transition-colors hover:text-primary-focus sm:w-24 sm:text-base">
               Log In
@@ -41,7 +41,7 @@ const AnonNavbar = (props) => {
           </Link>
         </div>
       </div>
-      <main className="relative pt-8">{props.children}</main>
+      <main className="relative pt-8 transition-colors">{children}</main>
     </>
   );
 };
