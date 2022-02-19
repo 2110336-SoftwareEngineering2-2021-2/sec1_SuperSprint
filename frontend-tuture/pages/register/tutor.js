@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import Dropzone from 'react-dropzone';
 import zxcvbn from 'zxcvbn';
 import Layout from '../../components/Layout';
-import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker';
 import DateTimePicker from 'react-datetime-picker/dist/DateTimePicker';
 
 const { Range } = Slider;
