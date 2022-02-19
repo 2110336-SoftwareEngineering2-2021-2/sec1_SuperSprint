@@ -1,10 +1,13 @@
 // import Multiselect from 'multiselect-react-dropdown';
 import { faCamera } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Dropzone from 'react-dropzone';
 import zxcvbn from 'zxcvbn';
 import Layout from '../../components/Layout';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm } from 'react-hook-form';
 
 const METER_BG_COLOR = [
   'bg-red-400',
@@ -21,14 +24,73 @@ const METER_TEXT_COLOR = [
   'text-green-500',
 ];
 const PWD_STRENGTH = ['weak', 'weak', 'okay', 'good', 'strong'];
+const MIN_PWD_LENGTH = 8;
+const MAX_PWD_LENGTH = 30;
+const MAX_USERNAME_LENGTH = 30;
 
 function StudentRegister({ subjects, levels, avatarSeed }) {
   const specialCharRegex = /.*[!@#\$%\^\&*\)\(+=._-].*/g;
   const uppercaseRegex = /.*[A-Z].*/g;
   const lowercaseRegex = /.*[a-z].*/g;
+  const numberRegex = /.*[0-9].*/g;
+  const phoneRegex = /^\d{10}$/g;
+
+  const schema = yup.object().shape({
+    username: yup
+      .string()
+      .max(MAX_USERNAME_LENGTH, 'Username must not exceed 30 characters')
+      .required(),
+    new_password: yup
+      .string()
+      .min(MIN_PWD_LENGTH, 'Password must at least 8 characters')
+      .max(MAX_PWD_LENGTH, 'Password must not exceed 30 characters')
+      .matches(uppercaseRegex, 'Contains at least 1 uppercase letters')
+      .matches(lowercaseRegex, 'Contains at least 1 lowercase letters')
+      .matches(numberRegex, 'Contains at least 1 numerical letters')
+      .matches(specialCharRegex, 'Contains at least 1 special letters')
+      .test(
+        'oneOfRequired',
+        'Password is too weak',
+        (value) => zxcvbn(value).score >= 2
+      )
+      .required(),
+    new_password_confirm: yup
+      .string()
+      .oneOf(
+        [yup.ref('new_password'), null],
+        'Confirm password does not match with password'
+      )
+      .required(),
+    first_name: yup
+      .string()
+      .matches(/^[A-Za-z]+$/, 'First name must contain only alphabet')
+      .required(),
+    last_name: yup
+      .string()
+      .matches(/^[A-Za-z]+$/, 'Last name must contain only alphabet')
+      .required(),
+    email: yup.string().email(),
+    phone: yup
+      .string()
+      .matches(phoneRegex, 'Phone number must contain only number')
+      .required(),
+    gender: yup
+      .string()
+      .oneOf(['male', 'female', 'non-binary', 'not_specified'])
+      .required(),
+  });
+
   const [password, setPassword] = useState({ password: '', score: 0 });
   const [avatarFile, setAvatarFile] = useState({ preview: '', name: '' });
   const [firstName, setFirstName] = useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
   function onAvatarDrop(acceptedFiles) {
     try {
@@ -56,6 +118,37 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
     'https://ui-avatars.com/api/?background=random&&length=1' +
     (firstName !== '' ? '&&name=' + firstName[0] + `${avatarSeed}` : '');
 
+  async function validateForm(event) {
+    const total = availFormVals.length;
+    var notError = true;
+
+    return notError;
+  }
+
+  async function submitRegister(data) {
+    // event.preventDefault();
+    console.log(data);
+    console.log('hello');
+    // if (!(await validateForm(data))) {
+    //   return;
+    // }
+    // router.push(
+    //   {
+    //     pathname: '/matching/result/[result]',
+    //     query: {
+    //       result: JSON.stringify({
+    //         study_subject: event.target.study_subject.value,
+    //         levels: event.target.edu_level.value,
+    //         price_min: event.target.price_min.value,
+    //         price_max: event.target.price_max.value,
+    //         availability: availFormVals,
+    //       }),
+    //     },
+    //   },
+    //   '/matching/result/'
+    // );
+  }
+
   return (
     <Layout title="Register Student | Tuture" signedIn={false}>
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
@@ -65,7 +158,7 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
         <form
           className="form-control mx-auto w-full max-w-3xl rounded-md py-4 px-8 shadow-md"
           id="student_register_form"
-          // onSubmit={submitMatching}
+          onSubmit={handleSubmit(submitRegister)}
         >
           <h2 className="-mx-4 my-3 text-xl font-bold">Account</h2>
           <div className="flex flex-wrap gap-4">
@@ -77,11 +170,19 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
               </label>
               <input
                 className="input-bordered input-primary input w-full max-w-xs"
+                {...register('username')}
                 id="username"
                 placeholder="Enter Username"
                 autoComplete="username"
                 required
               />
+              {errors.username && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.username.message}
+                  </span>
+                </label>
+              )}
               <label className="label" htmlFor="new_password">
                 <span className="label-text">
                   Password <span className="label-text text-red-500">*</span>
@@ -90,6 +191,7 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
               <input
                 type="password"
                 className="input-bordered input-primary input w-full max-w-xs"
+                {...register('new_password')}
                 id="new_password"
                 placeholder="Enter Password"
                 autoComplete="new-password"
@@ -97,6 +199,13 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
                 value={password.password}
                 onChange={onPasswordChange}
               />
+              {errors.new_password && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.new_password.message}
+                  </span>
+                </label>
+              )}
               <div className="my-2 flex max-w-xs">
                 {[...Array(5)].map((e, idx) => (
                   <div key={idx} className="w-1/5 px-1">
@@ -153,6 +262,16 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
                 <li
                   className={`text-sm transition-colors ${
                     password.password.length === 0 ||
+                    numberRegex.test(password.password)
+                      ? 'text-zinc-500/70'
+                      : 'text-error'
+                  }`}
+                >
+                  Contains at least 1 numerical letters
+                </li>
+                <li
+                  className={`text-sm transition-colors ${
+                    password.password.length === 0 ||
                     specialCharRegex.test(password.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
@@ -170,17 +289,29 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
               <input
                 type="password"
                 className="input-bordered input-primary input w-full max-w-xs"
+                {...register('new_password_confirm')}
                 id="new_password_confirm"
                 placeholder="Confirm Password"
                 autoComplete="new-password"
                 required
               />
+              {errors.new_password_confirm && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.new_password_confirm.message}
+                  </span>
+                </label>
+              )}
             </div>
             <div className="flex w-full flex-1 flex-col items-center sm:w-1/3">
-              <label className="label w-fit">
+              <label className="label w-fit" htmlFor="avatar">
                 <span className="label-text">Profile picture </span>
               </label>
-              <Dropzone onDrop={onAvatarDrop} multiple={false}>
+              <Dropzone
+                onDrop={onAvatarDrop}
+                multiple={false}
+                accept="image/jpeg,image/png"
+              >
                 {({ getRootProps, getInputProps }) => (
                   <div className="w-fit">
                     <div className="avatar">
@@ -189,7 +320,7 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
                           className="absolute rounded-full"
                           {...getRootProps()}
                         >
-                          <input {...getInputProps()} />
+                          <input id="avatar" {...getInputProps()} />
                           <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 text-primary opacity-0 transition-all hover:border-primary hover:opacity-100 sm:h-40 sm:w-40">
                             <FontAwesomeIcon
                               fixedWidth
@@ -232,6 +363,7 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
               </label>
               <input
                 className="input-bordered input-primary input w-full"
+                {...register('first_name')}
                 id="first_name"
                 placeholder="Enter First name"
                 autoComplete="given-name"
@@ -239,6 +371,13 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
                 onChange={(e) => setFirstName(e.target.value)}
                 required
               />
+              {errors.first_name && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.first_name.message}
+                  </span>
+                </label>
+              )}
             </div>
             <div className="w-64">
               <label className="label w-fit" htmlFor="last_name">
@@ -248,11 +387,19 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
               </label>
               <input
                 className="input-bordered input-primary input w-full"
+                {...register('last_name')}
                 id="last_name"
                 placeholder="Enter Last name"
                 autoComplete="family-name"
                 required
               />
+              {errors.last_name && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.last_name.message}
+                  </span>
+                </label>
+              )}
             </div>
           </div>
           <label className="label" htmlFor="email">
@@ -263,32 +410,61 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
           <input
             type="email"
             className="input-bordered input-primary input w-full max-w-xs"
+            {...register('email')}
             id="email"
             placeholder="Enter Email Address"
             autoComplete="email"
             required
           />
-          <label className="label" htmlFor="email">
+          {errors.email && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.email.message}
+              </span>
+            </label>
+          )}
+          <label className="label" htmlFor="phone">
             <span className="label-text">
               Phone number <span className="label-text text-red-500">*</span>
             </span>
           </label>
           <input
-            type="tel-national"
+            type="tel"
             className="input-bordered input-primary input w-full max-w-xs"
-            id="tel-national"
+            {...register('phone')}
+            id="phone"
             placeholder="Enter Phone number"
             autoComplete="tel-national"
+            minLength={10}
+            maxLength={10}
             required
           />
-          <label className="label" htmlFor="phone_number">
-            <span className="label-text">Gender</span>
+          {errors.phone && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.phone.message}
+              </span>
+            </label>
+          )}
+          <label className="label" htmlFor="gender">
+            <span className="label-text">
+              Gender <span className="label-text text-red-500">*</span>
+            </span>
           </label>
           <select
             className="select-bordered select-primary select w-48"
+            {...register('gender')}
             id="gender"
             defaultValue=""
+            required
           >
+            {errors.gender && (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {errors.gender.message}
+                </span>
+              </label>
+            )}
             <option value="" disabled>
               Select your gender
             </option>
@@ -329,7 +505,9 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
 }
 
 export async function getServerSideProps(context) {
-  const avatarSeed = String.fromCharCode(Math.floor(Math.random()*26) + 'A'.charCodeAt(0));
+  const avatarSeed = String.fromCharCode(
+    Math.floor(Math.random() * 26) + 'A'.charCodeAt(0)
+  );
   try {
     const subjectsRes = await fetch(
       `http://${process.env.API_URL}/subject/getSubjects`
@@ -344,7 +522,7 @@ export async function getServerSideProps(context) {
       props: {
         subjects: subjectsData.subjects,
         levels: levelsData.levels,
-        avatarSeed: avatarSeed
+        avatarSeed: avatarSeed,
       },
     };
   } catch (error) {
@@ -352,7 +530,7 @@ export async function getServerSideProps(context) {
       props: {
         subjects: ['Mathmetic', 'Physic', 'Biology', 'English'],
         levels: ['Middle School', 'High School'],
-        avatarSeed: avatarSeed
+        avatarSeed: avatarSeed,
       },
     };
   }
