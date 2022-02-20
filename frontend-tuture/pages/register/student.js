@@ -1,85 +1,23 @@
-// import Multiselect from 'multiselect-react-dropdown';
-import { faCamera } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useEffect, useState } from 'react';
-import Dropzone from 'react-dropzone';
+import { useState } from 'react';
 import zxcvbn from 'zxcvbn';
 import Layout from '../../components/Layout';
-import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-
-const METER_BG_COLOR = [
-  'bg-red-400',
-  'bg-red-400',
-  'bg-yellow-400',
-  'bg-yellow-400',
-  'bg-green-500',
-];
-const METER_TEXT_COLOR = [
-  'text-red-400',
-  'text-red-400',
-  'text-yellow-400',
-  'text-yellow-400',
-  'text-green-500',
-];
-const PWD_STRENGTH = ['weak', 'weak', 'okay', 'good', 'strong'];
-const MIN_PWD_LENGTH = 8;
-const MAX_PWD_LENGTH = 30;
-const MAX_USERNAME_LENGTH = 30;
+import {
+  uppercaseRegex,
+  lowercaseRegex,
+  numberRegex,
+  specialCharRegex,
+} from '../../components/commons/Regex';
+import { studentRegisterSchema } from '../../components/register-pages/StudentSchema';
+import AvatarUpload from '../../components/AvatarUpload';
+import {
+  METER_BG_COLOR,
+  METER_TEXT_COLOR,
+  PWD_STRENGTH,
+} from '../../components/register-pages/Constants';
 
 function StudentRegister({ subjects, levels, avatarSeed }) {
-  const specialCharRegex = /.*[!@#\$%\^\&*\)\(+=._-].*/g;
-  const uppercaseRegex = /.*[A-Z].*/g;
-  const lowercaseRegex = /.*[a-z].*/g;
-  const numberRegex = /.*[0-9].*/g;
-  const phoneRegex = /^\d{10}$/g;
-
-  const schema = yup.object().shape({
-    username: yup
-      .string()
-      .max(MAX_USERNAME_LENGTH, 'Username must not exceed 30 characters')
-      .required(),
-    new_password: yup
-      .string()
-      .min(MIN_PWD_LENGTH, 'Password must at least 8 characters')
-      .max(MAX_PWD_LENGTH, 'Password must not exceed 30 characters')
-      .matches(uppercaseRegex, 'Contains at least 1 uppercase letters')
-      .matches(lowercaseRegex, 'Contains at least 1 lowercase letters')
-      .matches(numberRegex, 'Contains at least 1 numerical letters')
-      .matches(specialCharRegex, 'Contains at least 1 special letters')
-      .test(
-        'oneOfRequired',
-        'Password is too weak',
-        (value) => zxcvbn(value).score >= 2
-      )
-      .required(),
-    new_password_confirm: yup
-      .string()
-      .oneOf(
-        [yup.ref('new_password'), null],
-        'Confirm password does not match with password'
-      )
-      .required(),
-    first_name: yup
-      .string()
-      .matches(/^[A-Za-z]+$/, 'First name must contain only alphabet')
-      .required(),
-    last_name: yup
-      .string()
-      .matches(/^[A-Za-z]+$/, 'Last name must contain only alphabet')
-      .required(),
-    email: yup.string().email(),
-    phone: yup
-      .string()
-      .matches(phoneRegex, 'Phone number must contain only number')
-      .required(),
-    gender: yup
-      .string()
-      .oneOf(['male', 'female', 'non-binary', 'not_specified'])
-      .required(),
-  });
-
   const [password, setPassword] = useState({ password: '', score: 0 });
   const [avatarFile, setAvatarFile] = useState({ preview: '', name: '' });
   const [firstName, setFirstName] = useState('');
@@ -89,34 +27,14 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
     formState: { errors },
     reset,
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(studentRegisterSchema),
   });
-
-  function onAvatarDrop(acceptedFiles) {
-    try {
-      setAvatarFile(
-        Object.assign(acceptedFiles[0], {
-          preview: URL.createObjectURL(acceptedFiles[0]),
-        })
-      );
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
-
-  useEffect(() => {
-    return () => URL.revokeObjectURL(avatarFile.preview);
-  }, [avatarFile]);
 
   function onPasswordChange(event) {
     const newPassword = event.target.value;
     const evaluation = zxcvbn(newPassword);
     setPassword({ password: newPassword, score: evaluation.score });
   }
-
-  const fallbackAvatar =
-    'https://ui-avatars.com/api/?background=random&&length=1' +
-    (firstName !== '' ? '&&name=' + firstName[0] + `${avatarSeed}` : '');
 
   async function validateForm(event) {
     const total = availFormVals.length;
@@ -307,45 +225,12 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
               <label className="label w-fit" htmlFor="avatar">
                 <span className="label-text">Profile picture </span>
               </label>
-              <Dropzone
-                onDrop={onAvatarDrop}
-                multiple={false}
-                accept="image/jpeg,image/png"
-              >
-                {({ getRootProps, getInputProps }) => (
-                  <div className="w-fit">
-                    <div className="avatar">
-                      <div className="relative w-24 rounded-full sm:w-40">
-                        <div
-                          className="absolute rounded-full"
-                          {...getRootProps()}
-                        >
-                          <input id="avatar" {...getInputProps()} />
-                          <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 text-primary opacity-0 transition-all hover:border-primary hover:opacity-100 sm:h-40 sm:w-40">
-                            <FontAwesomeIcon
-                              fixedWidth
-                              icon={faCamera}
-                              size="2x"
-                            />
-                          </div>
-                        </div>
-                        <img
-                          src={
-                            avatarFile.preview !== ''
-                              ? avatarFile.preview
-                              : fallbackAvatar
-                          }
-                          alt={
-                            avatarFile.preview !== ''
-                              ? avatarFile.name
-                              : 'Avatar'
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </Dropzone>
+              <AvatarUpload
+                avatarFile={avatarFile}
+                setAvatarFile={setAvatarFile}
+                firstName={firstName}
+                avatarSeed={avatarSeed}
+              />
               <p className="text-xs">Click or drop here to upload</p>
             </div>
           </div>

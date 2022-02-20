@@ -1,32 +1,29 @@
 // import Multiselect from 'multiselect-react-dropdown';
-import { faCamera, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import Slider from 'rc-slider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useEffect, useState } from 'react';
-import Dropzone from 'react-dropzone';
+import { useState } from 'react';
 import zxcvbn from 'zxcvbn';
 import Layout from '../../components/Layout';
 import DateTimePicker from 'react-datetime-picker/dist/DateTimePicker';
-
+import {
+  uppercaseRegex,
+  lowercaseRegex,
+  numberRegex,
+  specialCharRegex,
+} from '../../components/commons/Regex';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { tutorRegisterSchema } from '../../components/register-pages/TutorSchema';
+import AvatarUpload from '../../components/AvatarUpload';
+import {
+  METER_BG_COLOR,
+  METER_TEXT_COLOR,
+  PWD_STRENGTH,
+  MIN_PRICE,
+  MAX_PRICE,
+} from '../../components/register-pages/Constants';
 const { Range } = Slider;
-
-const MIN_PRICE = 0;
-const MAX_PRICE = 10000;
-const METER_BG_COLOR = [
-  'bg-red-400',
-  'bg-red-400',
-  'bg-yellow-400',
-  'bg-yellow-400',
-  'bg-green-500',
-];
-const METER_TEXT_COLOR = [
-  'text-red-400',
-  'text-red-400',
-  'text-yellow-400',
-  'text-yellow-400',
-  'text-green-500',
-];
-const PWD_STRENGTH = ['weak', 'weak', 'okay', 'good', 'strong'];
 
 function AvailabilityForm({
   formVal,
@@ -76,41 +73,25 @@ function AvailabilityForm({
 }
 
 function TutorRegister({ subjects, levels, avatarSeed }) {
-  const specialCharRegex = /.*[!@#\$%\^\&*\)\(+=._-].*/g;
-  const uppercaseRegex = /.*[A-Z].*/g;
-  const lowercaseRegex = /.*[a-z].*/g;
-
   const [password, setPassword] = useState({ password: '', score: 0 });
   const [avatarFile, setAvatarFile] = useState({ preview: '', name: '' });
   const [firstName, setFirstName] = useState('');
   const [priceRange, setPriceRange] = useState([2000, 4500]);
   const [availFormVals, setAvailFormVals] = useState([[null, null]]);
-
-  function onAvatarDrop(acceptedFiles) {
-    try {
-      setAvatarFile(
-        Object.assign(acceptedFiles[0], {
-          preview: URL.createObjectURL(acceptedFiles[0]),
-        })
-      );
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
-
-  useEffect(() => {
-    return () => URL.revokeObjectURL(avatarFile.preview);
-  }, [avatarFile]);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(tutorRegisterSchema),
+  });
 
   function onPasswordChange(event) {
     const newPassword = event.target.value;
     const evaluation = zxcvbn(newPassword);
     setPassword({ password: newPassword, score: evaluation.score });
   }
-
-  const fallbackAvatar =
-    'https://ui-avatars.com/api/?background=random&&length=1' +
-    (firstName !== '' ? '&&name=' + firstName[0] + `${avatarSeed}` : '');
 
   //const router = useRouter();
   // const schema = yup.object().shape({
@@ -223,11 +204,19 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
               </label>
               <input
                 className="input-bordered input-primary input w-full max-w-xs"
+                {...register('username')}
                 id="username"
                 placeholder="Enter Username"
                 autoComplete="username"
                 required
               />
+              {errors.username && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.username.message}
+                  </span>
+                </label>
+              )}
               <label className="label" htmlFor="new_password">
                 <span className="label-text">
                   Password <span className="label-text text-red-500">*</span>
@@ -236,6 +225,7 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
               <input
                 type="password"
                 className="input-bordered input-primary input w-full max-w-xs"
+                {...register('new_password')}
                 id="new_password"
                 placeholder="Enter Password"
                 autoComplete="new-password"
@@ -243,6 +233,13 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
                 value={password.password}
                 onChange={onPasswordChange}
               />
+              {errors.new_password && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.new_password.message}
+                  </span>
+                </label>
+              )}
               <div className="my-2 flex max-w-xs">
                 {[...Array(5)].map((e, idx) => (
                   <div key={idx} className="w-1/5 px-1">
@@ -299,6 +296,16 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
                 <li
                   className={`text-sm transition-colors ${
                     password.password.length === 0 ||
+                    numberRegex.test(password.password)
+                      ? 'text-zinc-500/70'
+                      : 'text-error'
+                  }`}
+                >
+                  Contains at least 1 numerical letters
+                </li>
+                <li
+                  className={`text-sm transition-colors ${
+                    password.password.length === 0 ||
                     specialCharRegex.test(password.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
@@ -316,51 +323,30 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
               <input
                 type="password"
                 className="input-bordered input-primary input w-full max-w-xs"
+                {...register('new_password_confirm')}
                 id="new_password_confirm"
                 placeholder="Confirm Password"
                 autoComplete="new-password"
                 required
               />
+              {errors.new_password_confirm && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.new_password_confirm.message}
+                  </span>
+                </label>
+              )}
             </div>
             <div className="flex w-full flex-1 flex-col items-center sm:w-1/3">
-              <label className="label w-fit">
+              <label className="label w-fit" htmlFor="avatar">
                 <span className="label-text">Profile picture </span>
               </label>
-              <Dropzone onDrop={onAvatarDrop} multiple={false}>
-                {({ getRootProps, getInputProps }) => (
-                  <div className="w-fit">
-                    <div className="avatar">
-                      <div className="relative w-24 rounded-full sm:w-40">
-                        <div
-                          className="absolute rounded-full"
-                          {...getRootProps()}
-                        >
-                          <input {...getInputProps()} />
-                          <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 text-primary opacity-0 transition-all hover:border-primary hover:opacity-100 sm:h-40 sm:w-40">
-                            <FontAwesomeIcon
-                              fixedWidth
-                              icon={faCamera}
-                              size="2x"
-                            />
-                          </div>
-                        </div>
-                        <img
-                          src={
-                            avatarFile.preview !== ''
-                              ? avatarFile.preview
-                              : fallbackAvatar
-                          }
-                          alt={
-                            avatarFile.preview !== ''
-                              ? avatarFile.name
-                              : 'Avatar'
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </Dropzone>
+              <AvatarUpload
+                avatarFile={avatarFile}
+                setAvatarFile={setAvatarFile}
+                firstName={firstName}
+                avatarSeed={avatarSeed}
+              />
               <p className="text-xs">Click or drop here to upload</p>
             </div>
           </div>
@@ -378,6 +364,7 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
               </label>
               <input
                 className="input-bordered input-primary input w-full"
+                {...register('first_name')}
                 id="first_name"
                 placeholder="Enter First name"
                 autoComplete="given-name"
@@ -385,6 +372,13 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
                 onChange={(e) => setFirstName(e.target.value)}
                 required
               />
+              {errors.first_name && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.first_name.message}
+                  </span>
+                </label>
+              )}
             </div>
             <div className="w-64">
               <label className="label w-fit" htmlFor="last_name">
@@ -394,11 +388,19 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
               </label>
               <input
                 className="input-bordered input-primary input w-full"
+                {...register('last_name')}
                 id="last_name"
                 placeholder="Enter Last name"
                 autoComplete="family-name"
                 required
               />
+              {errors.last_name && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.last_name.message}
+                  </span>
+                </label>
+              )}
             </div>
           </div>
           <label className="label" htmlFor="email">
@@ -409,32 +411,61 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
           <input
             type="email"
             className="input-bordered input-primary input w-full max-w-xs"
+            {...register('email')}
             id="email"
             placeholder="Enter Email Address"
             autoComplete="email"
             required
           />
-          <label className="label" htmlFor="email">
+          {errors.email && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.email.message}
+              </span>
+            </label>
+          )}
+          <label className="label" htmlFor="phone">
             <span className="label-text">
               Phone number <span className="label-text text-red-500">*</span>
             </span>
           </label>
           <input
-            type="tel-national"
+            type="tel"
             className="input-bordered input-primary input w-full max-w-xs"
-            id="tel-national"
+            {...register('phone')}
+            id="phone"
             placeholder="Enter Phone number"
             autoComplete="tel-national"
+            minLength={10}
+            maxLength={10}
             required
           />
-          <label className="label" htmlFor="phone_number">
-            <span className="label-text">Gender</span>
+          {errors.phone && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.phone.message}
+              </span>
+            </label>
+          )}
+          <label className="label" htmlFor="gender">
+            <span className="label-text">
+              Gender <span className="label-text text-red-500">*</span>
+            </span>
           </label>
           <select
             className="select-bordered select-primary select w-48"
+            {...register('gender')}
             id="gender"
             defaultValue=""
+            required
           >
+            {errors.gender && (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {errors.gender.message}
+                </span>
+              </label>
+            )}
             <option value="" disabled>
               Select your gender
             </option>
