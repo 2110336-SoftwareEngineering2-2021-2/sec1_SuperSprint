@@ -1,11 +1,8 @@
 // import Multiselect from 'multiselect-react-dropdown';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import Slider from 'rc-slider';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
+import Slider from 'rc-slider';
 import zxcvbn from 'zxcvbn';
 import Layout from '../../components/Layout';
-import DateTimePicker from 'react-datetime-picker/dist/DateTimePicker';
 import {
   uppercaseRegex,
   lowercaseRegex,
@@ -23,67 +20,23 @@ import {
   MIN_PRICE,
   MAX_PRICE,
   MAX_SUBJECT,
+  MAX_AVAILABILITY,
 } from '../../components/register-pages/Constants';
 import SubjectListForm from '../../components/register-pages/SubjectListForm';
+import AvailabilityListForm from '../../components/register-pages/AvailabilityListForm';
 const { Range } = Slider;
 
-function AvailabilityForm({
-  formVal,
-  lastElement,
-  onButtonClick,
-  onFieldChange,
-  reactMax,
-}) {
-  return (
-    <div
-      className={`flex w-fit flex-wrap items-center gap-2 ${
-        lastElement ? '' : 'mb-4'
-      }`}
-    >
-      <div className="flex w-fit flex-col items-center gap-0 sm:flex-row sm:gap-2">
-        <DateTimePicker
-          value={formVal[0]}
-          format="y-MM-dd hh:mm a"
-          onChange={(value) => onFieldChange(0, value)}
-          strictParsing={true}
-          className="input-bordered input-primary input input-sm w-[15.7rem] md:input-md md:w-[16.7rem]"
-        />
-        <span>-</span>
-        <DateTimePicker
-          value={formVal[1]}
-          format="y-MM-dd h:mm a"
-          onChange={(value) => onFieldChange(1, value)}
-          strictParsing={true}
-          className="input-bordered input-primary input input-sm w-[15.7rem] md:input-md md:w-[16.7rem]"
-        />
-      </div>
-
-      <button
-        type="button"
-        className="btn-outline btn btn-primary btn-xs inline-block w-fit grow-0 rounded-full text-center xs:btn-sm"
-        onClick={onButtonClick}
-        disabled={lastElement && reactMax}
-      >
-        <FontAwesomeIcon
-          size="sm"
-          icon={lastElement ? faPlus : faMinus}
-          fixedWidth
-        />
-      </button>
-    </div>
-  );
-}
-
-function TutorRegister({ subjects, levels, avatarSeed }) {
+function TutorRegister({ subjects, avatarSeed }) {
   const [password, setPassword] = useState({ password: '', score: 0 });
   const [avatarFile, setAvatarFile] = useState({ preview: '', name: '' });
   const [firstName, setFirstName] = useState('');
   const [priceRange, setPriceRange] = useState([2000, 4500]);
-  const [availFormVals, setAvailFormVals] = useState([[null, null]]);
   const {
     register,
     handleSubmit,
     formState: { errors },
+    control,
+    setValue,
     reset,
   } = useForm({
     resolver: yupResolver(tutorRegisterSchema),
@@ -135,23 +88,6 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
     setPriceRange(newPriceRange);
   }
 
-  function addAvailField() {
-    setAvailFormVals([...availFormVals, [null, null]]);
-  }
-
-  function removeAvailField(idx) {
-    let newFormVals = [...availFormVals];
-    newFormVals.splice(idx, 1);
-    setAvailFormVals(newFormVals);
-  }
-
-  function handleAvailFieldChange(idx, id, value) {
-    let newFormVals = [...availFormVals];
-    console.log(value);
-    newFormVals[idx][id] = value;
-    setAvailFormVals(newFormVals);
-  }
-
   async function validateForm(event) {
     const total = availFormVals.length;
     var notError = true;
@@ -185,6 +121,30 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
     return notError;
   }
 
+  async function submitRegister(data) {
+    // event.preventDefault();
+    console.log(data);
+    console.log('hello');
+    // if (!(await validateForm(data))) {
+    //   return;
+    // }
+    // router.push(
+    //   {
+    //     pathname: '/matching/result/[result]',
+    //     query: {
+    //       result: JSON.stringify({
+    //         study_subject: event.target.study_subject.value,
+    //         levels: event.target.edu_level.value,
+    //         price_min: event.target.price_min.value,
+    //         price_max: event.target.price_max.value,
+    //         availability: availFormVals,
+    //       }),
+    //     },
+    //   },
+    //   '/matching/result/'
+    // );
+  }
+
   return (
     <Layout title="Register Student | Tuture" signedIn={false}>
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
@@ -194,7 +154,7 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
         <form
           className="form-control mx-auto w-full max-w-3xl rounded-md py-4 px-8 shadow-md"
           id="student_register_form"
-          // onSubmit={submitMatching}
+          onSubmit={handleSubmit(submitRegister)}
         >
           <h2 className="-mx-4 my-3 text-xl font-bold">Account</h2>
           <div className="flex flex-wrap gap-4">
@@ -544,28 +504,14 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
               <span>THB</span>
             </label>
           </div>
-
           <label className="label" htmlFor="availability">
             <span className="label-text">Availability (max 10)</span>
           </label>
-          <div className="my-2">
-            {availFormVals.map((item, idx) => (
-              <AvailabilityForm
-                key={idx}
-                formVal={item}
-                lastElement={idx === availFormVals.length - 1}
-                reactMax={availFormVals.length === 10}
-                onButtonClick={
-                  idx === availFormVals.length - 1
-                    ? addAvailField
-                    : () => removeAvailField(idx)
-                }
-                onFieldChange={(id, value) =>
-                  handleAvailFieldChange(idx, id, value)
-                }
-              />
-            ))}
-          </div>
+          <AvailabilityListForm
+            hookFormSetValue={setValue}
+            hookFormControl={control}
+            maxAvailability={MAX_AVAILABILITY}
+          />
           <div className="divider"></div>
           <div className="flex w-full justify-center">
             <input type="submit" className="btn btn-primary" value="Sign Up" />
@@ -585,23 +531,22 @@ export async function getServerSideProps(context) {
       `http://${process.env.API_URL}/subject/getSubjects`
     );
     const subjectsData = await subjectsRes.json();
-    const levelsRes = await fetch(
-      `http://${process.env.API_URL}/subject/getLevels`
-    );
-    const levelsData = await levelsRes.json();
 
     return {
       props: {
         subjects: subjectsData.subjects,
-        levels: levelsData.levels,
         avatarSeed: avatarSeed,
       },
     };
   } catch (error) {
     return {
       props: {
-        subjects: ['Mathmetic', 'Physic', 'Biology', 'English'],
-        levels: ['Middle School', 'High School'],
+        subjects: {
+          Mathmetic: ['Middle School', 'High School'],
+          Physic: ['Middle School', 'High School'],
+          Biology: ['Middle School', 'High School'],
+          English: ['Middle School', 'High School'],
+        },
         avatarSeed: avatarSeed,
       },
     };

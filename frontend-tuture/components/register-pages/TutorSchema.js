@@ -6,6 +6,7 @@ import {
   specialCharRegex,
   phoneRegex
 } from '../commons/Regex';
+import zxcvbn from 'zxcvbn';
 
 const MIN_PWD_LENGTH = 8;
 const MAX_PWD_LENGTH = 30;
