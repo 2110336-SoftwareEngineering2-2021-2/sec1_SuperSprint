@@ -19,7 +19,7 @@
     "moment": "^2.29.1",
     "multiselect-react-dropdown": "^2.0.17",
     "next": "^12.1.0",
-    "next-themes": "0.0.15",
+    "next-themes": "^0.1.1",
     "nextjs-progressbar": "0.0.13",
     "rc-slider": "^9.7.5",
     "react": "^17.0.2",
