@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import zxcvbn from 'zxcvbn';
 import {
   uppercaseRegex,
   lowercaseRegex,

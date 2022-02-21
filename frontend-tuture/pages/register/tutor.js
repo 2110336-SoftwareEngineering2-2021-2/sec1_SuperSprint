@@ -22,7 +22,9 @@ import {
   PWD_STRENGTH,
   MIN_PRICE,
   MAX_PRICE,
+  MAX_SUBJECT,
 } from '../../components/register-pages/Constants';
+import SubjectListForm from '../../components/register-pages/SubjectListForm';
 const { Range } = Slider;
 
 function AvailabilityForm({
@@ -353,7 +355,7 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
 
           <div className="divider"></div>
 
-          <h2 className="-mx-4 my-3 text-xl font-bold">Personal Information</h2>
+          <h2 className="-mx-4 mb-3 text-xl font-bold">Personal Information</h2>
 
           <div className="mb-2 flex w-full flex-wrap gap-4">
             <div className="relative mb-2 w-64 sm:mb-0">
@@ -474,28 +476,20 @@ function TutorRegister({ subjects, levels, avatarSeed }) {
             <option value="non-binary">Non-binary</option>
             <option value="not_specified">Not specified</option>
           </select>
-          <label className="label" htmlFor="preferred_subjects">
-            <span className="label-text">Preferred subjects</span>
+
+          <div className="divider"></div>
+
+          <h2 className="-mx-4 my-3 text-xl font-bold">Platform Specifics</h2>
+
+          <label className="label" htmlFor="teaching_subjects">
+            <span className="label-text">Teaching subjects (max 10)</span>
           </label>
-          {/* <Multiselect
-            className="input-primary input max-w-xs"
-            options={[
-              { name: 'Option 1️⃣', id: 1 },
-              { name: 'Option 2️⃣', id: 2 },
-            ]} // Options to display in the dropdown
-            displayValue="name"
+          <SubjectListForm
+            hookFormRegister={register}
+            subjects={subjects}
+            maxSubject={MAX_SUBJECT}
           />
-          <label className="label" htmlFor="preferred_subjects">
-            <span className="label-text">Preferred subjects</span>
-          </label>
-          <Multiselect
-            className="input-primary input max-w-xs"
-            options={[
-              { name: 'Option 1️⃣', id: 1 },
-              { name: 'Option 2️⃣', id: 2 },
-            ]} // Options to display in the dropdown
-            displayValue="name"
-          /> */}
+
           <label htmlFor="price_range" className="label">
             <span className="label-text">Price Range</span>
           </label>

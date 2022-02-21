@@ -12,12 +12,14 @@ import {
 import { studentRegisterSchema } from '../../components/register-pages/StudentSchema';
 import AvatarUpload from '../../components/AvatarUpload';
 import {
+  MAX_SUBJECT,
   METER_BG_COLOR,
   METER_TEXT_COLOR,
   PWD_STRENGTH,
 } from '../../components/register-pages/Constants';
+import SubjectListForm from '../../components/register-pages/SubjectListForm';
 
-function StudentRegister({ subjects, levels, avatarSeed }) {
+function StudentRegister({ subjects, avatarSeed }) {
   const [password, setPassword] = useState({ password: '', score: 0 });
   const [avatarFile, setAvatarFile] = useState({ preview: '', name: '' });
   const [firstName, setFirstName] = useState('');
@@ -237,7 +239,7 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
 
           <div className="divider"></div>
 
-          <h2 className="-mx-4 my-3 text-xl font-bold">Personal Information</h2>
+          <h2 className="-mx-4 mb-3 text-xl font-bold">Personal Information</h2>
 
           <div className="mb-2 flex w-full flex-wrap gap-4">
             <div className="relative mb-2 w-64 sm:mb-0">
@@ -358,28 +360,21 @@ function StudentRegister({ subjects, levels, avatarSeed }) {
             <option value="non-binary">Non-binary</option>
             <option value="not_specified">Not specified</option>
           </select>
+
+          <div className="divider"></div>
+
+          <h2 className="-mx-4 mb-3 text-xl font-bold">Platform Specifics</h2>
+
           <label className="label" htmlFor="preferred_subjects">
-            <span className="label-text">Preferred subjects</span>
+            <span className="label-text">Preferred subjects (max 10)</span>
           </label>
-          {/* <Multiselect
-            className="input-primary input max-w-xs"
-            options={[
-              { name: 'Option 1️⃣', id: 1 },
-              { name: 'Option 2️⃣', id: 2 },
-            ]} // Options to display in the dropdown
-            displayValue="name"
+          <SubjectListForm
+            hookFormRegister={register}
+            subjects={subjects}
+            maxSubject={MAX_SUBJECT}
           />
-          <label className="label" htmlFor="preferred_subjects">
-            <span className="label-text">Preferred subjects</span>
-          </label>
-          <Multiselect
-            className="input-primary input max-w-xs"
-            options={[
-              { name: 'Option 1️⃣', id: 1 },
-              { name: 'Option 2️⃣', id: 2 },
-            ]} // Options to display in the dropdown
-            displayValue="name"
-          /> */}
+
+          <div className="divider"></div>
           <div className="flex w-full justify-center">
             <input type="submit" className="btn btn-primary" value="Sign Up" />
           </div>
@@ -398,23 +393,22 @@ export async function getServerSideProps(context) {
       `http://${process.env.API_URL}/subject/getSubjects`
     );
     const subjectsData = await subjectsRes.json();
-    const levelsRes = await fetch(
-      `http://${process.env.API_URL}/subject/getLevels`
-    );
-    const levelsData = await levelsRes.json();
 
     return {
       props: {
         subjects: subjectsData.subjects,
-        levels: levelsData.levels,
         avatarSeed: avatarSeed,
       },
     };
   } catch (error) {
     return {
       props: {
-        subjects: ['Mathmetic', 'Physic', 'Biology', 'English'],
-        levels: ['Middle School', 'High School'],
+        subjects: {
+          Mathmetic: ['Middle School', 'High School'],
+          Physic: ['Middle School', 'High School'],
+          Biology: ['Middle School', 'High School'],
+          English: ['Middle School', 'High School'],
+        },
         avatarSeed: avatarSeed,
       },
     };

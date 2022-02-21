@@ -20,3 +20,6 @@ export const MAX_PRICE = 10000;
 export const MIN_PWD_LENGTH = 8;
 export const MAX_PWD_LENGTH = 30;
 export const MAX_USERNAME_LENGTH = 30;
+
+export const MAX_SUBJECT = 10;
+export const MAX_AVAILABILITY = 10;
