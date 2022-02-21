@@ -1,6 +1,8 @@
-import { Controller, Body, Get, Post, Injectable, Param } from '@nestjs/common';
+import { Controller, Body, Get, Post, Injectable, Query } from '@nestjs/common';
 import { SubjectService } from './subject.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('subject')
 @Controller('subject')
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
@@ -18,7 +20,7 @@ export class SubjectController {
   }
 
   @Get('getSubjectsByLevel')
-  async getSubjectsByLevel(@Param('level') level: string) {
+  async getSubjectsByLevel(@Query('level') level: string) {
     const subjects = await this.subjectService.getSubjectsByLevel(level);
     return { subjects };
   }

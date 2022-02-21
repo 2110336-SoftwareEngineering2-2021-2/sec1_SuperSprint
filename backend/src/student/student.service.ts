@@ -25,7 +25,7 @@ export class StudentService {
     };
   }
 
-  async getStudents(){
+  async getStudents() {
     const students = await this.studentModel.find();
     return students;
   }

@@ -1,6 +1,8 @@
 import { Controller, Body, Get, Post, Injectable } from '@nestjs/common';
 import { ScoreService } from './score.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('score')
 @Controller('score')
 export class ScoreController {
   constructor(private readonly scoreService: ScoreService) {}

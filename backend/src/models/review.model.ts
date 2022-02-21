@@ -1,8 +1,8 @@
 import * as mongoose from 'mongoose';
-import { ApiProperty } from '@nestjs/swagger';
+
 const Schema = mongoose.Schema;
 
-export const ScoreSchema = new mongoose.Schema(
+export const ReviewSchema = new mongoose.Schema(
   {
     tutorId: {
       type: Schema.Types.ObjectId,
@@ -14,26 +14,22 @@ export const ScoreSchema = new mongoose.Schema(
       ref: 'Subject',
       required: true,
     },
-    currentScore: {
+    rating: {
       type: Number,
       required: true,
     },
-    maxScore: {
-      type: Number,
-      required: true,
-    },
-    year: {
-      type: Number,
+    comment: {
+      type: String,
       required: true,
     },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
-export interface Score {
+
+export interface Review {
   _id: string;
   tutorId: string;
   subjectId: string;
-  currentScore: number;
-  maxScore: number;
-  year: number;
+  rating: number;
+  comment: string;
 }

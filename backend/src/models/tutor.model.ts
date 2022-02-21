@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { timestamp } from 'rxjs';
+import { ApiProperty } from '@nestjs/swagger';
 import { UserSchema } from '../models/user.model';
 
 const Schema = mongoose.Schema;
@@ -47,19 +47,33 @@ export const TutorSchema = new mongoose.Schema({
   dutyTime: [{ start: Date, end: Date }], // free time of tutor
 });
 
-export interface Tutor {
+export class Tutor {
+  @ApiProperty()
   _id: string;
+  @ApiProperty()
   firstName: string;
+  @ApiProperty()
   lastName: string;
+  @ApiProperty()
   email: string;
+  @ApiProperty()
   phone: string;
+  @ApiProperty()
   username: string;
+  @ApiProperty()
   userType: string;
+  @ApiProperty()
   gender: string;
+  @ApiProperty()
   avgRating: number;
+  @ApiProperty()
   successMatch: number;
+  @ApiProperty()
   teachSubject: Array<string>;
+  @ApiProperty()
   priceMax: number;
+  @ApiProperty()
   priceMin: number;
+  @ApiProperty()
   dutyTime: Array<{ start: Date; end: Date }>;
 }
