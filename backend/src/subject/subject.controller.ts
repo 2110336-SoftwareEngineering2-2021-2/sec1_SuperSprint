@@ -1,4 +1,4 @@
-import { Controller, Body, Get, Post, Injectable } from '@nestjs/common';
+import { Controller, Body, Get, Post, Injectable, Param } from '@nestjs/common';
 import { SubjectService } from './subject.service';
 
 @Controller('subject')
@@ -17,13 +17,17 @@ export class SubjectController {
     return { subjects };
   }
 
+  @Get('getSubjectsByLevel')
+  async getSubjectsByLevel(@Param('level') level: string) {
+    const subjects = await this.subjectService.getSubjectsByLevel(level);
+    return { subjects };
+  }
+
   @Get('getLevels')
   async getAllLevels() {
     const levels = await this.subjectService.getLevels();
     return { levels };
   }
-  
-
 
   @Post()
   async addSubject(
