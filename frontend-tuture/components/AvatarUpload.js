@@ -23,7 +23,7 @@ function AvatarUpload({
         name: 'Default Avatar',
       });
     }
-  }, [firstName, avatarSeed, uploaded]);
+  }, [firstName, avatarSeed, uploaded, setAvatarFile]);
 
   function onAvatarDrop(acceptedFiles) {
     try {

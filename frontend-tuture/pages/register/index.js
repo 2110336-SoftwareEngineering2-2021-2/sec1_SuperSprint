@@ -48,7 +48,7 @@ function Register() {
             <div className="card-body items-center text-center">
               <h2 className="card-title">Tutor</h2>
               <div className="card-actions">
-                <Link href="/register/tutor">
+                <Link href="/register/tutor" passHref>
                   <button className="btn btn-primary btn-sm">Select</button>
                 </Link>
               </div>

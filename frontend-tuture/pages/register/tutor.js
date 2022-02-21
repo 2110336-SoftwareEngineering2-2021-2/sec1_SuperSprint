@@ -120,9 +120,9 @@ function TutorRegister({ subjects, avatarSeed }) {
   }
 
   return (
-    <Layout title="Register Student | Tuture" signedIn={false}>
+    <Layout title="Register Tutor | Tuture" signedIn={false}>
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-        Create Student Account
+        Create Tutor Account
       </h1>
       <div className="container mx-auto my-4">
         <form
