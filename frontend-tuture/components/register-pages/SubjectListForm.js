@@ -23,7 +23,6 @@ export function SubjectForm({
           {...hookFormRegister(`subjects.${idx}.subject`)}
           value={fieldVal.subject}
           onChange={(event) => onChange('subject', event.target.value)}
-          defaultValue=""
           className="select-bordered select-primary select select-sm max-w-xs sm:w-48 w-36 md:select-md"
         >
           <option value="" disabled>
@@ -40,7 +39,6 @@ export function SubjectForm({
           {...hookFormRegister(`subjects.${idx}.level`)}
           value={fieldVal.level}
           onChange={(event) => onChange('level', event.target.value)}
-          defaultValue=""
           className="select-bordered select-primary select select-sm max-w-xs sm:w-48 w-36 md:select-md "
           disabled={fieldVal.subject === ''}
         >
@@ -88,11 +86,8 @@ function SubjectListForm({ hookFormRegister, subjects, maxSubject }) {
   }
   
   function handleFieldChange(idx, item, value) {
-    console.log(idx, item, value);
     let newFormVals = [...subjectFormVals];
     newFormVals[idx][item] = value;
-    console.log(newFormVals[idx][item]);
-    console.log(newFormVals);
     setSubjectFormVals(newFormVals);
   }
 
