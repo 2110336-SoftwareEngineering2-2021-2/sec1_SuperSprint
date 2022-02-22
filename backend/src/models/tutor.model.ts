@@ -29,11 +29,14 @@ export const TutorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  userType: {
+  password: {
     type: String,
     required: true,
   },
   gender: { type: String },
+  profileUrl: {
+    type: String,
+  },
   avgRating: Number,
   successMatch: Number,
   priceMax: Number,
@@ -61,9 +64,11 @@ export class Tutor {
   @ApiProperty()
   username: string;
   @ApiProperty()
-  userType: string;
+  password: string;
   @ApiProperty()
   gender: string;
+  @ApiProperty()
+  profileUrl: string;
   @ApiProperty()
   avgRating: number;
   @ApiProperty()

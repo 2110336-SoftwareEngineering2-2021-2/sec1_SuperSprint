@@ -11,58 +11,33 @@ export class StudentService {
     @InjectModel('Student') private readonly studentModel: Model<Student>,
   ) {}
 
-  async getStudent(studentId: string) {
-    const student = await this.findStudent(studentId);
-    return {
-      firstName: student.firstName,
-      lastName: student.lastName,
-      email: student.email,
-      phone: student.phone,
-      username: student.username,
-      userType: student.userType,
-      gender: student.gender,
-      preferredSubject: student.preferredSubject,
-    };
-  }
-
   async getStudents() {
     const students = await this.studentModel.find();
     return students;
   }
 
-  async getPreferredSubject(studentId: string): Promise<Array<string>> {
-    console.log(['getPreferredSubject', studentId]);
+  async getStudent(studentId: string) {
     const student = await this.findStudent(studentId);
-    return student.preferredSubject;
+    return {
+      firstName: student.firstName,
+      lasatName: student.lastName,
+      email: student.email,
+      phone: student.phone,
+      username: student.username,
+      gender: student.gender,
+      profileUrl: student.profileUrl,
+      preferSubject: student.preferSubject,
+    };
+  }
+
+  async getPreferSubject(studentId: string): Promise<Array<string>> {
+    const student = await this.findStudent(studentId);
+    return student.preferSubject;
   }
 
   chooseTutor(studentId: string, tutorId: string) {
     console.log([studentId, 'choose', tutorId]);
     return 'pending';
-  }
-
-  async insertStudent(
-    firstName,
-    lastName,
-    email,
-    phone,
-    username,
-    userType,
-    gender,
-    preferredSubject,
-  ): Promise<any> {
-    const newStudent = new this.studentModel({
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      phone: phone,
-      username: username,
-      userType: userType,
-      gender: gender,
-      preferredSubject: preferredSubject,
-    });
-    await newStudent.save();
-    return { studentId: newStudent.id };
   }
 
   private async findStudent(id: string): Promise<Student> {

@@ -29,12 +29,17 @@ export const StudentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  userType: {
+  password: {
     type: String,
     required: true,
   },
-  gender: { type: String },
-  preferredSubject: [
+  gender: {
+    type: String,
+  },
+  profileUrl: {
+    type: String,
+  },
+  preferSubject: [
     {
       type: Schema.Types.ObjectId,
       ref: 'Subject',
@@ -49,7 +54,8 @@ export interface Student {
   email: string;
   phone: string;
   username: string;
-  userType: string;
+  password: string;
   gender: string;
-  preferredSubject: Array<string>;
+  profileUrl: string;
+  preferSubject: Array<string>;
 }

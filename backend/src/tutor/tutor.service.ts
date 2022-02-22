@@ -20,8 +20,9 @@ export class TutorService {
     email,
     phone,
     username,
-    userType,
+    password,
     gender,
+    profileUrl,
     avgRating,
     successMatch,
     teachSubject,
@@ -29,41 +30,53 @@ export class TutorService {
     priceMax,
     dutyTime,
   ): Promise<any> {
-    const newTutor = new this.tutorModel({
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      phone: phone,
-      username: username,
-      userType: userType,
-      gender: gender,
-      avgRating: avgRating,
-      successMatch: successMatch,
-      teachSubject: teachSubject,
-      priceMin: priceMin,
-      priceMax: priceMax,
-      dutyTime: dutyTime,
-    });
-    await newTutor.save();
-    return { tutorId: newTutor._id };
+    const tutor = await this.tutorModel.findOne({ username: username }).exec();
+    console.log(tutor);
+    if (!tutor) {
+      const newTutor = new this.tutorModel({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
+        username: username,
+        password: password,
+        gender: gender,
+        profileUrl: profileUrl,
+        avgRating: avgRating,
+        successMatch: successMatch,
+        teachSubject: teachSubject,
+        priceMin: priceMin,
+        priceMax: priceMax,
+        dutyTime: dutyTime,
+      });
+      await newTutor.save();
+      return { tutorId: newTutor._id };
+    } else {
+      return { tutorId: -1 };
+    }
   }
 
-  async findTutors(): Promise<Tutor[]> {
-    const tutors = await this.tutorModel.find().exec();
+  async getTutors(): Promise<Tutor[]> {
+    const tutors = await this.tutorModel.find();
     return tutors;
   }
 
   async getTutor(tutorId: string) {
-    const tutor = await this.tutorModel
-      .find({ _id: tutorId })
-      .select({
-        _id: 1,
-        firstName: 1,
-        lastName: 1,
-      })
-      .exec();
+    const tutor = await this.findTutor(tutorId);
     return {
-      tutor,
+      firstName: tutor.firstName,
+      lastName: tutor.lastName,
+      email: tutor.email,
+      phone: tutor.phone,
+      username: tutor.username,
+      gender: tutor.gender,
+      profileUrl: tutor.profileUrl,
+      avgRating: tutor.avgRating,
+      successMatch: tutor.successMatch,
+      priceMax: tutor.priceMax,
+      priceMin: tutor.priceMin,
+      teachSubject: tutor.teachSubject,
+      dutyTime: tutor.dutyTime,
     };
   }
 
@@ -274,8 +287,9 @@ export class TutorService {
     email,
     phone,
     username,
-    userType,
+    password,
     gender,
+    profileUrl,
     avgRating,
     successMatch,
     teachSubject,
@@ -300,11 +314,14 @@ export class TutorService {
     if (username) {
       updateTutor.username = username;
     }
-    if (userType) {
-      updateTutor.userType = userType;
+    if (password) {
+      updateTutor.password = password;
     }
     if (gender) {
       updateTutor.gender = gender;
+    }
+    if (profileUrl) {
+      updateTutor.profileUrl = profileUrl;
     }
     if (avgRating) {
       updateTutor.avgRating = avgRating;

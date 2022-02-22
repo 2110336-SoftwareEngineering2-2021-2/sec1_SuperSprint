@@ -1,44 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { TutorService } from './tutor.service';
 import { ApiTags } from '@nestjs/swagger';
+import { get } from 'http';
 
 @ApiTags('tutor')
 @Controller('tutor')
 export class TutorController {
   constructor(private readonly tutorService: TutorService) {}
-
-  @Post()
-  addTutor(
-    @Body('firstName') firstName: string,
-    @Body('lastName') lastName: string,
-    @Body('email') email: string,
-    @Body('phone') phone: string,
-    @Body('username') username: string,
-    @Body('userType') userType: string,
-    @Body('gender') gender: string,
-    @Body('avgRating') avgRating: number,
-    @Body('successMatch') successMatch: number,
-    @Body('teachSubject') teachSubject: Array<string>,
-    @Body('priceMin') priceMin: number,
-    @Body('priceMax') priceMax: number,
-    @Body('dutyTime') dutyTime: Array<Array<string>>,
-  ): Promise<string> {
-    return this.tutorService.insertTutor(
-      firstName,
-      lastName,
-      email,
-      phone,
-      username,
-      userType,
-      gender,
-      avgRating,
-      successMatch,
-      teachSubject,
-      priceMin,
-      priceMax,
-      dutyTime,
-    );
-  }
 
   @Post('search')
   searchTutor(@Body('text') text: string): any {
@@ -75,8 +43,9 @@ export class TutorController {
     @Body('email') email: string,
     @Body('phone') phone: string,
     @Body('username') username: string,
-    @Body('userType') userType: string,
+    @Body('password') password: string,
     @Body('gender') gender: string,
+    @Body('profileUrl') profileUrl: string,
     @Body('avgRating') avgRating: number,
     @Body('successMatch') successMatch: number,
     @Body('teachSubject') teachSubject: Array<string>,
@@ -91,8 +60,9 @@ export class TutorController {
       email,
       phone,
       username,
-      userType,
+      password,
       gender,
+      profileUrl,
       avgRating,
       successMatch,
       teachSubject,
@@ -100,5 +70,10 @@ export class TutorController {
       priceMax,
       dutyTime,
     );
+  }
+
+  @Get()
+  getAllTutors() {
+    return this.tutorService.getTutors();
   }
 }
