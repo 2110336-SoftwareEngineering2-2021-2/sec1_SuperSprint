@@ -16,9 +16,8 @@ import AvatarUpload from '../../components/AvatarUpload';
 import {
   METER_BG_COLOR,
   METER_TEXT_COLOR,
+  MIN_PWD_LENGTH,
   PWD_STRENGTH,
-  MIN_PRICE,
-  MAX_PRICE,
   MAX_SUBJECT,
   MAX_AVAILABILITY,
 } from '../../components/register-pages/Constants';
@@ -142,8 +141,10 @@ function TutorRegister({ subjects, avatarSeed }) {
                 className="input-bordered input-primary input w-full max-w-xs"
                 {...register('username')}
                 id="username"
+                type="text"
                 placeholder="Enter Username"
-                autoComplete="username"
+                name="username"
+                // autoComplete="username"
                 required
               />
               {errors.username && (
@@ -202,12 +203,12 @@ function TutorRegister({ subjects, avatarSeed }) {
                 <li
                   className={`text-sm transition-colors ${
                     password.password.length === 0 ||
-                    password.password.length >= 8
+                    password.password.length >= MIN_PWD_LENGTH
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
                 >
-                  Contains at least 8 characters
+                  Contains at least {MIN_PWD_LENGTH} characters
                 </li>
                 <li
                   className={`text-sm transition-colors ${
@@ -299,6 +300,7 @@ function TutorRegister({ subjects, avatarSeed }) {
                 </span>
               </label>
               <input
+                type="text"
                 className="input-bordered input-primary input w-full"
                 {...register('first_name')}
                 id="first_name"
@@ -323,6 +325,7 @@ function TutorRegister({ subjects, avatarSeed }) {
                 </span>
               </label>
               <input
+                type="text"
                 className="input-bordered input-primary input w-full"
                 {...register('last_name')}
                 id="last_name"
