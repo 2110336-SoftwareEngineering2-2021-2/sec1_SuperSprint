@@ -3,38 +3,31 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 import Dropzone from 'react-dropzone';
 import { Controller } from 'react-hook-form';
+import { createAvatar } from '@dicebear/avatars';
+import * as style from '@dicebear/avatars-identicon-sprites';
 
 function AvatarUpload({
   hookFormControl,
   hookFormSetValue,
   firstName = 'John',
-  avatarSeed,
 }) {
   const [uploaded, setUploaded] = useState(false);
 
   useEffect(async () => {
-    const fallbackAvatarUrl =
-      'https://ui-avatars.com/api/?background=random&&length=1' +
-      (firstName !== '' ? '&&name=' + firstName[0] + `${avatarSeed}` : '');
-    const fallbackAvatarFile = await urlToObject(fallbackAvatarUrl);
+    const fallbackAvatarUri = createAvatar(style, {
+      seed: firstName,
+      dataUri: true,
+    });
+    // 'https://ui-avatars.com/api/?background=random&&length=1' +
+    // (firstName !== '' ? '&&name=' + firstName[0] + `${avatarSeed}` : '');
 
     if (!uploaded) {
       hookFormSetValue('avatar', {
-        preview: fallbackAvatarUrl,
-        file: fallbackAvatarFile,
+        preview: fallbackAvatarUri,
+        name: 'avatar',
       });
     }
-  }, [firstName, avatarSeed, uploaded]);
-
-  async function urlToObject(url) {
-    const response = await fetch(url, {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'same-origin',
-    });
-    const blob = await response.blob();
-    return new File([blob], 'avatar.jpg', { type: blob.type });
-  }
+  }, [firstName, uploaded]);
 
   function onAvatarDrop(value, acceptedFiles, onChange) {
     URL.revokeObjectURL(value.preview);
@@ -42,6 +35,7 @@ function AvatarUpload({
       onChange({
         preview: URL.createObjectURL(acceptedFiles[0]),
         file: acceptedFiles[0],
+        name: acceptedFiles[0].name,
       });
       setUploaded(true);
     } catch (error) {
@@ -53,7 +47,10 @@ function AvatarUpload({
     <Controller
       control={hookFormControl}
       name={`avatar`}
-      defaultValue={{ preview: '', name: '' }}
+      defaultValue={{
+        preview: '',
+        name: 'avatar',
+      }}
       render={({ field: { onChange, value } }) => (
         <Dropzone
           onDrop={(e) => {
