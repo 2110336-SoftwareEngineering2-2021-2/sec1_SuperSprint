@@ -27,7 +27,6 @@ import PriceRangeForm from '../../components/register-pages/PriceRangeForm';
 
 function TutorRegister({ subjects, avatarSeed }) {
   const [password, setPassword] = useState({ password: '', score: 0 });
-  const [avatarFile, setAvatarFile] = useState({ preview: '', name: '' });
   const [firstName, setFirstName] = useState('');
   const {
     register,
@@ -279,8 +278,8 @@ function TutorRegister({ subjects, avatarSeed }) {
                 <span className="label-text">Profile picture </span>
               </label>
               <AvatarUpload
-                avatarFile={avatarFile}
-                setAvatarFile={setAvatarFile}
+                hookFormControl={control}
+                hookFormSetValue={setValue}
                 firstName={firstName}
                 avatarSeed={avatarSeed}
               />

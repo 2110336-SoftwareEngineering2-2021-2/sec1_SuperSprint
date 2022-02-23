@@ -22,10 +22,11 @@ import SubjectListForm from '../../components/register-pages/SubjectListForm';
 
 function StudentRegister({ subjects, avatarSeed }) {
   const [password, setPassword] = useState({ password: '', score: 0 });
-  const [avatarFile, setAvatarFile] = useState({ preview: '', name: '' });
   const [firstName, setFirstName] = useState('');
   const {
     register,
+    control,
+    setValue,
     handleSubmit,
     formState: { errors },
     reset,
@@ -49,25 +50,24 @@ function StudentRegister({ subjects, avatarSeed }) {
   async function submitRegister(data) {
     // event.preventDefault();
     console.log(data);
-    console.log('hello');
-    // if (!(await validateForm(data))) {
-    //   return;
-    // }
-    // router.push(
-    //   {
-    //     pathname: '/matching/result/[result]',
-    //     query: {
-    //       result: JSON.stringify({
-    //         study_subject: event.target.study_subject.value,
-    //         levels: event.target.edu_level.value,
-    //         price_min: event.target.price_min.value,
-    //         price_max: event.target.price_max.value,
-    //         availability: availFormVals,
-    //       }),
-    //     },
+
+    // const formData = new FormData();
+    // console.log(data.avatar.file);
+    // formData.append('file', data.avatar.file);
+    // const options = {
+    //   method: 'POST',
+    //   mode: 'no-cors',
+    //   // credentials: 'same-origin',
+    //   headers: {
+    //     Authorization: 'Client-ID bac84ec92d60897',
     //   },
-    //   '/matching/result/'
-    // );
+    //   body: formData
+    // };
+    // console.log(formData);
+    // console.log(options);
+    // const res = await fetch('https://api.anonfiles.com/upload', options);
+    // console.log(res);
+    // console.log(await res.json());
   }
 
   return (
@@ -231,8 +231,8 @@ function StudentRegister({ subjects, avatarSeed }) {
                 <span className="label-text">Profile picture </span>
               </label>
               <AvatarUpload
-                avatarFile={avatarFile}
-                setAvatarFile={setAvatarFile}
+                hookFormControl={control}
+                hookFormSetValue={setValue}
                 firstName={firstName}
                 avatarSeed={avatarSeed}
               />
