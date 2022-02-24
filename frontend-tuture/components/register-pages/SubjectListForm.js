@@ -1,7 +1,7 @@
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState, useEffect } from 'react';
-import { useFieldArray } from "react-hook-form";
+import { useFieldArray } from 'react-hook-form';
 
 export function SubjectForm({
   subjects,
@@ -85,12 +85,11 @@ function SubjectListForm({
   subjects,
   maxSubject,
 }) {
-  const { fields, append, prepend, remove, insert } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: hookFormControl,
-    name: 'subjects'
-  })
+    name: 'subjects',
+  });
 
-  
   function addField() {
     append({ ...defaultState });
   }
@@ -115,9 +114,7 @@ function SubjectListForm({
           lastElement={idx === fields.length - 1}
           reactMax={fields.length === maxSubject}
           onButtonClick={
-            idx === fields.length - 1
-              ? addField
-              : () => removeField(idx)
+            idx === fields.length - 1 ? addField : () => removeField(idx)
           }
         />
       ))}

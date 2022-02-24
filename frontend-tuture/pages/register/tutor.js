@@ -456,7 +456,6 @@ function TutorRegister({ subjects, avatarSeed }) {
             <span className="label-text">Availability (max 10)</span>
           </label>
           <AvailabilityListForm
-            hookFormSetValue={setValue}
             hookFormControl={control}
             maxAvailability={MAX_AVAILABILITY}
           />

@@ -1,15 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DateTimePicker from 'react-datetime-picker/dist/DateTimePicker';
-import { Controller } from 'react-hook-form';
+import { Controller, useFieldArray } from 'react-hook-form';
 
 function AvailabilityForm({
   hookFormControl,
   idx,
   lastElement,
   onButtonClick,
-  onFieldChange,
   reactMax,
 }) {
   return (
@@ -26,10 +25,7 @@ function AvailabilityForm({
             <DateTimePicker
               value={value}
               format="y-MM-dd hh:mm a"
-              onChange={(val) => {
-                onChange(val);
-                onFieldChange(0, val);
-              }}
+              onChange={onChange}
               strictParsing={true}
               className="input-bordered input-primary input input-sm w-[15.7rem] md:input-md md:w-[16.7rem]"
             />
@@ -43,10 +39,7 @@ function AvailabilityForm({
             <DateTimePicker
               value={value}
               format="y-MM-dd hh:mm a"
-              onChange={(val) => {
-                onChange(val);
-                onFieldChange(1, val);
-              }}
+              onChange={onChange}
               strictParsing={true}
               className="input-bordered input-primary input input-sm w-[15.7rem] md:input-md md:w-[16.7rem]"
             />
@@ -70,58 +63,39 @@ function AvailabilityForm({
   );
 }
 
-const defaultState = [null, null];
+const defaultState = { from: null, to: null };
 
-function AvailabilityListForm({
-  hookFormControl,
-  hookFormSetValue,
-  maxAvailability,
-}) {
-  const [availFormVals, setAvailFormVals] = useState([[...defaultState]]);
+function AvailabilityListForm({ hookFormControl, maxAvailability }) {
+  const { fields, append, remove } = useFieldArray({
+    control: hookFormControl,
+    name: 'availability',
+  });
 
-  function applyFieldChanges(newFormVals) {
-    console.log(newFormVals);
-    newFormVals.forEach((e, idx) => {
-      hookFormSetValue(`availability.${idx}.from`, e[0]);
-      hookFormSetValue(`availability.${idx}.to`, e[1]);
-    });
+  function addField() {
+    append({ ...defaultState });
   }
 
-  function addAvailField() {
-    const newFormVals = [...availFormVals, [null, null]];
-    applyFieldChanges(newFormVals);
-    setAvailFormVals(newFormVals);
+  function removeField(idx) {
+    remove(idx);
   }
 
-  function removeAvailField(idx) {
-    let newFormVals = [...availFormVals];
-    newFormVals.splice(idx, 1);
-    applyFieldChanges(newFormVals);
-    setAvailFormVals(newFormVals);
-  }
-
-  function handleAvailFieldChange(idx, id, value) {
-    const newFormVals = [...availFormVals];
-    newFormVals[idx][id] = value;
-    setAvailFormVals(newFormVals);
-  }
+  useEffect(() => {
+    addField();
+  }, []);
 
   return (
     <div className="my-2">
-      {availFormVals.map((item, idx) => (
+      {fields.map((field, idx) => (
         <AvailabilityForm
-          key={idx}
+          key={field.id}
           hookFormControl={hookFormControl}
+          hookFormField={field}
           idx={idx}
-          formVal={item}
-          lastElement={idx === availFormVals.length - 1}
-          reactMax={availFormVals.length === maxAvailability}
+          lastElement={idx === fields.length - 1}
+          reactMax={fields.length === maxAvailability}
           onButtonClick={
-            idx === availFormVals.length - 1
-              ? addAvailField
-              : () => removeAvailField(idx)
+            idx === fields.length - 1 ? addField : () => removeField(idx)
           }
-          onFieldChange={(id, value) => handleAvailFieldChange(idx, id, value)}
         />
       ))}
     </div>
