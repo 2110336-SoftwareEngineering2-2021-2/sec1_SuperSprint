@@ -54,7 +54,7 @@ function PriceRangeForm({ hookFormRegister }) {
         >
           <input
             id="price_min"
-            {...hookFormRegister('price_min')}
+            {...hookFormRegister('price.min')}
             type="number"
             value={priceRange[0]}
             className="min-w-2/3 sm:min-w-1/2 input-bordered input-primary input input-sm w-full"
@@ -72,7 +72,7 @@ function PriceRangeForm({ hookFormRegister }) {
         >
           <input
             id="price_max"
-            {...hookFormRegister('price_max')}
+            {...hookFormRegister('price.max')}
             type="number"
             value={priceRange[1]}
             className="min-w-2/3 sm:min-w-1/2 input-bordered input-primary input input-sm w-full"

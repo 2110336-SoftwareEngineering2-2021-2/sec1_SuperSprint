@@ -49,8 +49,8 @@ function StudentRegister({ subjects, avatarSeed }) {
 
   async function submitRegister(data) {
     // event.preventDefault();
+    console.log("Pass");
     console.log(data);
-
     // const formData = new FormData();
     // console.log(data.avatar.file);
     // formData.append('file', data.avatar.file);
@@ -69,6 +69,8 @@ function StudentRegister({ subjects, avatarSeed }) {
     // console.log(res);
     // console.log(await res.json());
   }
+
+  console.log(errors);
 
   return (
     <Layout title="Register Student | Tuture" signedIn={false}>
@@ -375,6 +377,8 @@ function StudentRegister({ subjects, avatarSeed }) {
           </label>
           <SubjectListForm
             hookFormRegister={register}
+            hookFormErrors={errors}
+            hookFormControl={control}
             subjects={subjects}
             maxSubject={MAX_SUBJECT}
           />

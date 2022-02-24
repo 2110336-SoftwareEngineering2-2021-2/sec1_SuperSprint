@@ -422,13 +422,36 @@ function TutorRegister({ subjects, avatarSeed }) {
           </label>
           <SubjectListForm
             hookFormRegister={register}
+            hookFormErrors={errors}
+            hookFormControl={control}
             subjects={subjects}
             maxSubject={MAX_SUBJECT}
           />
+          {errors.subjects && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.subjects.message}
+              </span>
+            </label>
+          )}
           <label htmlFor="price_range" className="label">
             <span className="label-text">Price Range</span>
           </label>
           <PriceRangeForm hookFormRegister={register} />
+          {errors.subjects && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.subjects.message}
+              </span>
+            </label>
+          )}
+          {errors.price && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.price.message}
+              </span>
+            </label>
+          )}
           <label className="label" htmlFor="availability">
             <span className="label-text">Availability (max 10)</span>
           </label>
@@ -437,6 +460,14 @@ function TutorRegister({ subjects, avatarSeed }) {
             hookFormControl={control}
             maxAvailability={MAX_AVAILABILITY}
           />
+          {errors.availability && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.availability.message}
+              </span>
+            </label>
+          )}
+
           <div className="divider"></div>
           <div className="flex w-full justify-center">
             <input type="submit" className="btn btn-primary" value="Sign Up" />
