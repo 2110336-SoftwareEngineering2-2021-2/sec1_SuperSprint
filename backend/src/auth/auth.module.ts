@@ -4,7 +4,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { StudentSchema } from '../models/student.model';
 import { TutorSchema } from '../models/tutor.model';
-
+import { S3Service } from '@src/services/S3Sevices.service';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -13,6 +13,6 @@ import { TutorSchema } from '../models/tutor.model';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, S3Service],
 })
 export class AuthModule {}

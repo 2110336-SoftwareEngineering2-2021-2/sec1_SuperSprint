@@ -4,6 +4,7 @@ import { SubjectService } from '@src/subject/subject.service';
 import { Model } from 'mongoose';
 import { Tutor } from '../models/tutor.model';
 import { ScoreService } from '../score/score.service';
+import { S3Service } from '@src/services/S3Sevices.service';
 @Injectable()
 export class TutorService {
   private tutors: Tutor[] = [];
@@ -12,9 +13,11 @@ export class TutorService {
     @InjectModel('Tutor') private readonly tutorModel: Model<Tutor>,
     private readonly scoreSevice: ScoreService,
     private readonly subjectService: SubjectService,
+    private readonly s3Service: S3Service,
   ) {}
 
   async insertTutor(
+    image,
     firstName,
     lastName,
     email,

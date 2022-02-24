@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Tutor } from '../models/tutor.model';
 import { Student } from '../models/student.model';
 import * as bcrypt from 'bcrypt';
+import { S3Service } from '@src/services/S3Sevices.service';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +13,7 @@ export class AuthService {
   constructor(
     @InjectModel('Tutor') private readonly tutorModel: Model<Tutor>,
     @InjectModel('Student') private readonly studentModel: Model<Student>,
+    private readonly s3Service: S3Service,
   ) {}
   async insertStudent(
     firstName,
@@ -27,7 +29,9 @@ export class AuthService {
     const student = await this.studentModel
       .findOne({ username: username })
       .exec();
+
     if (!student) {
+      const imageUrl = await this.s3Service.uploadFile(profileUrl);
       const saltOrRounds = 10;
       const hashed_password = await bcrypt.hash(password, saltOrRounds);
       const newStudent = new this.studentModel({
@@ -35,10 +39,10 @@ export class AuthService {
         lastName: lastName,
         email: email,
         phone: phone,
+        profileUrl: imageUrl,
         username: username,
         password: hashed_password,
         gender: gender,
-        profileUrl: profileUrl,
         preferSubject: preferSubject,
       });
       await newStudent.save();

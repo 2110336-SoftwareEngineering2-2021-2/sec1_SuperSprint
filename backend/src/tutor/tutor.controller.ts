@@ -1,7 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  UseInterceptors,
+  UploadedFile,
+  UseGuards,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { PassportStrategy } from '@nestjs/passport';
 import { TutorService } from './tutor.service';
 import { ApiTags } from '@nestjs/swagger';
 import { get } from 'http';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('tutor')
 @Controller('tutor')
@@ -75,5 +88,12 @@ export class TutorController {
   @Get()
   getAllTutors() {
     return this.tutorService.getTutors();
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('test')
+  getTutor(@Body('id') id: string) {
+    console.log(id);
+    return this.tutorService.getTutor(id);
   }
 }
