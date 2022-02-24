@@ -63,7 +63,6 @@ export class Tutor {
   phone: string;
   @ApiProperty()
   username: string;
-  @ApiProperty()
   password: string;
   @ApiProperty()
   gender: string;

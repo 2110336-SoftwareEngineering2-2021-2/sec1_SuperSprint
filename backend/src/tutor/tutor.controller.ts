@@ -12,9 +12,10 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PassportStrategy } from '@nestjs/passport';
 import { TutorService } from './tutor.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOkResponse, ApiParam } from '@nestjs/swagger';
 import { get } from 'http';
 import { AuthGuard } from '@nestjs/passport';
+import { Tutor } from '../models/tutor.model';
 
 @ApiTags('tutor')
 @Controller('tutor')
@@ -22,11 +23,17 @@ export class TutorController {
   constructor(private readonly tutorService: TutorService) {}
 
   @Post('search')
+  @ApiParam({
+    name: 'text',
+    type: String,
+  })
+  @ApiOkResponse({ type: [Tutor] })
   searchTutor(@Body('text') text: string): any {
     return this.tutorService.searchTutor(text);
   }
 
   @Post('match')
+  @ApiOkResponse({ type: [Tutor] })
   async matchTutor(
     @Body('subjectName') subjectName: string,
     @Body('level') level: string,

@@ -18,6 +18,6 @@ import { S3Service } from '@src/services/S3Sevices.service';
 })
 export class TutorModule {
   configure(tutor: MiddlewareConsumer) {
-    tutor.apply().forRoutes('create'); 
+    tutor.apply().forRoutes('create');
   }
 }

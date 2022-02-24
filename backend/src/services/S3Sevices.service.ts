@@ -12,12 +12,13 @@ export class S3Service {
   async uploadFile(file) {
     const { originalname } = file;
 
-    await this.s3_upload(
+    const fileResponse = await this.s3_upload(
       file.buffer,
       this.AWS_S3_BUCKET,
       originalname,
       file.mimetype,
     );
+    return fileResponse.Location;
   }
 
   async deleteFile(key) {
@@ -40,10 +41,11 @@ export class S3Service {
     try {
       const s3Response = await this.s3.upload(params).promise();
 
-      console.log(s3Response);
+      return s3Response;
     } catch (e) {
       console.log(e);
     }
+    return { Location: '' };
   }
 
   async s3_delete(bucket, name) {
