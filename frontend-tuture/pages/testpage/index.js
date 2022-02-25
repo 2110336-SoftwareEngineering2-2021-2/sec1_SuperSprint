@@ -73,12 +73,12 @@ export default function Testpage() {
         </>
       )}
 
-      <div className="ml-auto mr-0 w-fit">
+      {/* <div className="ml-auto mr-0 w-fit">
         <ProfileDropdown
           name="Phusaratisasdfadsl;kjfasdlkf Jong"
           profileImg="http://daisyui.com/tailwind-css-component-profile-1@56w.png"
         />
-      </div>
+      </div> */}
 
       <div className="my-2 flex flex-wrap justify-center gap-4">{temp}</div>
 
