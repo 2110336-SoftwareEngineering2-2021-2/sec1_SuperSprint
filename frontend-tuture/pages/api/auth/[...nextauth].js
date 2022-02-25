@@ -22,11 +22,11 @@ export default nextAuth({
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
         const res = await fetch(
-          `http://${process.env.API_URL}/register/login`,
+          `http://${process.env.API_URL}/auth/login`,
           {
             method: 'POST',
-            mode: 'cors',
-            credentials: 'same-origin',
+            // mode: 'cors',
+            // credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               username: credentials.username,
@@ -38,15 +38,14 @@ export default nextAuth({
 
         // If no error and we have user data, return it
         if (res.ok && user) {
-          console.log(user);
+          // console.log(user);
           return user;
         }
-        // Return null if user data could not be retrieved
+        // console.log(user);
         return null;
       },
     }),
   ],
-  // secret: process.env.JWT_SECRET,
   pages: {
     signIn: '/testpage',
   },
@@ -55,14 +54,16 @@ export default nextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.accessToken = user.access_token;
+        token.user = user.user
       }
-      console.log('token', token);
+      // console.log('token', token);
       return token;
     },
     async session({ session, token }) {
-      console.log(session);
+      // console.log(session);
       session.accessToken = token.accessToken;
-      console.log(session);
+      session.user = token.user;
+      // console.log(session);
       return session;
     },
   },
