@@ -3,6 +3,7 @@ import { Switch, Transition } from '@headlessui/react';
 import Layout from '../../components/Layout';
 import TutorCard from '../../components/TutorCard';
 import ProfileDropdown from '../../components/ProfileDropdown';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 const names = [
   'Adam Benson',
@@ -33,8 +34,45 @@ export default function Testpage() {
     );
   }
 
+  const { data: session } = useSession();
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  console.log(session);
   return (
     <Layout title={'test page'}>
+      {session ? (
+        <>
+          Signed in as {session.user.username} <br />
+          <button onClick={() => signOut()}>Sign out</button>
+        </>
+      ) : (
+        <>
+          Not signed in <br />
+          <input
+            className="input-bordered input"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <input
+            className="input-bordered input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            onClick={() =>
+              signIn('credentials', {
+                username: 's ' + username,
+                password: password,
+              })
+            }
+          >
+            Sign in
+          </button>
+        </>
+      )}
+
       <div className="ml-auto mr-0 w-fit">
         <ProfileDropdown
           name="Phusaratisasdfadsl;kjfasdlkf Jong"
