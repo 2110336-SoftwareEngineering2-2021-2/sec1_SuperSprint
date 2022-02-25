@@ -22,7 +22,7 @@ export function SubjectForm({
             {...hookFormRegister(`subjects.${idx}.subject`)}
             value={subject}
             onChange={(event) => setSubject(event.target.value)}
-            className="select-bordered select-primary select select-sm w-36 max-w-xs sm:w-48 md:select-md"
+            className="select-bordered select-primary select select-sm w-32 max-w-xs sm:w-48 md:select-md"
           >
             <option value="" disabled>
               Select subject
@@ -36,7 +36,7 @@ export function SubjectForm({
           <span>/</span>
           <select
             {...hookFormRegister(`subjects.${idx}.level`)}
-            className="select-bordered select-primary select select-sm w-36 max-w-xs sm:w-48 md:select-md "
+            className="select-bordered select-primary select select-sm w-32 max-w-xs sm:w-48 md:select-md "
             disabled={subject === ''}
           >
             <option value="" disabled>
@@ -65,12 +65,26 @@ export function SubjectForm({
         </button>
       </div>
 
-      {hookFormErrors.subjects && hookFormErrors.subjects[idx] && (
-        <label className="label">
-          <span className="label-text-alt text-error">
-            {hookFormErrors.subjects[idx].message}
-          </span>
-        </label>
+      {hookFormErrors?.subjects && (
+        <div className="mt-2">
+          {hookFormErrors?.subjects[idx]?.message && (
+            <p className="label-text-alt text-error">
+              {hookFormErrors.subjects[idx].message}
+            </p>
+          )}
+          {hookFormErrors?.subjects[idx] &&
+            hookFormErrors?.subjects[idx]?.subject && (
+              <p className="label-text-alt text-error">
+                {hookFormErrors.subjects[idx].subject.message}
+              </p>
+            )}
+          {hookFormErrors?.subjects[idx] &&
+            hookFormErrors?.subjects[idx]?.level && (
+              <p className="label-text-alt text-error">
+                {hookFormErrors.subjects[idx].level.message}
+              </p>
+            )}
+        </div>
       )}
     </div>
   );
@@ -94,13 +108,13 @@ function SubjectListForm({
     append({ ...defaultState });
   }
 
-  useEffect(() => {
-    addField();
-  }, []);
-
   function removeField(idx) {
     remove(idx);
   }
+
+  useEffect(() => {
+    if (fields.length === 0) addField();
+  }, []);
 
   return (
     <div>

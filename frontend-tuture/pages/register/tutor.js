@@ -95,7 +95,7 @@ function TutorRegister({ subjects, avatarSeed }) {
 
   async function submitRegister(data) {
     // event.preventDefault();
-    console.log(data);
+    console.log(data.price);
     console.log('hello');
     // if (!(await validateForm(data))) {
     //   return;

@@ -80,7 +80,7 @@ function AvailabilityListForm({ hookFormControl, maxAvailability }) {
   }
 
   useEffect(() => {
-    addField();
+    if (fields.length === 0) addField();
   }, []);
 
   return (

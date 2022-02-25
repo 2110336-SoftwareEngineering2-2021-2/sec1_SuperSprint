@@ -12,6 +12,26 @@ const MIN_PWD_LENGTH = 8;
 const MAX_PWD_LENGTH = 30;
 const MAX_USERNAME_LENGTH = 30;
 
+yup.addMethod(yup.array, 'unique', function (message) {
+  return this.test('unique', message, function (list) {
+    //var mapperred = []
+    const mapper = (x) => String(x.subject) + String(x.level);
+    //const mapper = [...list];
+    const set = [...new Set(list.map(mapper))];
+    const isUnique = list.length === set.length;
+    if (isUnique) {
+      return true;
+    }
+    const { path, createError } = this;
+    //console.log(`HHH ${path}`);
+    const idx = list.findIndex((l, i) => mapper(l) !== set[i]);
+    return this.createError({
+      path: `${path}.${idx}`,
+      message: message,
+    });
+  });
+});
+
 export const tutorRegisterSchema = yup.object().shape({
   username: yup
     .string()
@@ -55,4 +75,49 @@ export const tutorRegisterSchema = yup.object().shape({
     .string()
     .oneOf(['male', 'female', 'non-binary', 'not_specified'])
     .required(),
+  subjects: yup
+    .array()
+    .of(
+      yup
+        .object({
+          subject: yup
+            .string()
+            .test(
+              'test-subject',
+              'Subject must be selected',
+              function (value, context) {
+                const parent2 = context.from[1];
+                const len = parent2.value.subjects.length;
+                //console.log(parent2, len);
+                //console.log("DDD",parent1,parent2.value.subjects.length);
+                if (value === '' && len === 1) {
+                  return true;
+                } else if (value !== '') {
+                  return true;
+                }
+                return false;
+              }
+            ),
+          level: yup
+            .string()
+            .test(
+              'test-level',
+              'Level must be selected',
+              function (value, context) {
+                const parent2 = context.from[1];
+                const len = parent2.value.subjects.length;
+                //console.log(parent2, len);
+                //console.log("DDD",parent1,parent2.value.subjects.length);
+                if (value === '' && len === 1) {
+                  return true;
+                } else if (value !== '') {
+                  return true;
+                }
+                return false;
+              }
+            ),
+        })
+    )
+    .unique('Duplicate subject and level'),
+    
 });
