@@ -1,7 +1,10 @@
+import { getSession, useSession } from 'next-auth/react';
 import Layout from '../components/Layout';
 import TutorList from '../components/TutorList';
 
 export default function Home({ tutors }) {
+  const { data: session } = useSession();
+  
   return (
     <Layout title="Home | Tuture">
       {/* <h1 className="w-full text-4xl font-bold">Hello</h1>
@@ -13,7 +16,7 @@ export default function Home({ tutors }) {
       </Link> */}
       <div className="px-8">
         <h1 className="mx-auto text-2xl font-bold">
-          Hello, {'Phusaratis Jong'}
+          Hello, {session.user.firstName} {session.user.lastName}
         </h1>
         <div className="divider" />
         {/* <h2>your recommendation</h2> */}
@@ -24,6 +27,17 @@ export default function Home({ tutors }) {
 }
 
 export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/landing',
+        permanent: false,
+      },
+    };
+  }
+  console.log(session.user.firstName);
+
   try {
     const res = await fetch(`http://${process.env.API_URL}/student/recommend`, {
       method: 'POST',
@@ -37,7 +51,7 @@ export async function getServerSideProps(context) {
       }),
     });
     const data = await res.json();
-    
+
     const tutors = data.tutorList.map((item, idx) => {
       return {
         first_name: item.firstName,
@@ -53,11 +67,11 @@ export async function getServerSideProps(context) {
     });
 
     return {
-      props: { tutors },
+      props: { tutors, session },
     };
   } catch (error) {
     return {
-      props: { tutors: [] },
+      props: { tutors: [], session },
     };
   }
 }

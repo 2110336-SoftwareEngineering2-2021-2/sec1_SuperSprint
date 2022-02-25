@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { faBars, faBell, faSearch } from '@fortawesome/free-solid-svg-icons';
 import ProfileDropdown from './ProfileDropdown';
+import { useSession } from 'next-auth/react';
 
 const Navbar = (props) => {
+  const { data: session } = useSession();
   const router = useRouter();
 
   function submitSearch(event) {
@@ -75,10 +77,8 @@ const Navbar = (props) => {
               />
             </button>
             <ProfileDropdown
-              name={'Phusaratis Jong'}
-              profileImg={
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTQeke6GCoBbq9Mni1fnPLP8CapwRFRgx29w'
-              }
+              name={`${session.user.firstName} ${session.user.lastName}`}
+              profileImg={session.user.profileUrl}
             />
           </div>
         </div>
