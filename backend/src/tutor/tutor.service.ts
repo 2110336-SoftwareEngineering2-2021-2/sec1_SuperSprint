@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { SubjectService } from '@src/subject/subject.service';
 import { Model } from 'mongoose';
@@ -315,7 +319,13 @@ export class TutorService {
       updateTutor.phone = phone;
     }
     if (username) {
-      updateTutor.username = username;
+      const user = await this.tutorModel.findOne({ username: username }).exec();
+      if (!user) {
+        //! don't have user use this username
+        updateTutor.username = username;
+      } else {
+        throw new ForbiddenException('duplicate username ');
+      }
     }
     if (password) {
       updateTutor.password = password;
