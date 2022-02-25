@@ -54,7 +54,6 @@ export class AuthController {
     @Body('username') username: string,
     @Body('password') password: string,
     @Body('gender') gender: string,
-    // @Body('profileUrl') profileUrl: string,
     @Body('avgRating') avgRating: number,
     @Body('successMatch') successMatch: number,
     @Body('teachSubject') teachSubject: Array<string>,
@@ -78,7 +77,7 @@ export class AuthController {
       teachSubject,
       priceMin,
       priceMax,
-      dutyTime,
+      newDutyTime,
     );
   }
 

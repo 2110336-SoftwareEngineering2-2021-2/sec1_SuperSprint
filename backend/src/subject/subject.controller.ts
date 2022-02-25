@@ -1,6 +1,7 @@
 import { Controller, Body, Get, Post, Query } from '@nestjs/common';
 import { SubjectService } from './subject.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOkResponse, ApiBody } from '@nestjs/swagger';
+import { Subject } from '../models/subject.model';
 
 @ApiTags('subject')
 @Controller('subject')
@@ -8,12 +9,20 @@ export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
   @Get('getById')
+  @ApiBody({
+    schema: {
+      example: {
+        subjectId: '012345678945641',
+      },
+    },
+  })
   async getSubject(@Body('subjectId') subjectId: string) {
     const subject = await this.subjectService.getName(subjectId);
     return { subject };
   }
 
   @Get('getAllSubjects')
+  @ApiOkResponse({ type: [Subject] })
   async getAllSubjects() {
     const subjects = await this.subjectService.getSubjects();
     return { subjects };
@@ -35,6 +44,23 @@ export class SubjectController {
   async getAllLevels() {
     const levels = await this.subjectService.getLevels();
     return { levels };
+  }
+
+  @Get('getAllSubjectsLevel')
+  @ApiOkResponse({
+    schema: {
+      example: {
+        mathematics: [
+          { highschool: '0123456789' },
+          { '9subjects': '0123456789' },
+        ],
+        pat1: [{ pat: '0123456789' }],
+      },
+    },
+  })
+  async getAllSubjectsLevel() {
+    const result = await this.subjectService.getAllSubjectsLevel();
+    return result;
   }
 
   @Post('create')

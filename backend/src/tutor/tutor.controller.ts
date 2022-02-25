@@ -23,7 +23,13 @@ export class TutorController {
   constructor(private readonly tutorService: TutorService) {}
 
   @Post('search')
-  @ApiParam({ name: 'text', type: String })
+  @ApiBody({
+    schema: {
+      example: {
+        text: 'text to search',
+      },
+    },
+  })
   @ApiOkResponse({ type: [Tutor] })
   searchTutor(@Body('text') text: string): any {
     return this.tutorService.searchTutor(text);

@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 
 export const SubjectSchema = new mongoose.Schema(
   {
@@ -17,9 +18,13 @@ export const SubjectSchema = new mongoose.Schema(
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
-export interface Subject {
+export class Subject {
+  @ApiProperty()
   _id: string;
+  @ApiProperty()
   title: string;
+  @ApiProperty()
   level: string;
+  @ApiProperty()
   description: string;
 }

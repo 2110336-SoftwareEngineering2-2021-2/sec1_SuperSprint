@@ -29,22 +29,32 @@ export class SubjectService {
     return await this.subjectModel.find({ level: level }).lean();
   }
 
+  async getAllSubjectsLevel() {
+    const subjectsName = await this.getSubjectsName();
+    const subjects = await Promise.all(
+      subjectsName.map(async (e) => {
+        const levels = await this.subjectModel
+          .find({ title: e })
+          .distinct('level');
+        const levelUse = await Promise.all(
+          levels.map(async (l) => {
+            const subject = await this.findByTitleAndLevel(e, l);
+            // console.log(subject.id);
+            return { [l]: subject.id };
+          }),
+        );
+
+        return { [e]: levelUse };
+      }),
+    );
+    return subjects.reduce((previousValue, currentValue) => {
+      return { ...previousValue, ...currentValue };
+    });
+  }
+
   async getLevels() {
     const level = await this.subjectModel.find().distinct('level');
     return level;
-  }
-
-  private async findSubject(id: string): Promise<Subject> {
-    let subject;
-    try {
-      subject = await this.subjectModel.findById(id).lean();
-    } catch (error) {
-      throw new NotFoundException('Could not find subject.');
-    }
-    if (!subject) {
-      throw new NotFoundException('Could not find subject.');
-    }
-    return subject;
   }
 
   async insertSubject(title: string, level: string, description: string) {
@@ -59,5 +69,18 @@ export class SubjectService {
 
   async findByTitleAndLevel(title: string, level: string) {
     return await this.subjectModel.findOne({ title: title, level: level });
+  }
+
+  private async findSubject(id: string): Promise<Subject> {
+    let subject;
+    try {
+      subject = await this.subjectModel.findById(id).lean();
+    } catch (error) {
+      throw new NotFoundException('Could not find subject.');
+    }
+    if (!subject) {
+      throw new NotFoundException('Could not find subject.');
+    }
+    return subject;
   }
 }
