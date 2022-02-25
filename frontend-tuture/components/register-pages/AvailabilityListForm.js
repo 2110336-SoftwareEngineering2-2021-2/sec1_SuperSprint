@@ -21,9 +21,11 @@ function AvailabilityForm({
         <Controller
           control={hookFormControl}
           name={`availability.${idx}.from`}
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { onChange, value, ref } }) => (
             <DateTimePicker
               value={value}
+              ref={ref}
+              minDate={new Date()}
               format="y-MM-dd hh:mm a"
               onChange={onChange}
               strictParsing={true}
@@ -35,9 +37,11 @@ function AvailabilityForm({
         <Controller
           control={hookFormControl}
           name={`availability.${idx}.to`}
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { onChange, value, ref } }) => (
             <DateTimePicker
               value={value}
+              ref={ref}
+              minDate={new Date()}
               format="y-MM-dd hh:mm a"
               onChange={onChange}
               strictParsing={true}

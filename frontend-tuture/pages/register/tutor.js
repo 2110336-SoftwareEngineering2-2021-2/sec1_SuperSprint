@@ -59,6 +59,7 @@ function TutorRegister({ subjects, avatarSeed }) {
   //       );
   //     }),
   // });
+  console.log(errors);
 
   async function validateForm(event) {
     const total = availFormVals.length;
@@ -95,8 +96,9 @@ function TutorRegister({ subjects, avatarSeed }) {
 
   async function submitRegister(data) {
     // event.preventDefault();
-    console.log(data.price);
-    console.log('hello');
+    console.log(data);
+    console.log(data.availability);
+    console.log('Pass');
     // if (!(await validateForm(data))) {
     //   return;
     // }
@@ -483,7 +485,7 @@ export async function getServerSideProps(context) {
   );
   try {
     const subjectsRes = await fetch(
-      `http://${process.env.API_URL}/subject/getSubjects`
+      `http://${process.env.API_URL}/subject/getAllSubjectsLevel`
     );
     const subjectsData = await subjectsRes.json();
 

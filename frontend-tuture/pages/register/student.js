@@ -399,7 +399,7 @@ export async function getServerSideProps(context) {
   );
   try {
     const subjectsRes = await fetch(
-      `http://${process.env.API_URL}/subject/getSubjects`
+      `http://${process.env.API_URL}/subject/getAllSubjectsLevel`
     );
     const subjectsData = await subjectsRes.json();
 

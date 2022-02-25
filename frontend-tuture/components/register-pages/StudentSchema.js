@@ -115,7 +115,7 @@ export const studentRegisterSchema = yup.object().shape({
                 const len = parent2.value.subjects.length;
                 //console.log(parent2, len);
                 //console.log("DDD",parent1,parent2.value.subjects.length);
-                if (value === '' && len === 1) {
+                if (value === '' && len === 1 && context.parent.subject === '') {
                   return true;
                 } else if (value !== '') {
                   return true;
