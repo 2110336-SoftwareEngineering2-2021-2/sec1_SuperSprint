@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Tutor } from '../models/tutor.model';
@@ -18,6 +22,7 @@ export class AuthService {
     private readonly s3Service: S3Service,
     private readonly jwtService: JwtService,
   ) {}
+
   async insertStudent(
     firstName,
     lastName,
@@ -29,14 +34,24 @@ export class AuthService {
     image,
     preferSubject,
   ): Promise<any> {
-    const student = await this.studentModel
+    const foundUsername = await this.studentModel
       .findOne({ username: username })
-      .exec();
-
-    if (!student) {
-      const imageUrl = await this.s3Service.uploadFile(image);
+      .lean();
+    const foundEmail = await this.studentModel.findOne({ email: email }).lean();
+    if (foundUsername && foundEmail) {
+      throw new NotFoundException('duplicate username and email');
+    }
+    if (foundUsername) {
+      throw new NotFoundException('duplicate username');
+    }
+    if (foundEmail) {
+      throw new NotFoundException('duplicate email');
+    }
+    const pass = password;
+    try {
+      const imageUrl = await this.s3Service.uploadFile(username, image);
       const saltOrRounds = 10;
-      const hashed_password = await bcrypt.hash(password, saltOrRounds);
+      const hashed_password = await bcrypt.hash(pass, saltOrRounds);
       const newStudent = new this.studentModel({
         firstName: firstName,
         lastName: lastName,
@@ -49,12 +64,14 @@ export class AuthService {
         preferSubject: preferSubject,
       });
       console.log(newStudent);
-      await newStudent.save();
-      return { studentId: newStudent.id };
-    } else {
-      return { studentId: -1 }; //! username duplicate
+      const newS = await newStudent.save();
+      const { password, ...result } = newS.toObject();
+      return result;
+    } catch (err) {
+      throw err;
     }
   }
+
   async insertTutor(
     firstName,
     lastName,
@@ -71,12 +88,24 @@ export class AuthService {
     priceMax,
     dutyTime,
   ): Promise<any> {
-    const tutor = await this.tutorModel.findOne({ username: username }).exec();
-    const imageUrl = await this.s3Service.uploadFile(image);
-    console.log(tutor);
-    if (!tutor) {
+    const foundUsername = await this.tutorModel
+      .findOne({ username: username })
+      .lean();
+    const foundEmail = await this.tutorModel.findOne({ email: email }).lean();
+    if (foundUsername && foundEmail) {
+      throw new NotFoundException('duplicate username and email');
+    }
+    if (foundUsername) {
+      throw new NotFoundException('duplicate username');
+    }
+    if (foundEmail) {
+      throw new NotFoundException('duplicate email');
+    }
+    const pass = password;
+    try {
+      const imageUrl = await this.s3Service.uploadFile(username, image);
       const saltOrRounds = 10;
-      const hashed_password = await bcrypt.hash(password, saltOrRounds);
+      const hashed_password = await bcrypt.hash(pass, saltOrRounds);
       const newTutor = new this.tutorModel({
         firstName: firstName,
         lastName: lastName,
@@ -93,11 +122,12 @@ export class AuthService {
         priceMax: priceMax,
         dutyTime: dutyTime,
       });
-      await newTutor.save();
 
-      return { tutorId: newTutor._id };
-    } else {
-      return { tutorId: -1 };
+      const newT = await newTutor.save();
+      const { password, ...result } = newT.toObject();
+      return result;
+    } catch (err) {
+      throw err;
     }
   }
 
@@ -110,10 +140,10 @@ export class AuthService {
       case 's':
         user = await this.studentModel
           .findOne({ username: newUsername })
-          .exec();
+          .lean();
         break;
       case 't':
-        user = await this.tutorModel.findOne({ username: newUsername }).exec();
+        user = await this.tutorModel.findOne({ username: newUsername }).lean();
         break;
       default:
         break;
@@ -129,10 +159,31 @@ export class AuthService {
     // console.log(pass);
   }
 
-  async login(user: any) {
-    const payload = { username: user.username, sub: user._id };
+  async login(body: any) {
+    let user;
+    switch (body.username.split(' ')[0]) {
+      case 's':
+        user = await this.studentModel
+          .findOne({ username: body.username.split(' ')[1] })
+          .lean();
+        break;
+      case 't':
+        user = await this.tutorModel
+          .findOne({ username: body.username.split(' ')[1] })
+          .lean();
+        break;
+      default:
+        throw new ForbiddenException('wrong user type');
+        break;
+    }
+
+    const { password, ...result } = user;
+    const payload = { username: user.username, id: user._id };
     return {
       access_token: this.jwtService.sign(payload),
+      user: {
+        ...result,
+      },
     };
   }
 }

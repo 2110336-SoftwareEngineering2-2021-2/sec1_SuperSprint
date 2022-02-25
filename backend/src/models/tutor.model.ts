@@ -1,6 +1,5 @@
 import * as mongoose from 'mongoose';
-import { ApiProperty } from '@nestjs/swagger';
-import { UserSchema } from '../models/user.model';
+import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 
 const Schema = mongoose.Schema;
 
@@ -28,6 +27,7 @@ export const TutorSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
+    unique: true,
   },
   password: {
     type: String,
@@ -63,6 +63,7 @@ export class Tutor {
   phone: string;
   @ApiProperty()
   username: string;
+  @ApiHideProperty()
   password: string;
   @ApiProperty()
   gender: string;

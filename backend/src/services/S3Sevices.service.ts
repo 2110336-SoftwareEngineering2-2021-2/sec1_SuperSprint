@@ -9,10 +9,11 @@ export class S3Service {
     secretAccessKey: process.env.AWS_S3_KEY_SECRET,
   });
 
-  async uploadFile(file) {
+  async uploadFile(path, file) {
     const { originalname } = file;
 
     const fileResponse = await this.s3_upload(
+      path,
       file.buffer,
       this.AWS_S3_BUCKET,
       originalname,
@@ -25,10 +26,10 @@ export class S3Service {
     await this.s3_delete(this.AWS_S3_BUCKET, key);
   }
 
-  async s3_upload(file, bucket, name, mimetype) {
+  async s3_upload(path, file, bucket, name, mimetype) {
     const params = {
       Bucket: bucket,
-      Key: String(name),
+      Key: path + '/' + String(name),
       Body: file,
       // ACL: 'public-read',
       ContentType: mimetype,

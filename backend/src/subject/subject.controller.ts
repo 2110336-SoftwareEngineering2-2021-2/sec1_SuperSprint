@@ -1,4 +1,4 @@
-import { Controller, Body, Get, Post, Injectable, Query } from '@nestjs/common';
+import { Controller, Body, Get, Post, Query } from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -13,25 +13,25 @@ export class SubjectController {
     return { id: name };
   }
 
-  @Get('getSubjects')
+  @Get('getAllSubjects')
   async getAllSubjects() {
     const subjects = await this.subjectService.getSubjects();
     return { subjects };
   }
 
-  @Get('getSubjectsByLevel')
+  @Get('getByLevel')
   async getSubjectsByLevel(@Query('level') level: string) {
     const subjects = await this.subjectService.getSubjectsByLevel(level);
     return { subjects };
   }
 
-  @Get('getLevels')
+  @Get('getAllLevels')
   async getAllLevels() {
     const levels = await this.subjectService.getLevels();
     return { levels };
   }
 
-  @Post()
+  @Post('create')
   async addSubject(
     @Body('title') title: string,
     @Body('level') level: string,

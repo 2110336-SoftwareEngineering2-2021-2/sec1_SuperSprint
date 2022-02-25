@@ -12,12 +12,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport'; //! install passport too
 
-@ApiTags()
-@Controller('register')
+@ApiTags('auth')
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('student')
+  @Post('register/student')
   @UseInterceptors(FileInterceptor('image'))
   addStudent(
     @UploadedFile() image: Express.Multer.File,
@@ -43,7 +43,7 @@ export class AuthController {
     );
   }
 
-  @Post('tutor')
+  @Post('register/tutor')
   @UseInterceptors(FileInterceptor('image'))
   addTutor(
     @UploadedFile() image: Express.Multer.File,
@@ -91,7 +91,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Post('test')
   async test(@Request() req) {
-    console.log(req);
-    return 'dfasdf';
+    console.log(req.user.username, req.user.sub);
+    return 'Login sucessfully';
   }
 }

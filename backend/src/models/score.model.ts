@@ -29,11 +29,17 @@ export const ScoreSchema = new mongoose.Schema(
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
-export interface Score {
+export class Score {
+  @ApiProperty()
   _id: string;
+  @ApiProperty()
   tutorId: string;
+  @ApiProperty()
   subjectId: string;
+  @ApiProperty()
   currentScore: number;
+  @ApiProperty()
   maxScore: number;
+  @ApiProperty()
   year: number;
 }

@@ -12,7 +12,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PassportStrategy } from '@nestjs/passport';
 import { TutorService } from './tutor.service';
-import { ApiTags, ApiOkResponse, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOkResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { get } from 'http';
 import { AuthGuard } from '@nestjs/passport';
 import { Tutor } from '../models/tutor.model';
@@ -23,16 +23,18 @@ export class TutorController {
   constructor(private readonly tutorService: TutorService) {}
 
   @Post('search')
-  @ApiParam({
-    name: 'text',
-    type: String,
-  })
+  @ApiParam({ name: 'text', type: String })
   @ApiOkResponse({ type: [Tutor] })
   searchTutor(@Body('text') text: string): any {
     return this.tutorService.searchTutor(text);
   }
 
   @Post('match')
+  @ApiParam({ name: 'subjectName', type: String })
+  @ApiParam({ name: 'level', type: String })
+  @ApiParam({ name: 'priceMin', type: Number })
+  @ApiParam({ name: 'priceMax', type: Number })
+  @ApiParam({ name: 'availabilityStudent', type: Number })
   @ApiOkResponse({ type: [Tutor] })
   async matchTutor(
     @Body('subjectName') subjectName: string,
@@ -65,7 +67,7 @@ export class TutorController {
     @Body('username') username: string,
     @Body('password') password: string,
     @Body('gender') gender: string,
-    @Body('profileUrl') profileUrl: string,
+    @UploadedFile() image: Express.Multer.File,
     @Body('avgRating') avgRating: number,
     @Body('successMatch') successMatch: number,
     @Body('teachSubject') teachSubject: Array<string>,
@@ -80,9 +82,8 @@ export class TutorController {
       email,
       phone,
       username,
-      password,
       gender,
-      profileUrl,
+      image,
       avgRating,
       successMatch,
       teachSubject,
@@ -92,15 +93,19 @@ export class TutorController {
     );
   }
 
-  @Get()
+  @Get('getAllTutors')
   getAllTutors() {
     return this.tutorService.getTutors();
+  }
+  @Get('getById')
+  getTutorById(@Body('id') id: string) {
+    return this.tutorService.getTutorById(id);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('test')
   getTutor(@Body('id') id: string) {
     console.log(id);
-    return this.tutorService.getTutor(id);
+    return this.tutorService.getTutorById(id);
   }
 }

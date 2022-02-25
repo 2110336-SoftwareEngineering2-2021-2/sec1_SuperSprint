@@ -68,7 +68,7 @@
 //   private async findStudent(id: string): Promise<Student> {
 //     let student;
 //     try {
-//       student = await this.studentModel.findById(id).exec();
+//       student = await this.studentModel.findById(id).lean();
 //     } catch (error) {
 //       throw new NotFoundException('Could not find student.');
 //     }

@@ -21,7 +21,7 @@ export class SubjectService {
   }
 
   async getSubjectsByLevel(level: string) {
-    return await this.subjectModel.find({ level: level }).exec();
+    return await this.subjectModel.find({ level: level }).lean();
   }
 
   async getLevels() {
@@ -32,7 +32,7 @@ export class SubjectService {
   private async findSubject(id: string): Promise<Subject> {
     let subject;
     try {
-      subject = await this.subjectModel.findById(id).exec();
+      subject = await this.subjectModel.findById(id).lean();
     } catch (error) {
       throw new NotFoundException('Could not find subject.');
     }
