@@ -12,11 +12,16 @@ export class SubjectService {
 
   async getName(subjectId: string) {
     const subject = await this.findSubject(subjectId);
-    return subject.title;
+    return subject;
+  }
+
+  async getSubjectsName() {
+    const title = await this.subjectModel.find().distinct('title');
+    return title;
   }
 
   async getSubjects() {
-    const title = await this.subjectModel.find().distinct('title');
+    const title = await this.subjectModel.find();
     return title;
   }
 

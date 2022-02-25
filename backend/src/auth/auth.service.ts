@@ -161,16 +161,19 @@ export class AuthService {
 
   async login(body: any) {
     let user;
+    let role;
     switch (body.username.split(' ')[0]) {
       case 's':
         user = await this.studentModel
           .findOne({ username: body.username.split(' ')[1] })
           .lean();
+        role = 'student';
         break;
       case 't':
         user = await this.tutorModel
           .findOne({ username: body.username.split(' ')[1] })
           .lean();
+        role = 'tutor';
         break;
       default:
         throw new ForbiddenException('wrong user type');
@@ -178,6 +181,7 @@ export class AuthService {
     }
 
     const { password, ...result } = user;
+    result.role = role;
     const payload = { username: user.username, id: user._id };
     return {
       access_token: this.jwtService.sign(payload),

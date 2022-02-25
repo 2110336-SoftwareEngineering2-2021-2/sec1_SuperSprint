@@ -60,8 +60,10 @@ export class AuthController {
     @Body('teachSubject') teachSubject: Array<string>,
     @Body('priceMin') priceMin: number,
     @Body('priceMax') priceMax: number,
-    @Body('dutyTime') dutyTime: Array<Array<string>>,
+    @Body('dutyTime') dutyTime: string,
   ): Promise<string> {
+    const newDutyTime = JSON.parse(dutyTime);
+    console.log(newDutyTime);
     return this.authService.insertTutor(
       firstName,
       lastName,
@@ -92,6 +94,13 @@ export class AuthController {
   @Post('test')
   async test(@Request() req) {
     console.log(req.user.username, req.user.sub);
+    return 'Login sucessfully';
+  }
+  @UseInterceptors(FileInterceptor('image'))
+  @Post('test2')
+  async test2(@UploadedFile() image: Express.Multer.File, @Request() req) {
+    console.log(req);
+    // console.log(req.user.username, req.user.sub);
     return 'Login sucessfully';
   }
 }

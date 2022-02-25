@@ -9,13 +9,19 @@ export class SubjectController {
 
   @Get('getById')
   async getSubject(@Body('subjectId') subjectId: string) {
-    const name = await this.subjectService.getName(subjectId);
-    return { id: name };
+    const subject = await this.subjectService.getName(subjectId);
+    return { subject };
   }
 
   @Get('getAllSubjects')
   async getAllSubjects() {
     const subjects = await this.subjectService.getSubjects();
+    return { subjects };
+  }
+
+  @Get('getAllSubjectsName')
+  async getAllSubjectsName() {
+    const subjects = await this.subjectService.getSubjectsName();
     return { subjects };
   }
 

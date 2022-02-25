@@ -9,7 +9,9 @@ import {
 } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { TutorService } from '../tutor/tutor.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags, ApiOkResponse } from '@nestjs/swagger';
+import { Student } from '../models/student.model';
+import { Tutor } from '../models/tutor.model';
 @ApiTags('student')
 @Controller('student')
 export class StudentController {
@@ -19,6 +21,14 @@ export class StudentController {
   ) {}
 
   @Post('recommend')
+  @ApiOkResponse({ type: [Tutor] })
+  @ApiBody({
+    schema: {
+      example: {
+        studentId: '00001',
+      },
+    },
+  })
   async recommendTutor(@Body('studentId') studentId: string) {
     const subjects = await this.studentService.getPreferSubject(studentId);
     const result = await this.tutorService.recommendTutor(subjects);
@@ -26,6 +36,14 @@ export class StudentController {
   }
 
   @Post('chooseTutor')
+  @ApiBody({
+    schema: {
+      example: {
+        studentId: '00001',
+        tutorId: '00001',
+      },
+    },
+  })
   chooseTutor(
     @Body('studentId') studentId: string,
     @Body('tutorId') tutorId: string,
@@ -35,16 +53,33 @@ export class StudentController {
   }
 
   @Get('getAllStudents')
+  @ApiOkResponse({ type: [Student] })
   getAllStudents() {
     return this.studentService.getStudents();
   }
 
-  @Get(':id')
-  getStudentById(@Param('id') id: string) {
+  @Get('getById')
+  @ApiOkResponse({ type: Student })
+  getStudentById(@Body('id') id: string) {
     return this.studentService.getStudentById(id);
   }
 
   @Patch(':id')
+  @ApiBody({
+    schema: {
+      example: {
+        id: '00001',
+        firstName: 'Phu',
+        lastName: 'Jong',
+        email: 'phu@jong.com',
+        phone: '0123456789',
+        username: 'phu.jong',
+        gender: 'm',
+        image: '',
+        preferSubject: [],
+      },
+    },
+  })
   updateStudent(
     @Param('id') id: string,
     @Body('firstName') firstName: string,

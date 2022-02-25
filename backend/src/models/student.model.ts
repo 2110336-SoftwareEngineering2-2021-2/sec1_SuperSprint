@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import { UserSchema } from '../models/user.model';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 
 const Schema = mongoose.Schema;
 
@@ -48,15 +48,25 @@ export const StudentSchema = new mongoose.Schema({
   ],
 });
 
-export interface Student {
+export class Student {
+  @ApiProperty()
   _id: string;
+  @ApiProperty()
   firstName: string;
+  @ApiProperty()
   lastName: string;
+  @ApiProperty()
   email: string;
+  @ApiProperty()
   phone: string;
+  @ApiProperty()
   username: string;
+  @ApiHideProperty()
   password: string;
+  @ApiProperty()
   gender: string;
+  @ApiProperty()
   profileUrl: string;
+  @ApiProperty()
   preferSubject: Array<string>;
 }
