@@ -10,8 +10,9 @@ function AvatarUpload({
   hookFormControl,
   hookFormSetValue,
   firstName = 'John',
+  defaultValue = ''
 }) {
-  const [uploaded, setUploaded] = useState(false);
+  const [uploaded, setUploaded] = useState(defaultValue !== '');
 
   useEffect(async () => {
     const fallbackAvatarUri = createAvatar(style, {
@@ -48,7 +49,7 @@ function AvatarUpload({
       control={hookFormControl}
       name={`avatar`}
       defaultValue={{
-        preview: '',
+        preview: defaultValue,
         name: 'avatar',
       }}
       render={({ field: { onChange, value } }) => (

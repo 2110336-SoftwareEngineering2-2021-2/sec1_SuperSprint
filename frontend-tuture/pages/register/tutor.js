@@ -1,6 +1,5 @@
 // import Multiselect from 'multiselect-react-dropdown';
 import { useState } from 'react';
-import Slider from 'rc-slider';
 import zxcvbn from 'zxcvbn';
 import Layout from '../../components/Layout';
 import {
@@ -25,7 +24,7 @@ import SubjectListForm from '../../components/register-pages/SubjectListForm';
 import AvailabilityListForm from '../../components/register-pages/AvailabilityListForm';
 import PriceRangeForm from '../../components/register-pages/PriceRangeForm';
 
-function TutorRegister({ subjects, avatarSeed }) {
+function TutorRegister({ subjects }) {
   const [password, setPassword] = useState({ password: '', score: 0 });
   const [firstName, setFirstName] = useState('');
   const {
@@ -34,6 +33,7 @@ function TutorRegister({ subjects, avatarSeed }) {
     formState: { errors },
     control,
     setValue,
+    watch,
     reset,
   } = useForm({
     resolver: yupResolver(tutorRegisterSchema),
@@ -283,7 +283,6 @@ function TutorRegister({ subjects, avatarSeed }) {
                 hookFormControl={control}
                 hookFormSetValue={setValue}
                 firstName={firstName}
-                avatarSeed={avatarSeed}
               />
               <p className="text-xs">Click or drop here to upload</p>
             </div>
@@ -426,6 +425,7 @@ function TutorRegister({ subjects, avatarSeed }) {
             hookFormRegister={register}
             hookFormErrors={errors}
             hookFormControl={control}
+            hookFormWatch={watch}
             subjects={subjects}
             maxSubject={MAX_SUBJECT}
           />
@@ -480,9 +480,6 @@ function TutorRegister({ subjects, avatarSeed }) {
 }
 
 export async function getServerSideProps(context) {
-  const avatarSeed = String.fromCharCode(
-    Math.floor(Math.random() * 26) + 'A'.charCodeAt(0)
-  );
   try {
     const subjectsRes = await fetch(
       `http://${process.env.API_URL}/subject/getAllSubjectsLevel`
@@ -491,20 +488,30 @@ export async function getServerSideProps(context) {
 
     return {
       props: {
-        subjects: subjectsData.subjects,
-        avatarSeed: avatarSeed,
+        subjects: subjectsData,
       },
     };
   } catch (error) {
     return {
       props: {
         subjects: {
-          Mathmetic: ['Middle School', 'High School'],
-          Physic: ['Middle School', 'High School'],
-          Biology: ['Middle School', 'High School'],
-          English: ['Middle School', 'High School'],
+          Mathmetic: [
+            { level: 'Middle School', id: '293817589231576' },
+            { level: 'High School', id: '2309512231698' },
+          ],
+          Physic: [
+            { level: 'Middle School', id: '293817589231576' },
+            { level: 'High School', id: '2309512231698' },
+          ],
+          Biology: [
+            { level: 'Middle School', id: '293817589231576' },
+            { level: 'High School', id: '2309512231698' },
+          ],
+          English: [
+            { level: 'Middle School', id: '293817589231576' },
+            { level: 'High School', id: '2309512231698' },
+          ],
         },
-        avatarSeed: avatarSeed,
       },
     };
   }

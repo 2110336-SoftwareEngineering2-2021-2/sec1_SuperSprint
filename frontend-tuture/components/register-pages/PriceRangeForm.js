@@ -4,8 +4,8 @@ import { MAX_PRICE, MIN_PRICE } from './Constants';
 
 const defaultState = [2000, 4500];
 
-function PriceRangeForm({ hookFormRegister }) {
-  const [priceRange, setPriceRange] = useState([...defaultState]);
+function PriceRangeForm({ hookFormRegister, defaultValue = [...defaultState] }) {
+  const [priceRange, setPriceRange] = useState([...defaultValue]);
 
   function setMinPriceRange(event) {
     let newPriceRange = [...priceRange];

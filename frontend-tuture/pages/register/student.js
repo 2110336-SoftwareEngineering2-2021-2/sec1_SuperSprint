@@ -20,7 +20,7 @@ import {
 } from '../../components/register-pages/Constants';
 import SubjectListForm from '../../components/register-pages/SubjectListForm';
 
-function StudentRegister({ subjects, avatarSeed }) {
+function StudentRegister({ subjects }) {
   const [password, setPassword] = useState({ password: '', score: 0 });
   const [firstName, setFirstName] = useState('');
   const {
@@ -29,6 +29,7 @@ function StudentRegister({ subjects, avatarSeed }) {
     setValue,
     handleSubmit,
     formState: { errors },
+    watch,
     reset,
   } = useForm({
     resolver: yupResolver(studentRegisterSchema),
@@ -49,7 +50,7 @@ function StudentRegister({ subjects, avatarSeed }) {
 
   async function submitRegister(data) {
     // event.preventDefault();
-    console.log("Pass");
+    console.log('Pass');
     console.log(data);
     // const formData = new FormData();
     // console.log(data.avatar.file);
@@ -236,7 +237,6 @@ function StudentRegister({ subjects, avatarSeed }) {
                 hookFormControl={control}
                 hookFormSetValue={setValue}
                 firstName={firstName}
-                avatarSeed={avatarSeed}
               />
               <p className="text-xs">Click or drop here to upload</p>
             </div>
@@ -379,6 +379,7 @@ function StudentRegister({ subjects, avatarSeed }) {
             hookFormRegister={register}
             hookFormErrors={errors}
             hookFormControl={control}
+            hookFormWatch={watch}
             subjects={subjects}
             maxSubject={MAX_SUBJECT}
           />
@@ -394,9 +395,6 @@ function StudentRegister({ subjects, avatarSeed }) {
 }
 
 export async function getServerSideProps(context) {
-  const avatarSeed = String.fromCharCode(
-    Math.floor(Math.random() * 26) + 'A'.charCodeAt(0)
-  );
   try {
     const subjectsRes = await fetch(
       `http://${process.env.API_URL}/subject/getAllSubjectsLevel`
@@ -405,20 +403,30 @@ export async function getServerSideProps(context) {
 
     return {
       props: {
-        subjects: subjectsData.subjects,
-        avatarSeed: avatarSeed,
+        subjects: subjectsData,
       },
     };
   } catch (error) {
     return {
       props: {
         subjects: {
-          Mathmetic: ['Middle School', 'High School'],
-          Physic: ['Middle School', 'High School'],
-          Biology: ['Middle School', 'High School'],
-          English: ['Middle School', 'High School'],
+          Mathmetic: [
+            { level: 'Middle School', id: '293817589231576' },
+            { level: 'High School', id: '2309512231698' },
+          ],
+          Physic: [
+            { level: 'Middle School', id: '293817589231576' },
+            { level: 'High School', id: '2309512231698' },
+          ],
+          Biology: [
+            { level: 'Middle School', id: '293817589231576' },
+            { level: 'High School', id: '2309512231698' },
+          ],
+          English: [
+            { level: 'Middle School', id: '293817589231576' },
+            { level: 'High School', id: '2309512231698' },
+          ],
         },
-        avatarSeed: avatarSeed,
       },
     };
   }

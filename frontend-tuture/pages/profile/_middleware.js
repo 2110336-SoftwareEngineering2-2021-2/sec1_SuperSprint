@@ -5,7 +5,7 @@ export async function middleware(req, ev) {
   const url = req.nextUrl.clone();
   // 'secret' should be the same 'process.env.SECRET' use in NextAuth function
   const session = await getToken({ req: req, secret: process.env.NEXTAUTH_SECRET });
-  console.log('session in middleware: ', session);
+  // console.log('session in middleware: ', session);
 
   if(url.pathname !== '/profile') return NextResponse.next();
 

@@ -67,10 +67,14 @@ function AvailabilityForm({
   );
 }
 
-const defaultState = { from: null, to: null };
+const defaultState = [{ from: null, to: null }];
 
-function AvailabilityListForm({ hookFormControl, maxAvailability }) {
-  const { fields, append, remove } = useFieldArray({
+function AvailabilityListForm({
+  hookFormControl,
+  maxAvailability,
+  defaultValues = [...defaultState],
+}) {
+  const { fields, append, remove, replace } = useFieldArray({
     control: hookFormControl,
     name: 'availability',
   });
@@ -84,7 +88,7 @@ function AvailabilityListForm({ hookFormControl, maxAvailability }) {
   }
 
   useEffect(() => {
-    if (fields.length === 0) addField();
+    if (fields.length === 0) replace([...defaultValues]);
   }, []);
 
   return (

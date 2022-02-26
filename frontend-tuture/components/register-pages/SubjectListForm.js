@@ -7,12 +7,13 @@ export function SubjectForm({
   subjects,
   hookFormRegister,
   hookFormErrors,
+  hookFormWatch,
   idx,
   onButtonClick,
   lastElement,
   reactMax,
 }) {
-  const [subject, setSubject] = useState('');
+  const subject = hookFormWatch(`subjects.${idx}.subject`);
 
   return (
     <div className={`${lastElement ? '' : 'mb-4'}`}>
@@ -20,8 +21,6 @@ export function SubjectForm({
         <div className="flex w-fit flex-row items-center gap-1 xs:gap-2">
           <select
             {...hookFormRegister(`subjects.${idx}.subject`)}
-            value={subject}
-            onChange={(event) => setSubject(event.target.value)}
             className="select-bordered select-primary select select-sm w-32 max-w-xs sm:w-48 md:select-md"
           >
             <option value="" disabled>
@@ -43,9 +42,9 @@ export function SubjectForm({
               Select level
             </option>
             {subject !== '' &&
-              subjects[subject].map((e, idx) => (
-                <option key={idx} value={e}>
-                  {e}
+              subjects[subject]?.map((e, idx) => (
+                <option key={idx} value={e.id}>
+                  {e.level}
                 </option>
               ))}
           </select>
@@ -96,16 +95,18 @@ function SubjectListForm({
   hookFormRegister,
   hookFormControl,
   hookFormErrors,
+  hookFormWatch,
   subjects,
   maxSubject,
+  defaultValues = [{...defaultState}]
 }) {
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control: hookFormControl,
     name: 'subjects',
   });
 
-  function addField() {
-    append({ ...defaultState });
+  function addField(value) {
+    append(value);
   }
 
   function removeField(idx) {
@@ -113,7 +114,7 @@ function SubjectListForm({
   }
 
   useEffect(() => {
-    if (fields.length === 0) addField();
+    if (fields.length === 0) replace([...defaultValues]);
   }, []);
 
   return (
@@ -124,11 +125,12 @@ function SubjectListForm({
           subjects={subjects}
           hookFormRegister={hookFormRegister}
           hookFormErrors={hookFormErrors}
+          hookFormWatch={hookFormWatch}
           idx={idx}
           lastElement={idx === fields.length - 1}
           reactMax={fields.length === maxSubject}
           onButtonClick={
-            idx === fields.length - 1 ? addField : () => removeField(idx)
+            idx === fields.length - 1 ? () => addField({...defaultState}) : () => removeField(idx)
           }
         />
       ))}
