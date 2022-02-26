@@ -140,12 +140,7 @@ export default function Login() {
                      onClick={() => signIn('credentials',{
                        username: username,
                        password: password
-                     }, { callbackUrl: "/" })
-
-                      // signIn('credentials', {
-                      //   username: role + username,
-                      //   password: password
-                      // })
+                     })
                     }
                      />
                 </div>

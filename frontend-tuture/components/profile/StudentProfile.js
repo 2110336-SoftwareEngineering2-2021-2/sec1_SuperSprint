@@ -1,49 +1,61 @@
-import React from 'react'
+import React from 'react';
 import Image from 'next/image';
 // import LineImage from '../../public/images/Yellow-Vertical-Line.svg';
 
-
 export default function StudentProfile({
-    studentName,
-    gender,
-    birthDate,
-    phoneNumber,
-    preferredSubjects,
-    imgUrl
+  username,
+  e_mail,
+  studentName,
+  gender,
+  birthDate,
+  phoneNumber,
+  preferredSubjects,
+  imgUrl,
 }) {
   return (
-    <div className="card lg:card-side card-bordered border-primary flex bg-base-200 shadow-xl my-10 mx-auto border-solid">
-        <div className="flex-1 card-body p-5 m-10 px-10 align-middle">
-            <div className="flex flex-col justify-center items-center">
-            <div className="w-50 h-50">
-            <Image src={imgUrl} alt="line" objectFit="contain" width={300} height={300} />
-            </div>
-            <div className="flex-col items-center place-items-center my-5 space-y-5">
-                <h1 className="card-title">Username: johndoe</h1>
-                <h1 className="card-title">E-mail : johndoe@gmail.com</h1>
-            </div>
-            </div>
+    <div className="container my-10 mx-auto flex max-w-3xl flex-col border-solid border-primary bg-base-200 p-4 shadow-xl md:flex-row">
+      <div className="flex flex-[2] flex-col items-center justify-center gap-2">
+        <div className="avatar">
+          <div className="m-2 w-40 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100 md:w-48">
+            <img src="https://api.lorem.space/image/face?hash=3174" />
+          </div>
         </div>
-        <div className="divider-horizontal w-1 bg-primary my-7 mr-20"></div>
-        {/* <div className="h-[225px] w-[400px]">
+        <div className="mx-auto w-fit">
+          <p>Username: {username}</p>
+          <p>E-mail : {e_mail}</p>
+        </div>
+      </div>
+      <div className="divider divider-vertical md:divider-horizontal"></div>
+      {/* <div className="h-[225px] w-[400px]">
             <Image src={LineImage} alt="line" width="20%" objectFit="contain" layout="fill" />
         </div> */}
-        <div className="flex-1 card-body align-middle justify-center space-y-8">
-            <h1 className="card-title">Name : {studentName}</h1>
-            <h1 className="card-title">Gender : {gender}</h1>
-            <h1 className="card-title">Birthdate : {birthDate}</h1>
-            <h1 className="card-title">Phone number : {phoneNumber}</h1>
-            <h1 className="card-title">Preferred subjects : 
-            <ul className="flex space-x-2">
-                {preferredSubjects.map(subject => {
-                    return <li key={subject}>{subject}</li>
-                })}
-            </ul>
+      <div className="mx-4 my-4 flex flex-1 flex-col items-start gap-1 md:mx-0">
+        <p>Name</p>
+        <p>Gender</p>
+        <p>Birthdate</p>
+        <p>Phone number</p>
+        <p>Preferred subjects</p>
+        {/* <ul className="ml-6 list-disc">
+          {preferredSubjects?.map((subject, idx) => {
+            return <li key={idx}>{subject}</li>;
+          })}
+        </ul> */}
 
-            </h1>
-            
-            {/* <div className="justify-end card-actions"></div></div> */}
-        </div>
+        {/* <div className="justify-end card-actions"></div></div> */}
+      </div>
+      <div className="mx-4 my-4 flex flex-1 flex-col items-start gap-1 md:mx-0">
+        <p>{studentName}</p>
+        <p>{gender}</p>
+        <p>{birthDate}</p>
+        <p>{phoneNumber}</p>
+        <ul className="ml-6 list-disc">
+          {preferredSubjects?.map((subject, idx) => {
+            return <li key={idx}>{subject}</li>;
+          })}
+        </ul>
+
+        {/* <div className="justify-end card-actions"></div></div> */}
+      </div>
     </div>
-  )
+  );
 }
