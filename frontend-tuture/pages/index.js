@@ -9,7 +9,7 @@ export default function Home({ tutors }) {
     <Layout title="Home | Tuture">
       <div className="px-8">
         <h1 className="mx-auto text-2xl font-bold">
-          Hello, {session.user.firstName} {session.user.lastName}
+          Hello, {session?.user?.firstName} {session?.user?.lastName}
         </h1>
         <div className="divider" />
         {/* <h2>your recommendation</h2> */}

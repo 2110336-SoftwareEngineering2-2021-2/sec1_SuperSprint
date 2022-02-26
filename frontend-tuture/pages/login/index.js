@@ -42,6 +42,13 @@ export default function Login() {
     // function handlePassword(event) {
     //   setPassword(event.target.value);
     // }
+    function testRouter() {
+      signIn('credentials', {
+        username: 's ' + username,
+        password: password,
+      });
+      router.push('/testpage');
+    }
 
   return (
     <Layout title="Login | Tuture" signedIn={false}>
@@ -137,11 +144,7 @@ export default function Login() {
                 {/* <br/> */}
                 <div className="flex w-full justify-center">
                     <input type="submit" className="btn btn-primary" value="Sign In"
-                     onClick={() => signIn('credentials',{
-                       username: username,
-                       password: password
-                     })
-                    }
+                     onClick={testRouter}
                      />
                 </div>
           {/* </form> */}
@@ -150,9 +153,11 @@ export default function Login() {
                 <Link href="../register" passHref>
                     <button class="astext">Sign Up</button>
                 </Link>
+                {/* {session &&
                 <button onClick={() => signOut()}>
                   Log out
                 </button>
+                } */}
         </div>
     </Layout>
   );

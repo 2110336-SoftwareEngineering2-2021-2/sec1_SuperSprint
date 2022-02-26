@@ -1,9 +1,10 @@
-import TutorProfile from '../../../components/profile/TutorProfile';
+import TutorProfile from '../../components/profile/TutorProfile';
 
 import React from 'react';
-import Layout from '../../../components/Layout';
-import TutorImage from '../../../public/images/President-Putin.png';
+import Layout from '../../components/Layout';
+import TutorImage from '../../public/images/President-Putin.png';
 import { useRouter } from 'next/router';
+  
 
 // function getTutorData(tutorId) {
 
