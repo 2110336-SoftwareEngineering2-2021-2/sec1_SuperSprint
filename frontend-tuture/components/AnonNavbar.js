@@ -7,6 +7,7 @@ import Link from 'next/link';
 const AnonNavbar = ({ children }) => {
   const { theme, setTheme } = useTheme();
 
+
   return (
     <>
       <div className="navbar top-0 z-50 w-full text-neutral-content shadow-md shadow-primary-focus/25">
@@ -16,6 +17,8 @@ const AnonNavbar = ({ children }) => {
               Tuture
             </button>
           </Link>
+          <div>
+          </div>
         </div>
 
         <div className="flex flex-none items-center">
