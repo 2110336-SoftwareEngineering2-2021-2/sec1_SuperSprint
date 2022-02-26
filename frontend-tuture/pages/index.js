@@ -2,6 +2,7 @@ import Layout from '../components/Layout';
 import TutorList from '../components/TutorList';
 
 export default function Home({ tutors }) {
+
   return (
     <Layout title="Home | Tuture">
       {/* <h1 className="w-full text-4xl font-bold">Hello</h1>
