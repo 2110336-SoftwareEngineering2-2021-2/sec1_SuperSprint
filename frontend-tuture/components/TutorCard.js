@@ -67,7 +67,7 @@ export default function TutorCard({
           </p>
           <p className="cursor-default text-sm text-base-content text-opacity-80 selection:bg-primary sm:text-base">
             <FontAwesomeIcon size="sm" icon={faDollarSign} fixedWidth />{' '}
-            {`${price.min} - ${price.max} baht/hr`}
+            {`${price.min || 'undefined'} - ${price.max || 'undefined'} baht/hr`}
           </p>
         </div>
         <div className="inline-flex select-none flex-col justify-between p-2">

@@ -34,8 +34,7 @@ export async function getServerSideProps(context) {
         first_name: item.firstName,
         last_name: item.lastName,
         tutor_id: item._id,
-        profileImg:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTQeke6GCoBbq9Mni1fnPLP8CapwRFRgx29w',
+        profileImg: item.profileUrl,
         subjects: item.teachSubject.map((e) => e.title),
         levels: Array.from(new Set(item.teachSubject.map((e) => e.level))),
         rating: item.avgRating,
