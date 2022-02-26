@@ -21,6 +21,7 @@
     "moment": "^2.29.1",
     "multiselect-react-dropdown": "^2.0.17",
     "next": "^12.1.0",
+    "next-auth": "^4.2.1",
     "next-themes": "^0.1.1",
     "nextjs-progressbar": "0.0.13",
     "rc-slider": "^9.7.5",
