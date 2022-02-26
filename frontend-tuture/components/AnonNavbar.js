@@ -1,5 +1,6 @@
 import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { signIn } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 
@@ -32,11 +33,9 @@ const AnonNavbar = ({ children }) => {
             <FontAwesomeIcon fixedWidth icon={faMoon} className="swap-on" />
           </label>
           <div className="divider divider-horizontal"></div>
-          <Link href="/login">
-            <a className="w-20 min-w-fit text-center text-sm normal-case text-base-content transition-colors hover:text-primary-focus sm:w-24 sm:text-base">
-              Log In
-            </a>
-          </Link>
+          <a onClick={() => signIn()} className="w-20 min-w-fit text-center text-sm normal-case text-base-content transition-colors hover:text-primary-focus sm:w-24 sm:text-base cursor-pointer">
+            Log In
+          </a>
           <Link href="/register">
             <a className="btn btn-primary btn-sm w-20 text-sm normal-case text-primary-content sm:btn-md sm:w-24 sm:text-base">
               Register

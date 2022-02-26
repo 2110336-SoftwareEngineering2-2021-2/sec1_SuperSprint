@@ -7,6 +7,7 @@ import {
   faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 
@@ -70,12 +71,10 @@ function ProfileDropdown({ name, profileImg }) {
           </Link>
         </li>
         <li>
-          <Link href="/logout">
-            <a>
-              <FontAwesomeIcon fixedWidth icon={faSignOutAlt} />
-              Logout
-            </a>
-          </Link>
+          <a onClick={signOut}>
+            <FontAwesomeIcon fixedWidth icon={faSignOutAlt} />
+            Logout
+          </a>
         </li>
       </ul>
     </div>

@@ -1,99 +1,70 @@
-import NextAuth from "next-auth/next";
-import CredentialsProvider from "next-auth/providers/credentials";
+import nextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
-export default NextAuth({
-    providers: [
-        CredentialsProvider({
-            name: "credentials",
-            credentials: {
-            username: { label: "Username", type: "username", placeholder: "test" },
-            password: {  label: "Password", type: "password" }
-            },
-            async authorize(credentials,req) {
-
-                const res = await fetch(`http://${process.env.API_URL}/api/auth/login`,{
-                    method: 'POST',
-                    body: JSON.stringify(credentials),
-                    headers: {'Content-Type':'application/json'}
-                });
-
-                const user = await res.json();
-
-
-                if (res.ok && user) {
-                    return user;
-                }
-
-                return null;
-
-
-                // if (credentials.username === "aof123" && credentials.password === "123456") {
-                //     return {
-                //         id:1,
-                //         name:"aof",
-                //     }
-                // }
-                
-                // return null
-            
-        }})
-    ],
-    pages: {
-        signIn: '/login'
-    },
-
-    // secret: "test",
-    // jwt: {
-    //     secret: "test",
-    //     encryption: true
-    // },
-    // callbacks: {
-    //     redirect({ url, baseUrl   }) {
-    //       if (url.startsWith(baseUrl)) return url
-    //       // Allows relative callback URLs
-    //       else if (url.startsWith("/")) return new URL(url, baseUrl).toString()
-    //       return baseUrl
-    //     }
-    //   }
-    secret: process.env.JWT_SECRET,
-    callbacks: {
-        async jwt({ token, user, account }) {
-          if (account && user) {
-            return {
-              ...token,
-              accessToken: user.data.token,
-              refreshToken: user.data.refreshToken,
-            };
-          }
-    
-          return token;
-        },
-    
-        async session({ session, token }) {
-          session.user.accessToken = token.accessToken;
-          session.user.refreshToken = token.refreshToken;
-          session.user.accessTokenExpires = token.accessTokenExpires;
-    
-          return session;
-        },
+export default nextAuth({
+  providers: [
+    CredentialsProvider({
+      // The name to display on the sign in form (e.g. 'Sign in with...')
+      name: 'Credentials',
+      // The credentials is used to generate a suitable form on the sign in page.
+      // You can specify whatever fields you are expecting to be submitted.
+      // e.g. domain, username, password, 2FA token, etc.
+      // You can pass any HTML attribute to the <input> tag through the object.
+      credentials: {
+        username: { label: 'Username', type: 'text', placeholder: 'jsmith' },
+        password: { label: 'Password', type: 'password' },
       },
+      async authorize(credentials, req) {
+        // You need to provide your own logic here that takes the credentials
+        // submitted and returns either a object representing a user or value
+        // that is false/null if the credentials are invalid.
+        // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
+        // You can also use the `req` object to obtain additional parameters
+        // (i.e., the request IP address)
+        const res = await fetch(
+          `http://${process.env.API_URL}/auth/login`,
+          {
+            method: 'POST',
+            // mode: 'cors',
+            // credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: credentials.username,
+              password: credentials.password,
+            }),
+          }
+        );
+        const user = await res.json();
 
-    // callbacks: {
-    //     jwt: ({token, user}) => {
-    //         if (user) {
-    //             token.id = user.id;
-    //         }
-
-    //         return token;
-    //     },
-    //     session: ({session,token}) => {
-    //         if (token) {
-    //             session.id = token.id;
-    //         }
-
-    //         return session;
-    //     }
-    // },
-
-
-})
+        // If no error and we have user data, return it
+        if (res.ok && user) {
+          // console.log(user);
+          return user;
+        }
+        // console.log(user);
+        return null;
+      },
+    }),
+  ],
+  pages: {
+    signIn: '/testpage',
+  },
+  session: { strategy: 'jwt' },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.accessToken = user.access_token;
+        token.user = user.user
+      }
+      // console.log('token', token);
+      return token;
+    },
+    async session({ session, token }) {
+      // console.log(session);
+      session.accessToken = token.accessToken;
+      session.user = token.user;
+      // console.log(session);
+      return session;
+    },
+  },
+});

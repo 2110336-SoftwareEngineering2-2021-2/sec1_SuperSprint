@@ -11,17 +11,17 @@ import NextNProgress from 'nextjs-progressbar';
 import { SessionProvider } from 'next-auth/react';
 config.autoAddCss = false;
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
-    <SessionProvider>
-    <ThemeProvider>
-      <NavbarControl signedIn={false}>
-        <NextNProgress color="#ffc400" options={{ parent: 'main' }} />
-        <Component {...pageProps} />
-      </NavbarControl>
-    </ThemeProvider>
-   </SessionProvider>
-    );
+    <SessionProvider session={session}>
+      <ThemeProvider>
+        <NavbarControl signedIn={false}>
+          <NextNProgress color="#ffc400" options={{ parent: 'main' }} />
+          <Component {...pageProps} />
+        </NavbarControl>
+      </ThemeProvider>
+    </SessionProvider>
+  );
 }
 
 export default MyApp;

@@ -352,11 +352,11 @@ function Matching({ subjects, levels }) {
 export async function getServerSideProps(context) {
   try {
     const subjectsRes = await fetch(
-      `http://${process.env.API_URL}/subject/getSubjects`
+      `http://${process.env.API_URL}/subject/getAllSubjectsName`
     );
     const subjectsData = await subjectsRes.json();
     const levelsRes = await fetch(
-      `http://${process.env.API_URL}/subject/getLevels`
+      `http://${process.env.API_URL}/subject/getAllLevels`
     );
     const levelsData = await levelsRes.json();
 
