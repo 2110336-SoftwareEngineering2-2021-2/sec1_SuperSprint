@@ -21,8 +21,10 @@ import {
 import SubjectListForm from '../../components/register-pages/SubjectListForm';
 
 function StudentRegister({ subjects }) {
-  const [password, setPassword] = useState({ password: '', score: 0 });
-  const [firstName, setFirstName] = useState('');
+  const [passwordState, setPasswordState] = useState({
+    password: '',
+    score: 0,
+  });
   const {
     register,
     control,
@@ -32,20 +34,23 @@ function StudentRegister({ subjects }) {
     watch,
     reset,
   } = useForm({
+    defaultValues: {
+      username: '',
+      new_password: '',
+      new_password_confirm: '',
+      first_name: '',
+      last_name: '',
+      email: '',
+      phone: '',
+      gender: '',
+      subjects: [{ subject: '', level: '' }],
+    },
     resolver: yupResolver(studentRegisterSchema),
   });
 
-  function onPasswordChange(event) {
-    const newPassword = event.target.value;
+  function onPasswordChange(newPassword) {
     const evaluation = zxcvbn(newPassword);
-    setPassword({ password: newPassword, score: evaluation.score });
-  }
-
-  async function validateForm(event) {
-    const total = availFormVals.length;
-    var notError = true;
-
-    return notError;
+    setPasswordState({ password: newPassword, score: evaluation.score });
   }
 
   async function submitRegister(data) {
@@ -117,13 +122,12 @@ function StudentRegister({ subjects }) {
               <input
                 type="password"
                 className="input-bordered input-primary input w-full max-w-xs"
-                {...register('new_password')}
+                {...register('new_password', {
+                  onChange: (e) => onPasswordChange(e.target.value),
+                })}
                 id="new_password"
                 placeholder="Enter Password"
                 autoComplete="new-password"
-                required
-                value={password.password}
-                onChange={onPasswordChange}
               />
               {errors.new_password && (
                 <label className="label">
@@ -137,8 +141,8 @@ function StudentRegister({ subjects }) {
                   <div key={idx} className="w-1/5 px-1">
                     <div
                       className={`h-2 rounded-xl ${
-                        password.score !== 0 && password.score >= idx
-                          ? METER_BG_COLOR[password.score]
+                        passwordState.score !== 0 && passwordState.score >= idx
+                          ? METER_BG_COLOR[passwordState.score]
                           : 'bg-base-300'
                       } transition-colors`}
                     ></div>
@@ -147,18 +151,18 @@ function StudentRegister({ subjects }) {
               </div>
               <p
                 className={`max-w-xs text-right ${
-                  METER_TEXT_COLOR[password.score]
+                  METER_TEXT_COLOR[passwordState.score]
                 } ${
-                  password.password.length === 0 ? 'invisible' : 'visible'
+                  passwordState.password.length === 0 ? 'invisible' : 'visible'
                 } text-sm transition-all `}
               >
-                {PWD_STRENGTH[password.score]}
+                {PWD_STRENGTH[passwordState.score]}
               </p>
               <ul className="ml-8 list-disc">
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    password.password.length >= MIN_PWD_LENGTH
+                    passwordState.password.length === 0 ||
+                    passwordState.password.length >= MIN_PWD_LENGTH
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -167,8 +171,8 @@ function StudentRegister({ subjects }) {
                 </li>
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    uppercaseRegex.test(password.password)
+                    passwordState.password.length === 0 ||
+                    uppercaseRegex.test(passwordState.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -177,8 +181,8 @@ function StudentRegister({ subjects }) {
                 </li>
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    lowercaseRegex.test(password.password)
+                    passwordState.password.length === 0 ||
+                    lowercaseRegex.test(passwordState.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -187,8 +191,8 @@ function StudentRegister({ subjects }) {
                 </li>
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    numberRegex.test(password.password)
+                    passwordState.password.length === 0 ||
+                    numberRegex.test(passwordState.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -197,8 +201,8 @@ function StudentRegister({ subjects }) {
                 </li>
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    specialCharRegex.test(password.password)
+                    passwordState.password.length === 0 ||
+                    specialCharRegex.test(passwordState.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -236,7 +240,7 @@ function StudentRegister({ subjects }) {
               <AvatarUpload
                 hookFormControl={control}
                 hookFormSetValue={setValue}
-                firstName={firstName}
+                hookFormWatch={watch}
               />
               <p className="text-xs">Click or drop here to upload</p>
             </div>
@@ -260,8 +264,6 @@ function StudentRegister({ subjects }) {
                 id="first_name"
                 placeholder="Enter First name"
                 autoComplete="given-name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
                 required
               />
               {errors.first_name && (

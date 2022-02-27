@@ -34,7 +34,7 @@ export async function getServerSideProps(context) {
       // `http://${process.env.API_URL}/subject/getSubjects`
       `http://${process.env.API_URL}/subject/getLe`
     );
-    const data = await usernameRes.json();
+    const data = await res.json();
 
     return {
       props: {

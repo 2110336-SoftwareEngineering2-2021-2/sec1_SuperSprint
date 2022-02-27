@@ -25,8 +25,10 @@ import AvailabilityListForm from '../../components/register-pages/AvailabilityLi
 import PriceRangeForm from '../../components/register-pages/PriceRangeForm';
 
 function TutorRegister({ subjects }) {
-  const [password, setPassword] = useState({ password: '', score: 0 });
-  const [firstName, setFirstName] = useState('');
+  const [passwordState, setPasswordState] = useState({
+    password: '',
+    score: 0,
+  });
   const {
     register,
     handleSubmit,
@@ -36,13 +38,29 @@ function TutorRegister({ subjects }) {
     watch,
     reset,
   } = useForm({
+    defaultValues: {
+      username: '',
+      new_password: '',
+      new_password_confirm: '',
+      first_name: '',
+      last_name: '',
+      email: '',
+      phone: '',
+      gender: '',
+      price: {
+        min: 2500,
+        max: 4500,
+      },
+      //avatar: {},
+      subjects: [],
+      availability: [{ from: null, to: null }],
+    },
     resolver: yupResolver(tutorRegisterSchema),
   });
 
-  function onPasswordChange(event) {
-    const newPassword = event.target.value;
+  function onPasswordChange(newPassword) {
     const evaluation = zxcvbn(newPassword);
-    setPassword({ password: newPassword, score: evaluation.score });
+    setPasswordState({ password: newPassword, score: evaluation.score });
   }
 
   //const router = useRouter();
@@ -60,39 +78,6 @@ function TutorRegister({ subjects }) {
   //     }),
   // });
   console.log(errors);
-
-  async function validateForm(event) {
-    const total = availFormVals.length;
-    var notError = true;
-    for (const e of availFormVals) {
-      if (
-        e.avail_date === '' &&
-        e.avail_time_from === '' &&
-        e.avail_time_to === '' &&
-        total === 1
-      ) {
-        continue;
-      } else if (
-        e.avail_date !== '' &&
-        e.avail_time_from !== '' &&
-        e.avail_time_to !== ''
-      ) {
-        await schema
-          .validate({
-            avail_date: e.avail_date,
-            avail_time_from: e.avail_time_from,
-            avail_time_to: e.avail_time_to,
-          })
-          .catch((err) => {
-            alert(err.message);
-            notError = false;
-          });
-      } else {
-        return false;
-      }
-    }
-    return notError;
-  }
 
   async function submitRegister(data) {
     // event.preventDefault();
@@ -163,13 +148,12 @@ function TutorRegister({ subjects }) {
               <input
                 type="password"
                 className="input-bordered input-primary input w-full max-w-xs"
-                {...register('new_password')}
+                {...register('new_password', {
+                  onChange: (e) => onPasswordChange(e.target.value),
+                })}
                 id="new_password"
                 placeholder="Enter Password"
                 autoComplete="new-password"
-                required
-                value={password.password}
-                onChange={onPasswordChange}
               />
               {errors.new_password && (
                 <label className="label">
@@ -183,8 +167,8 @@ function TutorRegister({ subjects }) {
                   <div key={idx} className="w-1/5 px-1">
                     <div
                       className={`h-2 rounded-xl ${
-                        password.score !== 0 && password.score >= idx
-                          ? METER_BG_COLOR[password.score]
+                        passwordState.score !== 0 && passwordState.score >= idx
+                          ? METER_BG_COLOR[passwordState.score]
                           : 'bg-base-300'
                       } transition-colors`}
                     ></div>
@@ -193,18 +177,18 @@ function TutorRegister({ subjects }) {
               </div>
               <p
                 className={`max-w-xs text-right ${
-                  METER_TEXT_COLOR[password.score]
+                  METER_TEXT_COLOR[passwordState.score]
                 } ${
-                  password.password.length === 0 ? 'invisible' : 'visible'
+                  passwordState.password.length === 0 ? 'invisible' : 'visible'
                 } text-sm transition-all `}
               >
-                {PWD_STRENGTH[password.score]}
+                {PWD_STRENGTH[passwordState.score]}
               </p>
               <ul className="ml-8 list-disc">
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    password.password.length >= MIN_PWD_LENGTH
+                    passwordState.password.length === 0 ||
+                    passwordState.password.length >= MIN_PWD_LENGTH
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -213,8 +197,8 @@ function TutorRegister({ subjects }) {
                 </li>
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    uppercaseRegex.test(password.password)
+                    passwordState.password.length === 0 ||
+                    uppercaseRegex.test(passwordState.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -223,8 +207,8 @@ function TutorRegister({ subjects }) {
                 </li>
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    lowercaseRegex.test(password.password)
+                    passwordState.password.length === 0 ||
+                    lowercaseRegex.test(passwordState.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -233,8 +217,8 @@ function TutorRegister({ subjects }) {
                 </li>
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    numberRegex.test(password.password)
+                    passwordState.password.length === 0 ||
+                    numberRegex.test(passwordState.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -243,8 +227,8 @@ function TutorRegister({ subjects }) {
                 </li>
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    specialCharRegex.test(password.password)
+                    passwordState.password.length === 0 ||
+                    specialCharRegex.test(passwordState.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -282,7 +266,7 @@ function TutorRegister({ subjects }) {
               <AvatarUpload
                 hookFormControl={control}
                 hookFormSetValue={setValue}
-                firstName={firstName}
+                hookFormWatch={watch}
               />
               <p className="text-xs">Click or drop here to upload</p>
             </div>
@@ -306,8 +290,6 @@ function TutorRegister({ subjects }) {
                 id="first_name"
                 placeholder="Enter First name"
                 autoComplete="given-name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
                 required
               />
               {errors.first_name && (
@@ -439,7 +421,12 @@ function TutorRegister({ subjects }) {
           <label htmlFor="price_range" className="label">
             <span className="label-text">Price Range</span>
           </label>
-          <PriceRangeForm hookFormRegister={register} />
+          <PriceRangeForm
+            hookFormControl={control}
+            hookFormRegister={register}
+            hookFormWatch={watch}
+            hookFormSetValue={setValue}
+          />
           {errors.subjects && (
             <label className="label">
               <span className="label-text-alt text-error">

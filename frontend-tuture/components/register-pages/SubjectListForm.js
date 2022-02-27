@@ -98,7 +98,6 @@ function SubjectListForm({
   hookFormWatch,
   subjects,
   maxSubject,
-  defaultValues = [{...defaultState}]
 }) {
   const { fields, append, remove, replace } = useFieldArray({
     control: hookFormControl,
@@ -112,10 +111,6 @@ function SubjectListForm({
   function removeField(idx) {
     remove(idx);
   }
-
-  useEffect(() => {
-    if (fields.length === 0) replace([...defaultValues]);
-  }, []);
 
   return (
     <div>

@@ -6,61 +6,40 @@ import TutorImage from '../../public/images/sir-teaching-maths-in-the-class-2127
 import StudentImage from '../../public/images/students-studying-physics-in-classroom-2140100-2140100.svg';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { set } from 'react-hook-form';
-import { signIn , signOut , useSession } from "next-auth/react";
+import { signIn } from 'next-auth/react';
 
 export default function Login() {
+  const [role, setRole] = useState('s ');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-    const [role,setRole] = useState('s ');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+  const router = useRouter();
 
-    const router = useRouter();
-
-    function Signin(info){
-      console.log(info);
-    }
-
-    const {data:session,status} = useSession();
-
-    //console.log(session);
-    console.log("status",status);
-    console.log("session",session);
-    console.log(username,password);
-
-    // if (status === "authenticated") {
-    //   return <p>Signed in as {session.user.email}</p>
-    // }
-
-    // if (status === "loading") {
-    //   return "Loading or not authenticated..."
-    // }
-    // function handleUsername(event) {
-    //   setUsername(event.target.value);
-    // }
-
-    // function handlePassword(event) {
-    //   setPassword(event.target.value);
-    // }
-    function testRouter() {
-      signIn('credentials', {
-        username: 's ' + username,
-        password: password,
-      });
-      router.push('/testpage');
-    }
+  function onSignInClick() {
+    signIn('credentials', {
+      username: role + username,
+      password: password,
+    });
+    router.push('/testpage');
+  }
 
   return (
     <Layout title="Login | Tuture" signedIn={false}>
-      <div className="container m-auto flex flex-col gap-4">
+      <div className="container m-auto mb-4 flex flex-col items-center">
         <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
           Sign In
         </h1>
-        <div className="m-auto flex w-full justify-center px-2">
-           <div className={`${role=='s ' ? "border-solid hover:border-solid border-primary hover:border-primary" : ""} btn h-auto rounded-box glass w-96`}>
-            <button className="" onClick={() => setRole("s ")}>
+        <div className="mx-auto my-3 flex w-full flex-col items-center justify-center px-2 sm:flex-row">
+          <div
+            className={`${
+              role == 's '
+                ? 'shadow-xl shadow-primary-focus/30 hover:shadow-xl hover:shadow-primary-focus/40'
+                : 'shadow-sm hover:shadow-lg hover:shadow-primary-focus/20'
+            } card rounded-box glass card-compact box-border h-auto w-96 border transition-all duration-500 sm:card-normal`}
+            onClick={() => setRole('s ')}
+          >
             <figure className="px-2 pt-2">
-              <div className="relative h-[225px] w-[400px]">
+              <div className="relative h-32 w-[400px] md:h-[225px]">
                 <Image
                   src={StudentImage}
                   alt="car!"
@@ -77,15 +56,22 @@ export default function Login() {
                 </Link>
               </div> */}
             </div>
-          </button>
           </div>
-          <div className="divider divider-horizontal">OR</div>
-          
+          <div className="divider divider-vertical sm:divider-horizontal">
+            OR
+          </div>
+
           {/* Button here */}
-          <div className={`${role=='t ' ? "border-solid hover:border-solid border-primary hover:border-primary" : ""} btn h-auto rounded-box glass w-96`}>
-          <button onClick={() => setRole("t ")}>
+          <div
+            className={`${
+              role == 't '
+                ? 'shadow-xl shadow-primary-focus/30 hover:shadow-xl hover:shadow-primary-focus/40'
+                : 'shadow-sm hover:shadow-lg hover:shadow-primary-focus/20'
+            } card rounded-box glass card-compact box-border h-auto w-96 border transition-all duration-500 sm:card-normal`}
+            onClick={() => setRole('t ')}
+          >
             <figure className="px-2 pt-2">
-              <div className="relative h-[225px] w-[400px]">
+              <div className="relative h-32 w-[400px] md:h-[225px]">
                 <Image
                   src={TutorImage}
                   alt="car!"
@@ -102,65 +88,63 @@ export default function Login() {
                 </Link>
               </div> */}
             </div>
-          </button>
           </div>
         </div>
-        <p className="text-center text-sm sm:text-base m-5">Choose account type you want to login with.</p>
+        <p className="mt-6 text-center text-sm sm:text-base">
+          Choose Account Type
+        </p>
 
-          {/* <form onSubmit={handleSubmit(submitLogin)}> */}
-          {/* <form> */}
-            <div className="flex flex-row justify-center w-full">
-                <div className="flex text-xl">
-                    <h1>Username:&nbsp;&nbsp;</h1>
-                </div>
-                <input
-                        className="input-bordered input-primary input w-full max-w-xs"
-                        type="text"
-                        value={username}
-                        placeholder="Enter Username"
-                        name="username"
-                        autoComplete="username"
-                        required
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-            </div>
-            {/* <br/> */}
-            <div className="flex flex-row justify-center w-full">
-                <div className="flex text-xl">
-                    <h1>Password:&nbsp;&nbsp;&nbsp;</h1>
-                </div>
-                <input
-                        type="password"
-                        className="input-bordered input-primary input w-full max-w-xs"
-                        value={password}
-                        placeholder="Enter Password"
-                        autoComplete="current-password"
-                        required
-                        onChange={(e) => setPassword(e.target.value)}
-                        // value={password.password}
-                        // onChange={onPasswordChange}
-                    />
-                </div>
-                {/* <br/> */}
-                <div className="flex w-full justify-center">
-                    <input type="submit" className="btn btn-primary" value="Sign In"
-                     onClick={testRouter}
-                     />
-                </div>
-          {/* </form> */}
-                {/* <p className="overflow-hidden" align="center">or</p>  */}
-                <div className="divider divider-vertical">OR</div>
-                <Link href="../register" passHref>
-                    <button class="astext">Sign Up</button>
-                </Link>
-                {/* {session &&
+        <form
+          className="flex w-full flex-col items-center"
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSignInClick();
+          }}
+        >
+          <div className="form-control mx-auto w-full max-w-xs">
+            <label class="label">
+              <span class="label-text">Username</span>
+            </label>
+            <input
+              className="input-bordered input-primary input w-full max-w-xs"
+              type="text"
+              value={username}
+              placeholder="Enter Username"
+              name="username"
+              autoComplete="username"
+              required
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <label class="label">
+              <span class="label-text">Password</span>
+            </label>
+            <input
+              type="password"
+              className="input-bordered input-primary input w-full max-w-xs"
+              value={password}
+              placeholder="Enter Password"
+              autoComplete="current-password"
+              required
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          {/* <br/> */}
+          <button type="submit" className="btn btn-primary my-2">
+            Sign In
+          </button>
+        </form>
+        {/* </form> */}
+        {/* <p className="overflow-hidden" align="center">or</p>  */}
+        <div className="divider divider-vertical">OR</div>
+        <Link href="../register" passHref>
+          <button className="btn btn-ghost my-2">Register</button>
+        </Link>
+        {/* {session &&
                 <button onClick={() => signOut()}>
                   Log out
                 </button>
                 } */}
-        </div>
+      </div>
     </Layout>
   );
 }
-
-
