@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DateTimePicker from 'react-datetime-picker/dist/DateTimePicker';
@@ -67,12 +66,11 @@ function AvailabilityForm({
   );
 }
 
-const defaultState = [{ from: null, to: null }];
+const defaultState = { from: null, to: null };
 
 function AvailabilityListForm({
   hookFormControl,
   maxAvailability,
-  defaultValues = [...defaultState],
 }) {
   const { fields, append, remove, replace } = useFieldArray({
     control: hookFormControl,
@@ -86,10 +84,6 @@ function AvailabilityListForm({
   function removeField(idx) {
     remove(idx);
   }
-
-  useEffect(() => {
-    if (fields.length === 0) replace([...defaultValues]);
-  }, []);
 
   return (
     <div className="my-2">

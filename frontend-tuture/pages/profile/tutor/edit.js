@@ -8,7 +8,7 @@ import {
   numberRegex,
   specialCharRegex,
 } from '../../../components/commons/Regex';
-import { useForm } from 'react-hook-form';
+import { useForm, useFormState } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { tutorRegisterSchema } from '../../../components/register-pages/TutorSchema';
 import AvatarUpload from '../../../components/AvatarUpload';
@@ -36,8 +36,10 @@ function TutorProfileEdit(props) {
     });
   }
 
-  const [password, setPassword] = useState({ password: '', score: 0 });
-  const [firstName, setFirstName] = useState('');
+  const [passwordState, setPasswordState] = useState({
+    password: '',
+    score: 0,
+  });
   const {
     register,
     handleSubmit,
@@ -47,13 +49,33 @@ function TutorProfileEdit(props) {
     watch,
     reset,
   } = useForm({
-    resolver: yupResolver(tutorRegisterSchema),
+    defaultValues: {
+      username: props.profileData.username,
+      new_password: '',
+      new_password_confirm: '',
+      first_name: props.profileData.firstName,
+      last_name: props.profileData.lastName,
+      email: props.profileData.email,
+      phone: props.profileData.phone,
+      gender: props.profileData.gender,
+      price: {
+        min: props.profileData.priceMin,
+        max: props.profileData.priceMax,
+      },
+      //avatar: {},
+      subjects: props.profileData.subjects,
+      availability: props.profileData.availability,
+    },
+    //resolver: yupResolver(tutorRegisterSchema),
   });
 
-  function onPasswordChange(event) {
-    const newPassword = event.target.value;
+  const { dirtyFields } = useFormState({
+    control,
+  });
+
+  function onPasswordChange(newPassword) {
     const evaluation = zxcvbn(newPassword);
-    setPassword({ password: newPassword, score: evaluation.score });
+    setPasswordState({ password: newPassword, score: evaluation.score });
   }
 
   //const router = useRouter();
@@ -72,43 +94,10 @@ function TutorProfileEdit(props) {
   // });
   console.log(errors);
 
-  async function validateForm(event) {
-    const total = availFormVals.length;
-    var notError = true;
-    for (const e of availFormVals) {
-      if (
-        e.avail_date === '' &&
-        e.avail_time_from === '' &&
-        e.avail_time_to === '' &&
-        total === 1
-      ) {
-        continue;
-      } else if (
-        e.avail_date !== '' &&
-        e.avail_time_from !== '' &&
-        e.avail_time_to !== ''
-      ) {
-        await schema
-          .validate({
-            avail_date: e.avail_date,
-            avail_time_from: e.avail_time_from,
-            avail_time_to: e.avail_time_to,
-          })
-          .catch((err) => {
-            alert(err.message);
-            notError = false;
-          });
-      } else {
-        return false;
-      }
-    }
-    return notError;
-  }
-
   async function submitRegister(data) {
     // event.preventDefault();
+    console.log(dirtyFields);
     console.log(data);
-    console.log(data.availability);
     console.log('Pass');
     // if (!(await validateForm(data))) {
     //   return;
@@ -131,9 +120,9 @@ function TutorProfileEdit(props) {
   }
 
   return (
-    <Layout title="Register Tutor | Tuture" signedIn={false}>
+    <Layout title="Edit Profile | Tuture" signedIn={false}>
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-        Create Tutor Account
+        Edit Profile
       </h1>
       <div className="container mx-auto my-4">
         <form
@@ -158,6 +147,7 @@ function TutorProfileEdit(props) {
                 name="username"
                 // autoComplete="username"
                 required
+                disabled
               />
               {errors.username && (
                 <label className="label">
@@ -174,13 +164,12 @@ function TutorProfileEdit(props) {
               <input
                 type="password"
                 className="input-bordered input-primary input w-full max-w-xs"
-                {...register('new_password')}
+                {...register('new_password', {
+                  onChange: (e) => onPasswordChange(e.target.value),
+                })}
                 id="new_password"
                 placeholder="Enter Password"
                 autoComplete="new-password"
-                required
-                value={password.password}
-                onChange={onPasswordChange}
               />
               {errors.new_password && (
                 <label className="label">
@@ -194,8 +183,8 @@ function TutorProfileEdit(props) {
                   <div key={idx} className="w-1/5 px-1">
                     <div
                       className={`h-2 rounded-xl ${
-                        password.score !== 0 && password.score >= idx
-                          ? METER_BG_COLOR[password.score]
+                        passwordState.score !== 0 && passwordState.score >= idx
+                          ? METER_BG_COLOR[passwordState.score]
                           : 'bg-base-300'
                       } transition-colors`}
                     ></div>
@@ -204,18 +193,18 @@ function TutorProfileEdit(props) {
               </div>
               <p
                 className={`max-w-xs text-right ${
-                  METER_TEXT_COLOR[password.score]
+                  METER_TEXT_COLOR[passwordState.score]
                 } ${
-                  password.password.length === 0 ? 'invisible' : 'visible'
+                  passwordState.password.length === 0 ? 'invisible' : 'visible'
                 } text-sm transition-all `}
               >
-                {PWD_STRENGTH[password.score]}
+                {PWD_STRENGTH[passwordState.score]}
               </p>
               <ul className="ml-8 list-disc">
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    password.password.length >= MIN_PWD_LENGTH
+                    passwordState.password.length === 0 ||
+                    passwordState.password.length >= MIN_PWD_LENGTH
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -224,8 +213,8 @@ function TutorProfileEdit(props) {
                 </li>
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    uppercaseRegex.test(password.password)
+                    passwordState.password.length === 0 ||
+                    uppercaseRegex.test(passwordState.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -234,8 +223,8 @@ function TutorProfileEdit(props) {
                 </li>
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    lowercaseRegex.test(password.password)
+                    passwordState.password.length === 0 ||
+                    lowercaseRegex.test(passwordState.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -244,8 +233,8 @@ function TutorProfileEdit(props) {
                 </li>
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    numberRegex.test(password.password)
+                    passwordState.password.length === 0 ||
+                    numberRegex.test(passwordState.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -254,8 +243,8 @@ function TutorProfileEdit(props) {
                 </li>
                 <li
                   className={`text-sm transition-colors ${
-                    password.password.length === 0 ||
-                    specialCharRegex.test(password.password)
+                    passwordState.password.length === 0 ||
+                    specialCharRegex.test(passwordState.password)
                       ? 'text-zinc-500/70'
                       : 'text-error'
                   }`}
@@ -276,7 +265,6 @@ function TutorProfileEdit(props) {
                 id="new_password_confirm"
                 placeholder="Confirm Password"
                 autoComplete="new-password"
-                required
               />
               {errors.new_password_confirm && (
                 <label className="label">
@@ -293,7 +281,8 @@ function TutorProfileEdit(props) {
               <AvatarUpload
                 hookFormControl={control}
                 hookFormSetValue={setValue}
-                firstName={firstName}
+                hookFormWatch={watch}
+                defaultValue={props.profileData.profileImg}
                 //avatarSeed={avatarSeed}
               />
               <p className="text-xs">Click or drop here to upload</p>
@@ -320,8 +309,6 @@ function TutorProfileEdit(props) {
                 id="first_name"
                 placeholder="Enter First name"
                 autoComplete="given-name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
                 required
               />
               {errors.first_name && (
@@ -457,11 +444,14 @@ function TutorProfileEdit(props) {
             <span className="label-text">Price Range</span>
           </label>
           <PriceRangeForm
+            hookFormControl={control}
             hookFormRegister={register}
-            defaultValue={[
+            hookFormWatch={watch}
+            hookFormSetValue={setValue}
+            /*defaultValue={[
               props.profileData.priceMin,
               props.profileData.priceMax,
-            ]}
+            ]}*/
           />
           {errors.subjects && (
             <label className="label">
@@ -483,7 +473,6 @@ function TutorProfileEdit(props) {
           <AvailabilityListForm
             hookFormControl={control}
             maxAvailability={MAX_AVAILABILITY}
-            defaultValues={props.profileData.availability}
           />
           {errors.availability && (
             <label className="label">
@@ -494,8 +483,18 @@ function TutorProfileEdit(props) {
           )}
 
           <div className="divider"></div>
-          <div className="flex w-full justify-center">
+
+          <div className="mx-auto flex w-fit flex-col justify-center gap-1">
             <input type="submit" className="btn btn-primary" value="Submit" />
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={(evt) => {
+                evt.preventDefault();
+                reset();
+              }}
+            >
+              Reset
+            </button>
           </div>
         </form>
       </div>
@@ -504,14 +503,14 @@ function TutorProfileEdit(props) {
 }
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  if (!session) {
+  /*  if (!session) {
     return {
       redirect: {
         destination: '/login',
         permanent: false,
       },
     };
-  }
+  }*/
 
   var subjects;
   try {

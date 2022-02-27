@@ -6,29 +6,8 @@ import { Controller } from 'react-hook-form';
 import { createAvatar } from '@dicebear/avatars';
 import * as style from '@dicebear/avatars-identicon-sprites';
 
-function AvatarUpload({
-  hookFormControl,
-  hookFormSetValue,
-  firstName = 'John',
-  defaultValue = ''
-}) {
-  const [uploaded, setUploaded] = useState(defaultValue !== '');
-
-  useEffect(async () => {
-    const fallbackAvatarUri = createAvatar(style, {
-      seed: firstName,
-      dataUri: true,
-    });
-    // 'https://ui-avatars.com/api/?background=random&&length=1' +
-    // (firstName !== '' ? '&&name=' + firstName[0] + `${avatarSeed}` : '');
-
-    if (!uploaded) {
-      hookFormSetValue('avatar', {
-        preview: fallbackAvatarUri,
-        name: 'avatar',
-      });
-    }
-  }, [firstName, uploaded]);
+function AvatarUpload({ hookFormControl, hookFormWatch, defaultValue = '' }) {
+  const [uploaded, setUploaded] = useState(false);
 
   function onAvatarDrop(value, acceptedFiles, onChange) {
     URL.revokeObjectURL(value.preview);
@@ -47,11 +26,7 @@ function AvatarUpload({
   return (
     <Controller
       control={hookFormControl}
-      name={`avatar`}
-      defaultValue={{
-        preview: defaultValue,
-        name: 'avatar',
-      }}
+      name="avatar"
       render={({ field: { onChange, value } }) => (
         <Dropzone
           onDrop={(e) => {
@@ -70,7 +45,21 @@ function AvatarUpload({
                       <FontAwesomeIcon fixedWidth icon={faCamera} size="2x" />
                     </div>
                   </div>
-                  <img src={value.preview} alt={value.name} />
+                  {uploaded ? (
+                    <img src={value.preview} alt={value.name} />
+                  ) : (
+                    <img
+                      src={
+                        defaultValue === ''
+                          ? createAvatar(style, {
+                              seed: (hookFormWatch('first_name') + hookFormWatch('last_name')),
+                              dataUri: true,
+                            })
+                          : defaultValue
+                      }
+                      alt="Avatar"
+                    />
+                  )}
                 </div>
               </div>
             </div>
