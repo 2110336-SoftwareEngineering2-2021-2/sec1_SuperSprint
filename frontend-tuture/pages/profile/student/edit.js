@@ -20,6 +20,7 @@ import {
 } from '../../../components/register-pages/Constants';
 import SubjectListForm from '../../../components/register-pages/SubjectListForm';
 import { getSession } from 'next-auth/react';
+import fetchWithTimeout from '../../../lib/fetchWithTimeout';
 
 function StudentProfileEdit(props) {
   const [passwordState, setPasswordState] = useState({
@@ -49,9 +50,6 @@ function StudentProfileEdit(props) {
     },
     resolver: yupResolver(studentEditSchema),
   });
-  const { dirtyFields } = useFormState({
-    control,
-  });
 
   function onPasswordChange(newPassword) {
     const evaluation = zxcvbn(newPassword);
@@ -60,7 +58,7 @@ function StudentProfileEdit(props) {
 
   async function submitRegister(data) {
     // event.preventDefault();
-    console.log('AAAA');
+    console.log('pass');
     // console.log(dirtyFields);
     // console.log(data);
     // const formData = new FormData();
@@ -428,8 +426,11 @@ export async function getServerSideProps(context) {
 
   var subjects;
   try {
-    const subjectsRes = await fetch(
-      `http://${process.env.API_URL}/subject/getAllSubjectsLevel`
+    const subjectsRes = await fetchWithTimeout(
+      `http://${process.env.API_URL}/subject/getAllSubjectsLevel`,
+      {
+        timeout: 2000,
+      }
     );
     if (!res.ok) {
       throw new Error('Fetch error');
@@ -460,18 +461,22 @@ export async function getServerSideProps(context) {
 
   var profileData;
   try {
-    const res = await fetch(`http://${process.env.API_URL}/student/profile`, {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        studentId: session.user._id,
-        // studentId: '62051ce13dd882be338c2d2b',
-      }),
-    });
+    const res = await fetchWithTimeout(
+      `http://${process.env.API_URL}/student/profile`,
+      {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          studentId: session.user._id,
+          // studentId: '62051ce13dd882be338c2d2b',
+        }),
+        timeout: 2000,
+      }
+    );
     if (!res.ok) {
       throw new Error('Fetch error');
     }

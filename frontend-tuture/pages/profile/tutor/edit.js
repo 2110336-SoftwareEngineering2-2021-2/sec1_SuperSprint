@@ -1,4 +1,3 @@
-// import Multiselect from 'multiselect-react-dropdown';
 import { useState } from 'react';
 import zxcvbn from 'zxcvbn';
 import Layout from '../../../components/Layout';
@@ -10,7 +9,6 @@ import {
 } from '../../../components/commons/Regex';
 import { useForm, useFormState } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { tutorRegisterSchema } from '../../../components/register-pages/TutorSchema';
 import AvatarUpload from '../../../components/AvatarUpload';
 import {
   METER_BG_COLOR,
@@ -24,6 +22,8 @@ import SubjectListForm from '../../../components/register-pages/SubjectListForm'
 import AvailabilityListForm from '../../../components/register-pages/AvailabilityListForm';
 import PriceRangeForm from '../../../components/register-pages/PriceRangeForm';
 import { getSession } from 'next-auth/react';
+import fetchWithTimeout from '../../../lib/fetchWithTimeout';
+import { tutorEditSchema } from '../../../components/profile/TutorSchema';
 
 function TutorProfileEdit(props) {
   // destringify date item
@@ -66,7 +66,7 @@ function TutorProfileEdit(props) {
       subjects: props.profileData.subjects,
       availability: props.profileData.availability,
     },
-    //resolver: yupResolver(tutorRegisterSchema),
+    resolver: yupResolver(tutorEditSchema),
   });
 
   const { dirtyFields } = useFormState({
@@ -514,8 +514,11 @@ export async function getServerSideProps(context) {
 
   var subjects;
   try {
-    const subjectsRes = await fetch(
-      `http://${process.env.API_URL}/subject/getAllSubjectsLevel`
+    const subjectsRes = await fetchWithTimeout(
+      `http://${process.env.API_URL}/subject/getAllSubjectsLevel`,
+      {
+        timeout: 2000,
+      }
     );
     if (!subjectsRes.ok) {
       throw new Error('Fetch error');
@@ -557,6 +560,7 @@ export async function getServerSideProps(context) {
         studentId: session.user._id,
         // studentId: '62051ce13dd882be338c2d2b',
       }),
+      timeout: 2000,
     });
     if (!res.ok) {
       throw new Error('Fetch error');
