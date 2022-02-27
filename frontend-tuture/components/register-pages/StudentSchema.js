@@ -15,16 +15,13 @@ import {
 
 yup.addMethod(yup.array, 'unique', function (message) {
   return this.test('unique', message, function (list) {
-    //var mapperred = []
     const mapper = (x) => String(x.subject) + String(x.level);
-    //const mapper = [...list];
     const set = [...new Set(list.map(mapper))];
     const isUnique = list.length === set.length;
     if (isUnique) {
       return true;
     }
     const { path, createError } = this;
-    //console.log(`HHH ${path}`);
     const idx = list.findIndex((l, i) => mapper(l) !== set[i]);
     return this.createError({
       path: `${path}.${idx}`,
@@ -43,6 +40,7 @@ export const studentRegisterSchema = yup.object().shape({
     .required(),
   new_password: yup
     .string()
+    .required('Please enter the password')
     .min(MIN_PWD_LENGTH, `Password must at least ${MIN_PWD_LENGTH} characters`)
     .max(
       MAX_PWD_LENGTH,
@@ -56,8 +54,7 @@ export const studentRegisterSchema = yup.object().shape({
       'oneOfRequired',
       'Password is too weak',
       (value) => zxcvbn(value).score >= 2
-    )
-    .required(),
+    ),
   new_password_confirm: yup
     .string()
     .oneOf(
@@ -85,45 +82,40 @@ export const studentRegisterSchema = yup.object().shape({
   subjects: yup
     .array()
     .of(
-      yup
-        .object({
-          subject: yup
-            .string()
-            .test(
-              'test-subject',
-              'Subject must be selected',
-              function (value, context) {
-                const parent2 = context.from[1];
-                const len = parent2.value.subjects.length;
-                //console.log(parent2, len);
-                //console.log("DDD",parent1,parent2.value.subjects.length);
-                if (value === '' && len === 1) {
-                  return true;
-                } else if (value !== '') {
-                  return true;
-                }
-                return false;
+      yup.object({
+        subject: yup
+          .string()
+          .test(
+            'test-subject',
+            'Subject must be selected',
+            function (value, context) {
+              const parent2 = context.from[1];
+              const len = parent2.value.subjects.length;
+              if (value === '' && len === 1) {
+                return true;
+              } else if (value !== '') {
+                return true;
               }
-            ),
-          level: yup
-            .string()
-            .test(
-              'test-level',
-              'Level must be selected',
-              function (value, context) {
-                const parent2 = context.from[1];
-                const len = parent2.value.subjects.length;
-                //console.log(parent2, len);
-                //console.log("DDD",parent1,parent2.value.subjects.length);
-                if (value === '' && len === 1 && context.parent.subject === '') {
-                  return true;
-                } else if (value !== '') {
-                  return true;
-                }
-                return false;
+              return false;
+            }
+          ),
+        level: yup
+          .string()
+          .test(
+            'test-level',
+            'Level must be selected',
+            function (value, context) {
+              const parent2 = context.from[1];
+              const len = parent2.value.subjects.length;
+              if (value === '' && len === 1 && context.parent.subject === '') {
+                return true;
+              } else if (value !== '') {
+                return true;
               }
-            ),
-        })
+              return false;
+            }
+          ),
+      })
     )
     .unique('Duplicate subject and level'),
 });
