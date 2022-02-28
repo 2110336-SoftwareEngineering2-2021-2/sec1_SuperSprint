@@ -350,21 +350,30 @@ function Matching({ subjects, levels }) {
 }
 
 export async function getServerSideProps(context) {
-  const subjectsRes = await fetch(
-    `http://${process.env.API_URL}/subject/getSubjects`
-  );
-  const subjectsData = await subjectsRes.json();
-  const levelsRes = await fetch(
-    `http://${process.env.API_URL}/subject/getLevels`
-  );
-  const levelsData = await levelsRes.json();
+  try {
+    const subjectsRes = await fetch(
+      `http://${process.env.API_URL}/subject/getAllSubjectsName`
+    );
+    const subjectsData = await subjectsRes.json();
+    const levelsRes = await fetch(
+      `http://${process.env.API_URL}/subject/getAllLevels`
+    );
+    const levelsData = await levelsRes.json();
 
-  return {
-    props: {
-      subjects: subjectsData.subjects,
-      levels: levelsData.levels,
-    },
-  };
+    return {
+      props: {
+        subjects: subjectsData.subjects,
+        levels: levelsData.levels,
+      },
+    };
+  } catch (error) {
+    return {
+      props: {
+        subjects: ['Mathmetic', 'Physic', 'Biology', 'English'],
+        levels: ['Middle School', 'High School'],
+      },
+    };
+  }
 }
 
 export default Matching;

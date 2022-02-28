@@ -8,7 +8,8 @@ import { Transition } from '@headlessui/react';
 import { useEffect, useState } from 'react';
 
 export default function TutorCard({
-  name,
+  first_name,
+  last_name,
   profileImg,
   subjects,
   levels,
@@ -54,7 +55,7 @@ export default function TutorCard({
         />
         <div className="inline-flex w-64 flex-col justify-between p-4 sm:w-96">
           <h3 className="text-md w-40 max-w-fit overflow-hidden overflow-ellipsis whitespace-nowrap font-bold text-base-content transition-colors hover:cursor-pointer hover:text-primary-focus xs:w-52 sm:w-80 sm:text-xl">
-            {name}
+            {first_name} {last_name}
           </h3>
           <p className="cursor-default text-sm text-base-content text-opacity-80 selection:bg-primary sm:text-base">
             <FontAwesomeIcon size="sm" icon={faBookOpen} fixedWidth />{' '}
@@ -66,7 +67,7 @@ export default function TutorCard({
           </p>
           <p className="cursor-default text-sm text-base-content text-opacity-80 selection:bg-primary sm:text-base">
             <FontAwesomeIcon size="sm" icon={faDollarSign} fixedWidth />{' '}
-            {`${price.min} - ${price.max} baht/hr`}
+            {`${price.min || 'undefined'} - ${price.max || 'undefined'} baht/hr`}
           </p>
         </div>
         <div className="inline-flex select-none flex-col justify-between p-2">

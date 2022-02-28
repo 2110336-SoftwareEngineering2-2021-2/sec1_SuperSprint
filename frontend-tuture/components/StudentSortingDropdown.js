@@ -31,7 +31,7 @@ function StudentSortingDropdown({ className, sortingCallback }) {
     } catch (error) {
       console.error(error.msg);
     }
-  }, [selectedSortMode, isAsc, sortingCallback]);
+  }, [selectedSortMode, isAsc]);
 
   function changeSortMode(event) {
     const selected = event.target.getAttribute('note');
