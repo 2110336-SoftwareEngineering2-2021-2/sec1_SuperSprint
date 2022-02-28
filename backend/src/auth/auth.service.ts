@@ -34,6 +34,17 @@ export class AuthService {
     image,
     preferSubject,
   ): Promise<any> {
+    console.log(
+      firstName,
+      lastName,
+      email,
+      phone,
+      username,
+      password,
+      gender,
+      image,
+      preferSubject,
+    );
     const foundUsername = await this.studentModel
       .findOne({ username: username })
       .lean();
@@ -49,7 +60,13 @@ export class AuthService {
     }
     const pass = password;
     try {
-      const imageUrl = await this.s3Service.uploadFile(username, image);
+      let imageUrl;
+      if (image) {
+        imageUrl = await this.s3Service.uploadFile(username, image);
+      } else {
+        imageUrl =
+          'https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg';
+      }
       const saltOrRounds = 10;
       const hashed_password = await bcrypt.hash(pass, saltOrRounds);
       const newStudent = new this.studentModel({
@@ -81,13 +98,25 @@ export class AuthService {
     password,
     gender,
     image,
-    avgRating,
-    successMatch,
     teachSubject,
     priceMin,
     priceMax,
     dutyTime,
   ): Promise<any> {
+    console.log(
+      firstName,
+      lastName,
+      email,
+      phone,
+      username,
+      password,
+      gender,
+      image,
+      teachSubject,
+      priceMin,
+      priceMax,
+      dutyTime,
+    );
     const foundUsername = await this.tutorModel
       .findOne({ username: username })
       .lean();
@@ -103,7 +132,13 @@ export class AuthService {
     }
     const pass = password;
     try {
-      const imageUrl = await this.s3Service.uploadFile(username, image);
+      let imageUrl;
+      if (image) {
+        imageUrl = await this.s3Service.uploadFile(username, image);
+      } else {
+        imageUrl =
+          'https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg';
+      }
       const saltOrRounds = 10;
       const hashed_password = await bcrypt.hash(pass, saltOrRounds);
       const newTutor = new this.tutorModel({
@@ -115,8 +150,8 @@ export class AuthService {
         password: hashed_password,
         gender: gender,
         profileUrl: imageUrl,
-        avgRating: avgRating,
-        successMatch: successMatch,
+        avgRating: 5,
+        successMatch: 0,
         teachSubject: teachSubject,
         priceMin: priceMin,
         priceMax: priceMax,

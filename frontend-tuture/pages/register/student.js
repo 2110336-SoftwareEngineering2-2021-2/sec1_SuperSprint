@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import zxcvbn from 'zxcvbn';
 import Layout from '../../components/Layout';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -44,9 +45,12 @@ function StudentRegister({ subjects }) {
       phone: '',
       gender: '',
       subjects: [{ subject: '', level: '' }],
+      avatar: { preview: '', name: '', file: '' },
     },
     resolver: yupResolver(studentRegisterSchema),
   });
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   function onPasswordChange(newPassword) {
     const evaluation = zxcvbn(newPassword);
@@ -57,24 +61,53 @@ function StudentRegister({ subjects }) {
     // event.preventDefault();
     console.log('Pass');
     console.log(data);
-    // const formData = new FormData();
-    // console.log(data.avatar.file);
-    // formData.append('file', data.avatar.file);
-    // const options = {
-    //   method: 'POST',
-    //   mode: 'no-cors',
-    //   // credentials: 'same-origin',
-    //   headers: {
-    //     Authorization: 'Client-ID bac84ec92d60897',
-    //   },
-    //   body: formData
-    // };
-    // console.log(formData);
-    // console.log(options);
-    // const res = await fetch('https://api.anonfiles.com/upload', options);
-    // console.log(res);
-    // console.log(await res.json());
+    const formData = new FormData();
+
+    console.log(
+      'subjects',
+      data.subjects.map((e) => e.level)
+    );
+
+    formData.append('image', data.avatar.file || '');
+    formData.append('firstName', data.first_name);
+
+    data.subjects.map((e) => {
+      if (e.level) {
+        formData.append('preferSubject', e.level);
+      }
+    });
+
+    formData.append('lastName', data.last_name);
+    formData.append('email', data.email);
+    formData.append('phone', data.phone);
+    formData.append('gender', data.gender);
+    formData.append('username', data.username);
+    formData.append('password', data.new_password);
+
+    // formData.append('image', data.);
+
+    try {
+      const options = {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'same-origin',
+        body: formData,
+      };
+
+      const res = await fetch(
+        `http://${process.env.NEXT_PUBLIC_API_URL}/auth/register/student`,
+        options
+      );
+      if (!res.ok) throw new Error('Fetch Error');
+      const res_data = await res.json();
+      console.log(res_data);
+      router.push('/login');
+    } catch (error) {
+      console.error(error.stack);
+    }
   }
+
+  console.log(watch());
 
   console.log(errors);
 
@@ -98,7 +131,7 @@ function StudentRegister({ subjects }) {
                 </span>
               </label>
               <input
-                className="input-bordered input-primary input w-full max-w-xs"
+                className="input input-bordered input-primary w-full max-w-xs"
                 {...register('username')}
                 id="username"
                 type="text"
@@ -121,7 +154,7 @@ function StudentRegister({ subjects }) {
               </label>
               <input
                 type="password"
-                className="input-bordered input-primary input w-full max-w-xs"
+                className="input input-bordered input-primary w-full max-w-xs"
                 {...register('new_password', {
                   onChange: (e) => onPasswordChange(e.target.value),
                 })}
@@ -218,7 +251,7 @@ function StudentRegister({ subjects }) {
               </label>
               <input
                 type="password"
-                className="input-bordered input-primary input w-full max-w-xs"
+                className="input input-bordered input-primary w-full max-w-xs"
                 {...register('new_password_confirm')}
                 id="new_password_confirm"
                 placeholder="Confirm Password"
@@ -259,7 +292,7 @@ function StudentRegister({ subjects }) {
               </label>
               <input
                 type="text"
-                className="input-bordered input-primary input w-full"
+                className="input input-bordered input-primary w-full"
                 {...register('first_name')}
                 id="first_name"
                 placeholder="Enter First name"
@@ -282,7 +315,7 @@ function StudentRegister({ subjects }) {
               </label>
               <input
                 type="text"
-                className="input-bordered input-primary input w-full"
+                className="input input-bordered input-primary w-full"
                 {...register('last_name')}
                 id="last_name"
                 placeholder="Enter Last name"
@@ -305,7 +338,7 @@ function StudentRegister({ subjects }) {
           </label>
           <input
             type="email"
-            className="input-bordered input-primary input w-full max-w-xs"
+            className="input input-bordered input-primary w-full max-w-xs"
             {...register('email')}
             id="email"
             placeholder="Enter Email Address"
@@ -326,7 +359,7 @@ function StudentRegister({ subjects }) {
           </label>
           <input
             type="tel"
-            className="input-bordered input-primary input w-full max-w-xs"
+            className="input input-bordered input-primary w-full max-w-xs"
             {...register('phone')}
             id="phone"
             placeholder="Enter Phone number"
@@ -348,27 +381,27 @@ function StudentRegister({ subjects }) {
             </span>
           </label>
           <select
-            className="select-bordered select-primary select w-48"
+            className="select select-bordered select-primary w-48"
             {...register('gender')}
             id="gender"
             defaultValue=""
             required
           >
-            {errors.gender && (
-              <label className="label">
-                <span className="label-text-alt text-error">
-                  {errors.gender.message}
-                </span>
-              </label>
-            )}
             <option value="" disabled>
               Select your gender
             </option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="non-binary">Non-binary</option>
-            <option value="not_specified">Not specified</option>
+            <option value="m">Male</option>
+            <option value="f">Female</option>
+            {/* <option value="non-binary">Non-binary</option>
+            <option value="not_specified">Not specified</option> */}
           </select>
+          {errors.gender && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.gender.message}
+              </span>
+            </label>
+          )}
 
           <div className="divider"></div>
 
@@ -387,8 +420,24 @@ function StudentRegister({ subjects }) {
           />
 
           <div className="divider"></div>
-          <div className="flex w-full justify-center">
-            <input type="submit" className="btn btn-primary" value="Sign Up" />
+
+          <div className="mx-auto flex w-fit flex-col justify-center gap-1">
+            <button type="submit" className="btn btn-primary">
+              {!loading ? (
+                'Submit'
+              ) : (
+                <FontAwesomeIcon fixedWidth icon={faSpinner} spin />
+              )}
+            </button>
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={(evt) => {
+                evt.preventDefault();
+                reset();
+              }}
+            >
+              Reset
+            </button>
           </div>
         </form>
       </div>
@@ -399,7 +448,7 @@ function StudentRegister({ subjects }) {
 export async function getServerSideProps(context) {
   try {
     const subjectsRes = await fetch(
-      `http://${process.env.API_URL}/subject/getAllSubjectsLevel`
+      `http://${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`
     );
     const subjectsData = await subjectsRes.json();
 

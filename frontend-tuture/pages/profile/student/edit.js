@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import zxcvbn from 'zxcvbn';
 import Layout from '../../../components/Layout';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -19,7 +22,7 @@ import {
   PWD_STRENGTH,
 } from '../../../components/register-pages/Constants';
 import SubjectListForm from '../../../components/register-pages/SubjectListForm';
-import { getSession } from 'next-auth/react';
+import { getSession, useSession, signOut } from 'next-auth/react';
 import fetchWithTimeout from '../../../lib/fetchWithTimeout';
 
 function StudentProfileEdit(props) {
@@ -45,11 +48,14 @@ function StudentProfileEdit(props) {
       email: props.profileData.email,
       phone: props.profileData.phone,
       gender: props.profileData.gender,
-      //avatar: {},
+      avatar: { preview: '', name: '', file: '' },
       subjects: props.profileData.subjects,
     },
     resolver: yupResolver(studentEditSchema),
   });
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   function onPasswordChange(newPassword) {
     const evaluation = zxcvbn(newPassword);
@@ -58,26 +64,58 @@ function StudentProfileEdit(props) {
 
   async function submitRegister(data) {
     // event.preventDefault();
-    console.log('pass');
-    // console.log(dirtyFields);
-    // console.log(data);
-    // const formData = new FormData();
-    // console.log(data.avatar.file);
-    // formData.append('file', data.avatar.file);
-    // const options = {
-    //   method: 'POST',
-    //   mode: 'no-cors',
-    //   // credentials: 'same-origin',
-    //   headers: {
-    //     Authorization: 'Client-ID bac84ec92d60897',
-    //   },
-    //   body: formData
-    // };
-    // console.log(formData);
-    // console.log(options);
-    // const res = await fetch('https://api.anonfiles.com/upload', options);
-    // console.log(res);
-    // console.log(await res.json());
+    console.log('Pass');
+    console.log(data);
+    const formData = new FormData();
+
+    console.log(
+      'subjects',
+      data.subjects.map((e) => e.level)
+    );
+
+    formData.append('image', data.avatar.file || '');
+    formData.append('firstName', data.first_name);
+
+    data.subjects.map((e) => {
+      if (e.level) {
+        formData.append('preferSubject', e.level);
+      }
+    });
+
+    formData.append('lastName', data.last_name);
+    formData.append('email', data.email);
+    formData.append('phone', data.phone);
+    formData.append('gender', data.gender);
+    formData.append('username', data.username);
+    formData.append('password', data.new_password);
+
+    // formData.append('image', data.);
+
+    console.log(session);
+    try {
+      const options = {
+        method: 'PATCH',
+        mode: 'cors',
+        credentials: 'same-origin',
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: formData,
+      };
+      setLoading(true);
+      const res = await fetch(
+        `http://${process.env.NEXT_PUBLIC_API_URL}/student/${session.user._id}`,
+        options
+      );
+      if (!res.ok) throw new Error('Fetch Error');
+      setLoading(false);
+      signOut();
+      router.push('/login');
+      // router.push('/profile/student');
+    } catch (error) {
+      console.error(error.stack);
+    }
+    setLoading(false);
   }
 
   // console.log(watch());
@@ -103,7 +141,7 @@ function StudentProfileEdit(props) {
                 </span>
               </label>
               <input
-                className="input-bordered input-primary input w-full max-w-xs"
+                className="input input-bordered input-primary w-full max-w-xs"
                 {...register('username')}
                 id="username"
                 type="text"
@@ -128,7 +166,7 @@ function StudentProfileEdit(props) {
               </label>
               <input
                 type="password"
-                className="input-bordered input-primary input w-full max-w-xs"
+                className="input input-bordered input-primary w-full max-w-xs"
                 {...register('new_password', {
                   onChange: (e) => onPasswordChange(e.target.value),
                 })}
@@ -225,7 +263,7 @@ function StudentProfileEdit(props) {
               </label>
               <input
                 type="password"
-                className="input-bordered input-primary input w-full max-w-xs"
+                className="input input-bordered input-primary w-full max-w-xs"
                 {...register('new_password_confirm')}
                 id="new_password_confirm"
                 placeholder="Confirm Password"
@@ -266,7 +304,7 @@ function StudentProfileEdit(props) {
               </label>
               <input
                 type="text"
-                className="input-bordered input-primary input w-full"
+                className="input input-bordered input-primary w-full"
                 {...register('first_name')}
                 id="first_name"
                 placeholder="Enter First name"
@@ -289,7 +327,7 @@ function StudentProfileEdit(props) {
               </label>
               <input
                 type="text"
-                className="input-bordered input-primary input w-full"
+                className="input input-bordered input-primary w-full"
                 {...register('last_name')}
                 id="last_name"
                 placeholder="Enter Last name"
@@ -312,7 +350,7 @@ function StudentProfileEdit(props) {
           </label>
           <input
             type="email"
-            className="input-bordered input-primary input w-full max-w-xs"
+            className="input input-bordered input-primary w-full max-w-xs"
             {...register('email')}
             id="email"
             placeholder="Enter Email Address"
@@ -333,7 +371,7 @@ function StudentProfileEdit(props) {
           </label>
           <input
             type="tel"
-            className="input-bordered input-primary input w-full max-w-xs"
+            className="input input-bordered input-primary w-full max-w-xs"
             {...register('phone')}
             id="phone"
             placeholder="Enter Phone number"
@@ -355,27 +393,27 @@ function StudentProfileEdit(props) {
             </span>
           </label>
           <select
-            className="select-bordered select-primary select w-48"
+            className="select select-bordered select-primary w-48"
             {...register('gender')}
             id="gender"
             defaultValue=""
             required
           >
-            {errors.gender && (
-              <label className="label">
-                <span className="label-text-alt text-error">
-                  {errors.gender.message}
-                </span>
-              </label>
-            )}
             <option value="" disabled>
               Select your gender
             </option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="non-binary">Non-binary</option>
-            <option value="not_specified">Not specified</option>
+            <option value="m">Male</option>
+            <option value="f">Female</option>
+            {/* <option value="non-binary">Non-binary</option>
+            <option value="not_specified">Not specified</option> */}
           </select>
+          {errors.gender && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.gender.message}
+              </span>
+            </label>
+          )}
 
           <div className="divider"></div>
 
@@ -396,7 +434,13 @@ function StudentProfileEdit(props) {
           <div className="divider"></div>
 
           <div className="mx-auto flex w-fit flex-col justify-center gap-1">
-            <input type="submit" className="btn btn-primary" value="Submit" />
+            <button type="submit" className="btn btn-primary">
+              {!loading ? (
+                'Submit'
+              ) : (
+                <FontAwesomeIcon fixedWidth icon={faSpinner} spin />
+              )}
+            </button>
             <button
               className="btn btn-ghost btn-sm"
               onClick={(evt) => {
@@ -414,31 +458,32 @@ function StudentProfileEdit(props) {
 }
 
 export async function getServerSideProps(context) {
+  console.log('here');
   const session = await getSession(context);
-  //if (!session) {
-  //return {
-  //redirect: {
-  //destination: '/login',
-  //permanent: false,
-  //},
-  //};
-  //}
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
+  console.log(session);
 
   var subjects;
   try {
-    const subjectsRes = await fetchWithTimeout(
-      `http://${process.env.API_URL}/subject/getAllSubjectsLevel`,
-      {
-        timeout: 2000,
-      }
+    const subjectsRes = await fetch(
+      `http://${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`
     );
-    if (!res.ok) {
+    if (!subjectsRes.ok) {
       throw new Error('Fetch error');
     }
     const subjectsData = await subjectsRes.json();
 
     subjects = subjectsData;
   } catch (error) {
+    console.log(error.stack);
     subjects = {
       Mathmetic: [
         { level: 'Middle School', id: '293817589231576' },
@@ -461,26 +506,16 @@ export async function getServerSideProps(context) {
 
   var profileData;
   try {
-    const res = await fetchWithTimeout(
-      `http://${process.env.API_URL}/student/profile`,
-      {
-        method: 'POST',
-        mode: 'cors',
-        credentials: 'same-origin',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          studentId: session.user._id,
-          // studentId: '62051ce13dd882be338c2d2b',
-        }),
-        timeout: 2000,
-      }
+    const res = await fetch(
+      `http://${process.env.NEXT_PUBLIC_API_URL}/student/getById?id=${session.user._id}`,
+      { headers: { Authorization: `Bearer ${session.accessToken}` } }
     );
     if (!res.ok) {
       throw new Error('Fetch error');
     }
     const data = await res.json();
+
+    console.log(data);
 
     console.log('done fetching');
 
@@ -493,9 +528,16 @@ export async function getServerSideProps(context) {
       phone: data.phone,
       id: data._id,
       profileImg: data.profileUrl,
-      subjects: data.subjects,
+      subjects: data.preferSubject.map((e) => {
+        return {
+          subject: e.title,
+          level: e._id,
+        };
+      }),
     };
   } catch (error) {
+    console.log(error.stack);
+
     profileData = {
       firstName: 'John',
       lastName: 'Connor',

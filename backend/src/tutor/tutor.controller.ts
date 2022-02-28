@@ -8,6 +8,7 @@ import {
   UseInterceptors,
   UploadedFile,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PassportStrategy } from '@nestjs/passport';
@@ -21,7 +22,7 @@ import { Tutor } from '../models/tutor.model';
 @Controller('tutor')
 export class TutorController {
   constructor(private readonly tutorService: TutorService) {}
-
+  @UseGuards(AuthGuard('jwt'))
   @Post('search')
   @ApiBody({
     schema: {
@@ -35,6 +36,7 @@ export class TutorController {
     return this.tutorService.searchTutor(text);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post('match')
   @ApiBody({
     schema: {
@@ -69,7 +71,10 @@ export class TutorController {
     );
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiOkResponse({ type: Tutor })
   @ApiBody({
     schema: {
       example: {
@@ -97,23 +102,24 @@ export class TutorController {
   })
   updateTutor(
     @Param('id') id: string,
+    @UploadedFile() image: Express.Multer.File,
     @Body('firstName') firstName: string,
     @Body('lastName') lastName: string,
     @Body('email') email: string,
     @Body('phone') phone: string,
     @Body('username') username: string,
     @Body('gender') gender: string,
-    @UploadedFile() image: Express.Multer.File,
-    @Body('avgRating') avgRating: number,
-    @Body('successMatch') successMatch: number,
     @Body('teachSubject') teachSubject: Array<string>,
     @Body('priceMin') priceMin: number,
     @Body('priceMax') priceMax: number,
-    @Body('dutyTime') dutyTime: Array<Array<string>>,
+    @Body('dutyTime') dutyTime: string,
   ) {
-    const newDutyTime = JSON.stringify(dutyTime);
-    console.log(newDutyTime);
-    console.log(teachSubject[0]);
+    let newDutyTime = null;
+    console.log('-----------duty', dutyTime);
+
+    if (dutyTime) {
+      newDutyTime = JSON.parse(dutyTime);
+    }
 
     return this.tutorService.updateTutor(
       id,
@@ -124,24 +130,24 @@ export class TutorController {
       username,
       gender,
       image,
-      avgRating,
-      successMatch,
       teachSubject,
       priceMin,
       priceMax,
-      dutyTime,
+      newDutyTime,
     );
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get('getAllTutors')
   @ApiOkResponse({ type: [Tutor] })
   getAllTutors() {
     return this.tutorService.getTutors();
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get('getById')
   @ApiOkResponse({ type: Tutor })
-  getTutorById(@Body('id') id: string) {
+  getTutorById(@Query('id') id: string) {
     return this.tutorService.getTutorById(id);
   }
 

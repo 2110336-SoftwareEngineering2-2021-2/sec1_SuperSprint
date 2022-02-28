@@ -6,14 +6,23 @@ import { TutorSchema } from '../models/tutor.model';
 import { ScoreModule } from '@src/score/score.module';
 import { SubjectModule } from '@src/subject/subject.module';
 import { S3Service } from '@src/services/S3Sevices.service';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from '@src/auth/constants';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from '@src/auth/jwt.strategy';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Tutor', schema: TutorSchema }]),
     SubjectModule,
     ScoreModule,
+    JwtModule.register({
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '1800s' },
+    }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   controllers: [TutorController],
-  providers: [TutorService, S3Service],
+  providers: [TutorService, S3Service, JwtStrategy],
   exports: [TutorService],
 })
 export class TutorModule {

@@ -15,10 +15,12 @@ export default function TutorCard({
   levels,
   rating,
   price,
+  tutor_id,
   onCardClick,
   onChooseClick,
 }) {
   const [showCard, setShowCard] = useState(false);
+  console.log(tutor_id)
 
   useEffect(() => {
     setShowCard(true);
@@ -43,7 +45,7 @@ export default function TutorCard({
       leaveTo="opacity-0 scale-95"
     >
       <div
-        className="flex w-auto max-w-3xl justify-between rounded-lg bg-base-100 shadow-lg transition-all hover:scale-105 hover:shadow-amber-400/40"
+        className="flex w-auto max-w-3xl justify-between rounded-lg bg-base-100 shadow-lg transition-all hover:scale-105 hover:shadow-amber-400/40 cursor-pointer"
         onClick={onCardClick ?? null}
         tabIndex={0}
       >

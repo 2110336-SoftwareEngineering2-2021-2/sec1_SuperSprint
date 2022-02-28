@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { SubjectService } from '@src/subject/subject.service';
-import { Model } from 'mongoose';
+import { Model, Mongoose } from 'mongoose';
 import { Tutor } from '../models/tutor.model';
 import { ScoreService } from '../score/score.service';
 import { S3Service } from '@src/services/S3Sevices.service';
@@ -27,6 +27,7 @@ export class TutorService {
 
   async searchTutor(text: string): Promise<{ tutorList: Array<Tutor> }> {
     const regex = new RegExp(`${text.split(' ').join('|')}`, 'i');
+    console.log(text);
     const tutors = await this.tutorModel
       .aggregate()
       .lookup({
@@ -98,11 +99,10 @@ export class TutorService {
       .sort({
         count: -1,
       })
-      .limit(10)
       .match({
         count: { $ne: 0 },
       });
-
+    console.log('searcg', tutors);
     return { tutorList: tutors };
   }
 
@@ -148,9 +148,27 @@ export class TutorService {
   }
 
   async getTutorById(id) {
-    const tutor = await this.tutorModel.findById(id);
-    const { password, ...result } = tutor;
-    return result;
+    console.log('test', id);
+    // const tutor = await this.tutorModel
+    //   .aggregate()
+    //   .lookup({
+    //     from: 'subjects',
+    //     localField: 'teachSubject',
+    //     foreignField: '_id',
+    //     as: 'teachSubject',
+    //   })
+    //   .match({
+    //     _id: { $in: id },
+    //   });
+    const tutor = await this.tutorModel
+      .findById(id)
+      .populate('teachSubject')
+      .lean();
+
+    console.log('tutor', tutor);
+    // console.log('tutor', tutor);
+    // const { password, ...result } = tutor;
+    return tutor;
   }
 
   async matchTutor(
@@ -197,7 +215,7 @@ export class TutorService {
       .populate('teachSubject')
       .lean();
 
-    console.log(tutors);
+    console.log('------------------', datetimeFrom, datetimeTo);
     //เวลาว่างติวเตอร์ คร่อม เวลาว่างเด็ก
     const tutor_temp = tutors.filter((e) => {
       let oncondition = false;
@@ -242,42 +260,47 @@ export class TutorService {
     username,
     gender,
     image,
-    avgRating,
-    successMatch,
     teachSubject,
     priceMin,
     priceMax,
     dutyTime,
   ) {
-    const foundUsername = await this.tutorModel
-      .findOne({ username: username })
-      .lean();
-    const foundEmail = await this.tutorModel.findOne({ email: email }).lean();
+    // const foundUsername = await this.tutorModel
+    //   .findOne({ username: username })
+    //   .lean();
+    // const foundEmail = await this.tutorModel.findOne({ email: email }).lean();
 
-    if (foundUsername && foundEmail) {
-      throw new ForbiddenException('duplicate username and email');
-    }
-    if (foundUsername) {
-      throw new ForbiddenException('duplicate username');
-    }
-    if (foundEmail) {
-      throw new ForbiddenException('duplicate email');
-    }
+    // if (foundUsername && foundEmail) {
+    //   throw new ForbiddenException('duplicate username and email');
+    // }
+    // if (foundUsername) {
+    //   throw new ForbiddenException('duplicate username');
+    // }
+    // if (foundEmail) {
+    //   throw new ForbiddenException('duplicate email');
+    // }
 
     const tutor = await this.tutorModel.findById(id);
-    await this.s3Service.deleteFile(tutor.profileUrl);
-    const imageUrl = await this.s3Service.uploadFile(username, image);
 
-    tutor.firstName = firstName;
-    tutor.lastName = lastName;
-    tutor.gender = gender;
-    tutor.profileUrl = imageUrl;
-    tutor.avgRating = avgRating;
-    tutor.successMatch = successMatch;
-    tutor.teachSubject = teachSubject;
-    tutor.priceMin = priceMin;
-    tutor.priceMax = priceMax;
-    tutor.dutyTime = dutyTime;
+    if (image) {
+      await this.s3Service.deleteFile(tutor.profileUrl);
+      tutor.profileUrl = await this.s3Service.uploadFile(username, image);
+    }
+    // await this.s3Service.deleteFile(tutor.profileUrl);
+    // const imageUrl = await this.s3Service.uploadFile(username, image);
+
+    tutor.firstName = firstName || tutor.firstName;
+    tutor.lastName = lastName || tutor.lastName;
+    tutor.gender = gender || tutor.gender;
+    tutor.teachSubject = teachSubject || tutor.teachSubject;
+    tutor.priceMin = priceMin || tutor.priceMin;
+    tutor.priceMax = priceMax || tutor.priceMax;
+    if (dutyTime) {
+      tutor.dutyTime = dutyTime;
+    }
+    tutor.phone = phone || tutor.phone;
+    tutor.username = username || tutor.username;
+    tutor.email = email || tutor.email;
 
     const { password, ...updatedTutor } = await tutor.save();
 

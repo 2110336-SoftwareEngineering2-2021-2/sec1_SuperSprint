@@ -85,7 +85,7 @@ export const tutorEditSchema = yup.object().shape({
     .required(),
   gender: yup
     .string()
-    .oneOf(['male', 'female', 'non-binary', 'not_specified'])
+    .oneOf(['m', 'f', 'non-binary', 'not_specified'])
     .required(),
   subjects: yup
     .array()

@@ -82,7 +82,7 @@ export const studentEditSchema = yup.object().shape({
   phone: yup
     .string()
     .matches(phoneRegex, 'Phone number must contain only number'),
-  gender: yup.string().oneOf(['male', 'female', 'non-binary', 'not_specified']),
+  gender: yup.string().oneOf(['m', 'f', 'non-binary', 'not_specified']),
   subjects: yup
     .array()
     .of(

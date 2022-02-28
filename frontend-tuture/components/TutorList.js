@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import TutorCard from './TutorCard';
 import StudentSortingDropdown from './StudentSortingDropdown';
+import { useRouter } from 'next/router';
 
 const SORT_OPTION = [
   {
@@ -21,11 +22,10 @@ const SORT_OPTION = [
   {
     sortMode: 'name',
     func: (a, b) => {
-      const a_name = a.name.split(' ');
-      const b_name = b.name.split(' ');
-
-      if (a_name[0] !== b_name[0]) return a_name[0] < b_name[0] ? -1 : 1;
-      if (a_name[1] !== b_name[1]) return a_name[1] < b_name[1] ? -1 : 1;
+      if (a.first_name !== b.first_name)
+        return a.first_name < b.first_name ? -1 : 1;
+      if (a.last_name !== b.last_name)
+        return a.last_name < b.last_name ? -1 : 1;
       return 0;
     },
   },
@@ -35,12 +35,22 @@ function TutorList({
   tutors,
   sortOption = true,
   cardClickHandler,
-  chooseTutorHandler,
+  chooseTutorHandler = async function (tutorId) {
+    try {
+      const res = await fetch(`/api/test/${tutorId}`);
+      if (!res.ok) throw new Error('Match error');
+      console.log(res);
+      alert('yay');
+    } catch (error) {
+      console.error(error);
+    }
+  },
 }) {
   const [sortedOption, setSortedOption] = useState({
     option: SORT_OPTION[0],
     asc: false,
   });
+  const router = useRouter();
 
   function onChangeSorting(option) {
     const sortingOption = SORT_OPTION.find(
@@ -76,6 +86,7 @@ function TutorList({
           tutorsHandling(tutors).map((item, idx) => (
             <TutorCard
               key={idx}
+              tutor_id={item.tutor_id}
               first_name={item.first_name}
               last_name={item.last_name}
               profileImg={item.profileImg}
@@ -83,7 +94,7 @@ function TutorList({
               levels={item.levels}
               rating={item.rating}
               price={item.price}
-              onCardClick={() => cardClickHandling(item.tutor_id)}
+              onCardClick={() => router.push(`/tutor/${item.tutor_id}`)}
               onChooseClick={() => chooseTutorHandler(item.tutor_id)}
             />
           ))

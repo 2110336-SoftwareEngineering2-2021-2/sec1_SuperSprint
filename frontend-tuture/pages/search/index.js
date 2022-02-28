@@ -1,5 +1,6 @@
 import Layout from '../../components/Layout';
 import TutorList from '../../components/TutorList';
+import { getSession } from 'next-auth/react';
 
 function SearchResult({ tutors, query }) {
   return (
@@ -15,13 +16,15 @@ function SearchResult({ tutors, query }) {
 export async function getServerSideProps(context) {
   const { query } = context;
 
+  const session = await getSession(context);
   try {
-    const res = await fetch(`http://${process.env.API_URL}/tutor/search`, {
+    const res = await fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/tutor/search`, {
       method: 'POST',
       mode: 'cors',
       credentials: 'same-origin',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.accessToken}`,
       },
       body: JSON.stringify({
         text: query.result,

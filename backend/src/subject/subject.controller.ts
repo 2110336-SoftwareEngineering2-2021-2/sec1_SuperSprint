@@ -4,6 +4,7 @@ import { ApiTags, ApiOkResponse, ApiBody } from '@nestjs/swagger';
 import { Subject } from '../models/subject.model';
 
 @ApiTags('subject')
+@ApiOkResponse({ type: Subject })
 @Controller('subject')
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}

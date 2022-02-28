@@ -43,33 +43,34 @@ export class StudentService {
     image,
     preferSubject,
   ) {
-    const foundUsername = await this.studentModel
-      .findOne({ username: username })
-      .lean();
-    const foundEmail = await this.studentModel.findOne({ email: email }).lean();
+    // const foundUsername = await this.studentModel
+    //   .findOne({ username: username })
+    //   .lean();
 
-    if (foundUsername && foundEmail) {
-      throw new ForbiddenException('duplicate username and email');
-    }
-    if (foundUsername) {
-      throw new ForbiddenException('duplicate username');
-    }
-    if (foundEmail) {
-      throw new ForbiddenException('duplicate email');
-    }
+    // const foundEmail = await this.studentModel.findOne({ email: email }).lean();
+
+    // if (foundUsername && foundEmail) {
+    //   throw new ForbiddenException('duplicate username and email');
+    // }
+    // if (foundUsername) {
+    //   throw new ForbiddenException('duplicate username');
+    // }
+    // if (foundEmail) {
+    //   throw new ForbiddenException('duplicate email');
+    // }
 
     const student = await this.studentModel.findById(id);
-    await this.s3Service.deleteFile(student.profileUrl);
-    const imageUrl = await this.s3Service.uploadFile(username, image);
-
-    student.firstName = firstName;
-    student.lastName = lastName;
-    student.email = email;
-    student.phone = phone;
-    student.username = username;
-    student.gender = gender;
-    student.profileUrl = imageUrl;
-    student.preferSubject = preferSubject;
+    if (image) {
+      await this.s3Service.deleteFile(student.profileUrl);
+      student.profileUrl = await this.s3Service.uploadFile(username, image);
+    }
+    student.firstName = firstName || student.firstName;
+    student.lastName = lastName || student.lastName;
+    student.email = email || student.email;
+    student.phone = phone || student.phone;
+    student.username = username || student.username;
+    student.gender = gender || student.gender;
+    student.preferSubject = preferSubject || student.preferSubject;
 
     const updatedStudent = await student.save();
     const { password, ...result } = updatedStudent;
@@ -77,15 +78,20 @@ export class StudentService {
   }
 
   async getStudentById(id) {
-    const student = await this.studentModel.findById(id);
-    const { password, ...result } = student;
-    return result;
+    console.log(id);
+    const student = await (
+      await this.studentModel.findById(id)
+    ).populate('preferSubject');
+    // const { password, ...result } = student;
+
+    console.log(student);
+    return student;
   }
 
   private async findStudent(id: string): Promise<Student> {
     let student;
     try {
-      student = await this.studentModel.findById(id).lean();
+      student = await await this.studentModel.findById(id).lean();
     } catch (error) {
       throw new NotFoundException('Could not find student.');
     }

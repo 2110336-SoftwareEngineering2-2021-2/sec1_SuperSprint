@@ -13,14 +13,13 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const router = useRouter();
-
   function onSignInClick() {
+    console.log('onSignInClick', role, username, password);
     signIn('credentials', {
       username: role + username,
       password: password,
+      callbackUrl: '/'
     });
-    router.push('/testpage');
   }
 
   return (
@@ -136,7 +135,7 @@ export default function Login() {
         {/* </form> */}
         {/* <p className="overflow-hidden" align="center">or</p>  */}
         <div className="divider divider-vertical">OR</div>
-        <Link href="../register" passHref>
+        <Link href="/register" passHref>
           <button className="btn btn-ghost my-2">Register</button>
         </Link>
         {/* {session &&

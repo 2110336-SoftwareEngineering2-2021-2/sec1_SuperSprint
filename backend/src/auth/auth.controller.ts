@@ -54,15 +54,12 @@ export class AuthController {
     @Body('username') username: string,
     @Body('password') password: string,
     @Body('gender') gender: string,
-    @Body('avgRating') avgRating: number,
-    @Body('successMatch') successMatch: number,
     @Body('teachSubject') teachSubject: Array<string>,
     @Body('priceMin') priceMin: number,
     @Body('priceMax') priceMax: number,
     @Body('dutyTime') dutyTime: string,
   ): Promise<string> {
     const newDutyTime = JSON.parse(dutyTime);
-    console.log(newDutyTime);
     return this.authService.insertTutor(
       firstName,
       lastName,
@@ -72,8 +69,6 @@ export class AuthController {
       password,
       gender,
       image,
-      avgRating,
-      successMatch,
       teachSubject,
       priceMin,
       priceMax,
@@ -90,11 +85,12 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Post('test')
+  @Post('refreshToken')
   async test(@Request() req) {
     console.log(req.user.username, req.user.sub);
     return 'Login sucessfully';
   }
+
   @UseInterceptors(FileInterceptor('image'))
   @Post('test2')
   async test2(@UploadedFile() image: Express.Multer.File, @Request() req) {

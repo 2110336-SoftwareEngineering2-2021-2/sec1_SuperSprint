@@ -1,20 +1,22 @@
 import { sidebarData } from './Sidebar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars, faBell, faSearch } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { faBars, faBell, faSearch } from '@fortawesome/free-solid-svg-icons';
 import ProfileDropdown from './ProfileDropdown';
 import { useSession } from 'next-auth/react';
+import { useEffect } from "react";
 
 const Navbar = (props) => {
   const { data: session } = useSession();
+  console.log(session);
   const router = useRouter();
 
   function submitSearch(event) {
     event.preventDefault();
+    console.log('ssss')
     router.push(`/search?result=${event.target.search_term.value}`);
   }
-
   return (
     <div className="drawer h-screen w-full">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />

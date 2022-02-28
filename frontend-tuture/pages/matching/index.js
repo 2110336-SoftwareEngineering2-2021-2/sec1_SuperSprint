@@ -29,14 +29,14 @@ function AvailabilityForm({
           min={new Date().toISOString().split('T')[0]}
           value={formVal.avail_date || ''}
           onChange={(e) => onFieldChange(e)}
-          className="input-bordered input-primary input input-sm col-span-11 inline-block"
+          className="input input-bordered input-primary input-sm col-span-11 inline-block"
         />
         <input
           type="time"
           id="avail_time_from"
           value={formVal.avail_time_from || ''}
           onChange={(e) => onFieldChange(e)}
-          className="input-bordered input-primary input input-sm col-span-5 inline-block sm:w-32"
+          className="input input-bordered input-primary input-sm col-span-5 inline-block sm:w-32"
         />
         <span className="col-span-1 w-4 text-center">-</span>
         <input
@@ -44,7 +44,7 @@ function AvailabilityForm({
           id="avail_time_to"
           value={formVal.avail_time_to || ''}
           onChange={(e) => onFieldChange(e)}
-          className="input-bordered input-primary input input-sm col-span-5 inline-block sm:w-32"
+          className="input input-bordered input-primary input-sm col-span-5 inline-block sm:w-32"
         />
       </div>
       {/* <button
@@ -163,6 +163,13 @@ function Matching({ subjects, levels }) {
     if (!(await validateForm(event))) {
       return;
     }
+    console.log({
+      study_subject: event.target.study_subject.value,
+      levels: event.target.edu_level.value,
+      price_min: event.target.price_min.value,
+      price_max: event.target.price_max.value,
+      availability: availFormVals,
+    });
     router.push(
       {
         pathname: '/matching/result/[result]',
@@ -199,7 +206,7 @@ function Matching({ subjects, levels }) {
               </label>
               <div>
                 <select
-                  className="select-bordered select-primary select w-full"
+                  className="select select-bordered select-primary w-full"
                   id="study_subject"
                   defaultValue=""
                   required
@@ -226,7 +233,7 @@ function Matching({ subjects, levels }) {
               </label>
               <div className="relative">
                 <select
-                  className="select-bordered select-primary select w-full"
+                  className="select select-bordered select-primary w-full"
                   id="edu_level"
                   defaultValue=""
                   required
@@ -266,14 +273,14 @@ function Matching({ subjects, levels }) {
             </div>
             <div className="flex w-full items-center justify-between">
               <label
-                className="input-group-xs input-group w-5/12 sm:w-3/12"
+                className="input-group input-group-xs w-5/12 sm:w-3/12"
                 htmlFor="price_min"
               >
                 <input
                   id="price_min"
                   type="number"
                   value={priceRange[0]}
-                  className="min-w-2/3 sm:min-w-1/2 input-bordered input-primary input input-sm w-full"
+                  className="min-w-2/3 sm:min-w-1/2 input input-bordered input-primary input-sm w-full"
                   onChange={(event) => setMinPriceRange(event)}
                   onBlur={validatePriceRange}
                   min={MIN_PRICE}
@@ -283,14 +290,14 @@ function Matching({ subjects, levels }) {
               </label>
               <span className="select-none">-</span>
               <label
-                className="input-group-xs input-group right-0 w-5/12 sm:w-3/12"
+                className="input-group input-group-xs right-0 w-5/12 sm:w-3/12"
                 htmlFor="price_max"
               >
                 <input
                   id="price_max"
                   type="number"
                   value={priceRange[1]}
-                  className="min-w-2/3 sm:min-w-1/2 input-bordered input-primary input input-sm w-full"
+                  className="min-w-2/3 sm:min-w-1/2 input input-bordered input-primary input-sm w-full"
                   onChange={(event) => setMaxPriceRange(event)}
                   onBlur={validatePriceRange}
                   min={MIN_PRICE}
@@ -352,11 +359,11 @@ function Matching({ subjects, levels }) {
 export async function getServerSideProps(context) {
   try {
     const subjectsRes = await fetch(
-      `http://${process.env.API_URL}/subject/getAllSubjectsName`
+      `http://${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsName`
     );
     const subjectsData = await subjectsRes.json();
     const levelsRes = await fetch(
-      `http://${process.env.API_URL}/subject/getAllLevels`
+      `http://${process.env.NEXT_PUBLIC_API_URL}/subject/getAllLevels`
     );
     const levelsData = await levelsRes.json();
 

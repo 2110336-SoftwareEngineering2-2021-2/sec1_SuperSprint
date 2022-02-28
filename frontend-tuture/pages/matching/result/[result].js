@@ -1,17 +1,8 @@
 import Layout from '../../../components/Layout';
 import TutorList from '../../../components/TutorList';
+import { getSession } from 'next-auth/react';
 
 function MatchingResult({ tutors }) {
-  async function cardClickHandling(tutorId) {
-    try {
-      const test = await fetch(`/api/test/${tutorId}`);
-      console.log(test);
-      alert('yay');
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   return (
     <Layout title="Matching | Tuture">
       <TutorList
@@ -23,6 +14,8 @@ function MatchingResult({ tutors }) {
 }
 
 export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
   try {
     const { result } = context.query;
     const json = JSON.parse(result);
@@ -39,15 +32,21 @@ export async function getServerSideProps(context) {
         };
       }),
     });
-    const res = await fetch(`http://${process.env.API_URL}/tutor/match`, {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: body,
-    });
+    console.log(body);
+    console.log(session);
+    const res = await fetch(
+      `http://${process.env.NEXT_PUBLIC_API_URL}/tutor/match`,
+      {
+        method: 'POST',
+        mode: 'cors',
+        // credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.accessToken}`,
+        },
+        body: body,
+      }
+    );
     const data = await res.json();
 
     const tutors = data.tutorList.map((item) => {
@@ -55,8 +54,7 @@ export async function getServerSideProps(context) {
         first_name: item.firstName,
         last_name: item.lastName,
         tutor_id: item._id,
-        profileImg:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTQeke6GCoBbq9Mni1fnPLP8CapwRFRgx29w',
+        profileImg: item.profileUrl,
         subjects: item.teachSubject.map((e) => e.title),
         levels: Array.from(new Set(item.teachSubject.map((e) => e.level))),
         rating: item.avgRating,

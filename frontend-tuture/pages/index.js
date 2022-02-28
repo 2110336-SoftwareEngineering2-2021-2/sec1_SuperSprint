@@ -31,16 +31,17 @@ export async function getServerSideProps(context) {
   }
 
   try {
-    const res = await fetch(`http://${process.env.API_URL}/student/recommend`, {
+    const res = await fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/student/recommend`, {
       method: 'POST',
       mode: 'cors',
       credentials: 'same-origin',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.accessToken}`,
       },
       body: JSON.stringify({
-        // studentId: session.user._id,
-        studentId: '62051ce13dd882be338c2d2b',
+        studentId: session.user._id,
+        // studentId: '62051ce13dd882be338c2d2b',
       }),
     });
     const data = await res.json();

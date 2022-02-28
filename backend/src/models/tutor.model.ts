@@ -37,8 +37,8 @@ export const TutorSchema = new mongoose.Schema({
   profileUrl: {
     type: String,
   },
-  avgRating: Number,
-  successMatch: Number,
+  avgRating: { type: Number, default: 0 },
+  successMatch: { type: Number, default: 0 },
   priceMax: Number,
   priceMin: Number,
   teachSubject: [

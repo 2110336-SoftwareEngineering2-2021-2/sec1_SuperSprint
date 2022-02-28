@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import zxcvbn from 'zxcvbn';
 import Layout from '../../../components/Layout';
 import {
@@ -21,7 +24,7 @@ import {
 import SubjectListForm from '../../../components/register-pages/SubjectListForm';
 import AvailabilityListForm from '../../../components/register-pages/AvailabilityListForm';
 import PriceRangeForm from '../../../components/register-pages/PriceRangeForm';
-import { getSession } from 'next-auth/react';
+import { useSession, getSession, signOut } from 'next-auth/react';
 import fetchWithTimeout from '../../../lib/fetchWithTimeout';
 import { tutorEditSchema } from '../../../components/profile/TutorSchema';
 
@@ -35,6 +38,8 @@ function TutorProfileEdit(props) {
       };
     });
   }
+
+  console.log(props.profileData);
 
   const [passwordState, setPasswordState] = useState({
     password: '',
@@ -62,12 +67,21 @@ function TutorProfileEdit(props) {
         min: props.profileData.priceMin,
         max: props.profileData.priceMax,
       },
-      //avatar: {},
-      subjects: props.profileData.subjects,
-      availability: props.profileData.availability,
+      avatar: { preview: '', name: 'Old Avatar', file: '' },
+      subjects:
+        props.profileData.subjects.length > 0
+          ? props.profileData.subjects
+          : [{ subject: '', level: '' }],
+      availability:
+        props.profileData.availability.length > 0
+          ? props.profileData.availability
+          : [{ from: null, to: null }],
     },
     resolver: yupResolver(tutorEditSchema),
   });
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const { dirtyFields } = useFormState({
     control,
@@ -117,6 +131,70 @@ function TutorProfileEdit(props) {
     //   },
     //   '/matching/result/'
     // );
+    const formData = new FormData();
+
+    console.log(
+      'subjects',
+      data.subjects.map((e) => e.level)
+    );
+
+    formData.append('image', data.avatar.file || '');
+
+    formData.append('username', data.username);
+    formData.append('password', data.new_password);
+    formData.append('firstName', data.first_name);
+    formData.append('lastName', data.last_name);
+    formData.append('email', data.email);
+    formData.append('phone', data.phone);
+    formData.append('gender', data.gender);
+    data.subjects.map((e) => {
+      if (e.level) {
+        formData.append('teachSubject', e.level);
+      }
+    });
+    formData.append('priceMin', data.price.min);
+    formData.append('priceMax', data.price.max);
+    if (data.availability[0].from && data.availability[0].to) {
+      formData.append(
+        'dutyTime',
+        JSON.stringify(
+          data.availability.map((e) => {
+            if (e.from && e.to) {
+              return { start: e.from, end: e.to };
+            }
+          })
+        )
+      );
+    }
+
+    console.log(session);
+    try {
+      const options = {
+        method: 'PATCH',
+        mode: 'cors',
+        // credentials: 'same-origin',
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: formData,
+      };
+
+      setLoading(true);
+      const res = await fetch(
+        `http://${process.env.NEXT_PUBLIC_API_URL}/tutor/${session.user._id}`,
+        options
+      );
+      if (!res.ok) throw new Error('Fetch Error');
+      const res_data = await res.json();
+      console.log(res_data);
+      setLoading(false);
+      signOut();
+      router.push('/login');
+      // router.push('/profile/tutor');
+    } catch (error) {
+      console.error(error.stack);
+    }
+    setLoading(false);
   }
 
   return (
@@ -139,7 +217,7 @@ function TutorProfileEdit(props) {
                 </span>
               </label>
               <input
-                className="input-bordered input-primary input w-full max-w-xs"
+                className="input input-bordered input-primary w-full max-w-xs"
                 {...register('username', { value: props.profileData.username })}
                 id="username"
                 type="text"
@@ -158,12 +236,13 @@ function TutorProfileEdit(props) {
               )}
               <label className="label" htmlFor="new_password">
                 <span className="label-text">
-                  Password <span className="label-text text-red-500">*</span>
+                  New Password{' '}
+                  <span className="label-text text-red-500">*</span>
                 </span>
               </label>
               <input
                 type="password"
-                className="input-bordered input-primary input w-full max-w-xs"
+                className="input input-bordered input-primary w-full max-w-xs"
                 {...register('new_password', {
                   onChange: (e) => onPasswordChange(e.target.value),
                 })}
@@ -254,13 +333,13 @@ function TutorProfileEdit(props) {
               </ul>
               <label className="label" htmlFor="new_password_confirm">
                 <span className="label-text">
-                  Confirm Password{' '}
+                  Confirm New Password{' '}
                   <span className="label-text text-red-500">*</span>
                 </span>
               </label>
               <input
                 type="password"
-                className="input-bordered input-primary input w-full max-w-xs"
+                className="input input-bordered input-primary w-full max-w-xs"
                 {...register('new_password_confirm')}
                 id="new_password_confirm"
                 placeholder="Confirm Password"
@@ -302,7 +381,7 @@ function TutorProfileEdit(props) {
               </label>
               <input
                 type="text"
-                className="input-bordered input-primary input w-full"
+                className="input input-bordered input-primary w-full"
                 {...register('first_name', {
                   value: props.profileData.firstName,
                 })}
@@ -327,7 +406,7 @@ function TutorProfileEdit(props) {
               </label>
               <input
                 type="text"
-                className="input-bordered input-primary input w-full"
+                className="input input-bordered input-primary w-full"
                 {...register('last_name', {
                   value: props.profileData.lastName,
                 })}
@@ -352,7 +431,7 @@ function TutorProfileEdit(props) {
           </label>
           <input
             type="email"
-            className="input-bordered input-primary input w-full max-w-xs"
+            className="input input-bordered input-primary w-full max-w-xs"
             {...register('email', { value: props.profileData.email })}
             id="email"
             placeholder="Enter Email Address"
@@ -373,7 +452,7 @@ function TutorProfileEdit(props) {
           </label>
           <input
             type="tel"
-            className="input-bordered input-primary input w-full max-w-xs"
+            className="input input-bordered input-primary w-full max-w-xs"
             {...register('phone', { value: props.profileData.phone })}
             id="phone"
             placeholder="Enter Phone number"
@@ -395,27 +474,27 @@ function TutorProfileEdit(props) {
             </span>
           </label>
           <select
-            className="select-bordered select-primary select w-48"
+            className="select select-bordered select-primary w-48"
             {...register('gender', { value: props.profileData.gender })}
             id="gender"
             defaultValue=""
             required
           >
-            {errors.gender && (
-              <label className="label">
-                <span className="label-text-alt text-error">
-                  {errors.gender.message}
-                </span>
-              </label>
-            )}
             <option value="" disabled>
               Select your gender
             </option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="non-binary">Non-binary</option>
-            <option value="not_specified">Not specified</option>
+            <option value="m">Male</option>
+            <option value="f">Female</option>
+            {/* <option value="non-binary">Non-binary</option>
+            <option value="not_specified">Not specified</option> */}
           </select>
+          {errors.gender && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.gender.message}
+              </span>
+            </label>
+          )}
 
           <div className="divider"></div>
 
@@ -485,7 +564,13 @@ function TutorProfileEdit(props) {
           <div className="divider"></div>
 
           <div className="mx-auto flex w-fit flex-col justify-center gap-1">
-            <input type="submit" className="btn btn-primary" value="Submit" />
+            <button type="submit" className="btn btn-primary">
+              {!loading ? (
+                'Submit'
+              ) : (
+                <FontAwesomeIcon fixedWidth icon={faSpinner} spin />
+              )}
+            </button>
             <button
               className="btn btn-ghost btn-sm"
               onClick={(evt) => {
@@ -501,6 +586,7 @@ function TutorProfileEdit(props) {
     </Layout>
   );
 }
+
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   /*  if (!session) {
@@ -515,7 +601,7 @@ export async function getServerSideProps(context) {
   var subjects;
   try {
     const subjectsRes = await fetchWithTimeout(
-      `http://${process.env.API_URL}/subject/getAllSubjectsLevel`,
+      `http://${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`,
       {
         timeout: 2000,
       }
@@ -549,23 +635,20 @@ export async function getServerSideProps(context) {
 
   var profileData;
   try {
-    const res = await fetch(`http://${process.env.API_URL}/student/profile`, {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        studentId: session.user._id,
-        // studentId: '62051ce13dd882be338c2d2b',
-      }),
-      timeout: 2000,
-    });
+    const res = await fetch(
+      `http://${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${session.user._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      }
+    );
     if (!res.ok) {
       throw new Error('Fetch error');
     }
     const data = await res.json();
+
+    console.log('data----------------', data);
 
     console.log('done fetching');
 
@@ -581,10 +664,22 @@ export async function getServerSideProps(context) {
       priceMax: data.priceMax,
       availability: data.availability,
       profileImg: data.profileUrl,
-      subjects: data.subjects,
+      subjects: data.teachSubject?.map((e) => {
+        return {
+          subject: e.title,
+          level: e._id,
+        };
+      }),
+      availability: data.dutyTime?.map((e) => {
+        return {
+          from: e.start || new Date().toJSON(),
+          to: e.end || new Date().toJSON(),
+        };
+      }),
       //availability: need to stringify
     };
   } catch (error) {
+    console.log(error.stack);
     profileData = {
       firstName: 'John',
       lastName: 'Connor',
@@ -602,21 +697,21 @@ export async function getServerSideProps(context) {
         { subject: 'Biology', level: '2309512231698' },
       ],
       availability: [
-        { from: new Date('May 23, 2022'), to: new Date('Aug 8, 2022') },
-        { from: new Date('Sep 30, 2022'), to: new Date('Oct 30, 2022') },
+        {
+          from: new Date('May 23, 2022').toJSON(),
+          to: new Date('Aug 8, 2022').toJSON(),
+        },
+        {
+          from: new Date('Sep 30, 2022').toJSON(),
+          to: new Date('Oct 30, 2022').toJSON(),
+        },
       ],
     };
   }
 
-  // stringify date item
-  if (profileData.availability) {
-    profileData.availability = profileData.availability.map((e) => {
-      return {
-        from: e.from.toJSON(),
-        to: e.to.toJSON(),
-      };
-    });
-  }
+  // console.log('all done');
+
+  // console.log(profileData);
 
   return {
     props: { profileData, subjects },
