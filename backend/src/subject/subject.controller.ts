@@ -1,31 +1,69 @@
-import { Controller, Body, Get, Post, Injectable } from '@nestjs/common';
+import { Controller, Body, Get, Post, Query } from '@nestjs/common';
 import { SubjectService } from './subject.service';
+import { ApiTags, ApiOkResponse, ApiBody } from '@nestjs/swagger';
+import { Subject } from '../models/subject.model';
 
+@ApiTags('subject')
 @Controller('subject')
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
   @Get('getById')
+  @ApiBody({
+    schema: {
+      example: {
+        subjectId: '012345678945641',
+      },
+    },
+  })
   async getSubject(@Body('subjectId') subjectId: string) {
-    const name = await this.subjectService.getName(subjectId);
-    return { id: name };
+    const subject = await this.subjectService.getName(subjectId);
+    return { subject };
   }
 
-  @Get('getSubjects')
+  @Get('getAllSubjects')
+  @ApiOkResponse({ type: [Subject] })
   async getAllSubjects() {
     const subjects = await this.subjectService.getSubjects();
     return { subjects };
   }
 
-  @Get('getLevels')
+  @Get('getAllSubjectsName')
+  async getAllSubjectsName() {
+    const subjects = await this.subjectService.getSubjectsName();
+    return { subjects };
+  }
+
+  @Get('getByLevel')
+  async getSubjectsByLevel(@Query('level') level: string) {
+    const subjects = await this.subjectService.getSubjectsByLevel(level);
+    return { subjects };
+  }
+
+  @Get('getAllLevels')
   async getAllLevels() {
     const levels = await this.subjectService.getLevels();
     return { levels };
   }
-  
 
+  @Get('getAllSubjectsLevel')
+  @ApiOkResponse({
+    schema: {
+      example: {
+        mathematics: [
+          { highschool: '0123456789' },
+          { '9subjects': '0123456789' },
+        ],
+        pat1: [{ pat: '0123456789' }],
+      },
+    },
+  })
+  async getAllSubjectsLevel() {
+    const result = await this.subjectService.getAllSubjectsLevel();
+    return result;
+  }
 
-  @Post()
+  @Post('create')
   async addSubject(
     @Body('title') title: string,
     @Body('level') level: string,

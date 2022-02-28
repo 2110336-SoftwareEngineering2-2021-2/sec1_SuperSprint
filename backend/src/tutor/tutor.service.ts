@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { SubjectService } from '@src/subject/subject.service';
 import { Model } from 'mongoose';
 import { Tutor } from '../models/tutor.model';
 import { ScoreService } from '../score/score.service';
+import { S3Service } from '@src/services/S3Sevices.service';
 @Injectable()
 export class TutorService {
   private tutors: Tutor[] = [];
@@ -12,59 +17,12 @@ export class TutorService {
     @InjectModel('Tutor') private readonly tutorModel: Model<Tutor>,
     private readonly scoreSevice: ScoreService,
     private readonly subjectService: SubjectService,
+    private readonly s3Service: S3Service,
   ) {}
 
-  async insertTutor(
-    firstName,
-    lastName,
-    email,
-    phone,
-    username,
-    userType,
-    gender,
-    avgRating,
-    successMatch,
-    teachSubject,
-    priceMin,
-    priceMax,
-    dutyTime,
-  ): Promise<any> {
-    const newTutor = new this.tutorModel({
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      phone: phone,
-      username: username,
-      userType: userType,
-      gender: gender,
-      avgRating: avgRating,
-      successMatch: successMatch,
-      teachSubject: teachSubject,
-      priceMin: priceMin,
-      priceMax: priceMax,
-      dutyTime: dutyTime,
-    });
-    await newTutor.save();
-    return { tutorId: newTutor._id };
-  }
-
-  async findTutors(): Promise<Tutor[]> {
-    const tutors = await this.tutorModel.find().exec();
+  async getTutors(): Promise<Tutor[]> {
+    const tutors = await this.tutorModel.find();
     return tutors;
-  }
-
-  async getTutor(tutorId: string) {
-    const tutor = await this.tutorModel
-      .find({ _id: tutorId })
-      .select({
-        _id: 1,
-        firstName: 1,
-        lastName: 1,
-      })
-      .exec();
-    return {
-      tutor,
-    };
   }
 
   async searchTutor(text: string): Promise<{ tutorList: Array<Tutor> }> {
@@ -143,8 +101,7 @@ export class TutorService {
       .limit(10)
       .match({
         count: { $ne: 0 },
-      })
-      .exec();
+      });
 
     return { tutorList: tutors };
   }
@@ -156,11 +113,12 @@ export class TutorService {
       const tutorIds = await this.tutorModel
         .find({ teachSubject: { $in: [subjectId] } })
         .populate('teachSubject')
-        .exec();
+        .lean();
       const result: [number, Tutor][] = [];
       for (const tIndex in tutorIds) {
         const tutor = tutorIds[tIndex];
         const score = await this.calculateCredibility(tutor, subjectId);
+        console.log(tutorIds[tIndex]);
         result.push([score, tutor]);
       }
       const sortedResult = result.sort((n1, n2) => {
@@ -183,33 +141,16 @@ export class TutorService {
     });
 
     return sortedResults.map((e) => {
-      const {
-        _id,
-        firstName,
-        lastName,
-        username,
-        // gender,
-        avgRating,
-        teachSubject,
-        priceMin,
-        priceMax,
-        // dutyTime,
-      } = e[1];
-
-      return {
-        _id,
-        firstName,
-        lastName,
-        username,
-        // gender,
-        avgRating,
-        teachSubject,
-        priceMin,
-        priceMax,
-        // dutyTime,
-        score: e[0],
-      };
+      // console.log(e);
+      const { password, ...result } = e[1];
+      return { ...result, score: e[0] };
     });
+  }
+
+  async getTutorById(id) {
+    const tutor = await this.tutorModel.findById(id);
+    const { password, ...result } = tutor;
+    return result;
   }
 
   async matchTutor(
@@ -254,7 +195,7 @@ export class TutorService {
         ],
       })
       .populate('teachSubject')
-      .exec();
+      .lean();
 
     console.log(tutors);
     //เวลาว่างติวเตอร์ คร่อม เวลาว่างเด็ก
@@ -285,33 +226,8 @@ export class TutorService {
     const tutor_send = await Promise.all(
       tutor_temp.map(async (e) => {
         const score = await this.calculateCredibility(e, subject._id);
-
-        const {
-          _id,
-          firstName,
-          lastName,
-          username,
-          gender,
-          avgRating,
-          teachSubject,
-          priceMin,
-          priceMax,
-          dutyTime,
-        } = e;
-
-        return {
-          _id,
-          firstName,
-          lastName,
-          username,
-          gender,
-          avgRating,
-          teachSubject,
-          priceMin,
-          priceMax,
-          dutyTime,
-          score: score,
-        };
+        const { password, ...result } = e;
+        return { ...result, score };
       }),
     );
     return { tutorList: tutor_send };
@@ -324,8 +240,8 @@ export class TutorService {
     email,
     phone,
     username,
-    userType,
     gender,
+    image,
     avgRating,
     successMatch,
     teachSubject,
@@ -333,61 +249,51 @@ export class TutorService {
     priceMax,
     dutyTime,
   ) {
-    const updateTutor = await this.tutorModel.findById(id).exec();
+    const foundUsername = await this.tutorModel
+      .findOne({ username: username })
+      .lean();
+    const foundEmail = await this.tutorModel.findOne({ email: email }).lean();
 
-    if (firstName) {
-      updateTutor.firstName = firstName;
+    if (foundUsername && foundEmail) {
+      throw new ForbiddenException('duplicate username and email');
     }
-    if (lastName) {
-      updateTutor.lastName = lastName;
+    if (foundUsername) {
+      throw new ForbiddenException('duplicate username');
     }
-    if (email) {
-      updateTutor.email = email;
-    }
-    if (phone) {
-      updateTutor.phone = phone;
-    }
-    if (username) {
-      updateTutor.username = username;
-    }
-    if (userType) {
-      updateTutor.userType = userType;
-    }
-    if (gender) {
-      updateTutor.gender = gender;
-    }
-    if (avgRating) {
-      updateTutor.avgRating = avgRating;
-    }
-    if (successMatch) {
-      updateTutor.successMatch = successMatch;
-    }
-    if (teachSubject) {
-      updateTutor.teachSubject = teachSubject;
-    }
-    if (priceMin) {
-      updateTutor.priceMin = priceMin;
-    }
-    if (priceMax) {
-      updateTutor.priceMax = priceMax;
-    }
-    if (dutyTime) {
-      updateTutor.dutyTime = dutyTime;
+    if (foundEmail) {
+      throw new ForbiddenException('duplicate email');
     }
 
-    await updateTutor.save();
-    return 'Update Complete';
+    const tutor = await this.tutorModel.findById(id);
+    await this.s3Service.deleteFile(tutor.profileUrl);
+    const imageUrl = await this.s3Service.uploadFile(username, image);
+
+    tutor.firstName = firstName;
+    tutor.lastName = lastName;
+    tutor.gender = gender;
+    tutor.profileUrl = imageUrl;
+    tutor.avgRating = avgRating;
+    tutor.successMatch = successMatch;
+    tutor.teachSubject = teachSubject;
+    tutor.priceMin = priceMin;
+    tutor.priceMax = priceMax;
+    tutor.dutyTime = dutyTime;
+
+    const { password, ...updatedTutor } = await tutor.save();
+
+    return { message: 'successfully update', tutor: updatedTutor };
   }
 
   private async findTutor(tutorId: string): Promise<Tutor> {
     let tutor;
     try {
-      tutor = await this.tutorModel.findById(tutorId).exec();
+      tutor = await this.tutorModel.findById(tutorId).lean();
     } catch (error) {
       throw new NotFoundException('Could not find tutor.');
     }
     if (!tutor) throw new NotFoundException('Could not find tutor.');
-    return tutor;
+    const { password, ...result } = tutor;
+    return result;
   }
 
   private async calculateCredibility(

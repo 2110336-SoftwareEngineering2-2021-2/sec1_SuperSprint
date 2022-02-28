@@ -1,6 +1,5 @@
 import * as mongoose from 'mongoose';
-import { timestamp } from 'rxjs';
-import { UserSchema } from '../models/user.model';
+import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 
 const Schema = mongoose.Schema;
 
@@ -28,12 +27,16 @@ export const TutorSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
+    unique: true,
   },
-  userType: {
+  password: {
     type: String,
     required: true,
   },
   gender: { type: String },
+  profileUrl: {
+    type: String,
+  },
   avgRating: Number,
   successMatch: Number,
   priceMax: Number,
@@ -47,19 +50,35 @@ export const TutorSchema = new mongoose.Schema({
   dutyTime: [{ start: Date, end: Date }], // free time of tutor
 });
 
-export interface Tutor {
+export class Tutor {
+  @ApiProperty()
   _id: string;
+  @ApiProperty()
   firstName: string;
+  @ApiProperty()
   lastName: string;
+  @ApiProperty()
   email: string;
+  @ApiProperty()
   phone: string;
+  @ApiProperty()
   username: string;
-  userType: string;
+  @ApiHideProperty()
+  password: string;
+  @ApiProperty()
   gender: string;
+  @ApiProperty()
+  profileUrl: string;
+  @ApiProperty()
   avgRating: number;
+  @ApiProperty()
   successMatch: number;
+  @ApiProperty()
   teachSubject: Array<string>;
+  @ApiProperty()
   priceMax: number;
+  @ApiProperty()
   priceMin: number;
+  @ApiProperty()
   dutyTime: Array<{ start: Date; end: Date }>;
 }

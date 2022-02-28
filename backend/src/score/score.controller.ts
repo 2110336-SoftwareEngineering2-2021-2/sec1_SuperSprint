@@ -1,11 +1,15 @@
 import { Controller, Body, Get, Post, Injectable } from '@nestjs/common';
 import { ScoreService } from './score.service';
+import { ApiTags, ApiParam, ApiBody } from '@nestjs/swagger';
+import { Score } from '../models/score.model';
 
+@ApiTags('score')
 @Controller('score')
 export class ScoreController {
   constructor(private readonly scoreService: ScoreService) {}
 
-  @Post()
+  @Post('create')
+  @ApiBody({ type: Score })
   async addScore(
     @Body('tutorId') tutorId: string,
     @Body('subjectId') subjectId: string,

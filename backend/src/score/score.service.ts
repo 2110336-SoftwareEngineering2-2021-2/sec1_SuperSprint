@@ -21,7 +21,7 @@ export class ScoreService {
     try {
       score = await this.scoreModel
         .find({ tutorId: tId, subjectId: sId })
-        .exec();
+        .lean();
     } catch (error) {
       throw new NotFoundException('Could not find score.');
     }
