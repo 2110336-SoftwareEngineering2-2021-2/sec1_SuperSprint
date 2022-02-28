@@ -40,7 +40,7 @@ export class SubjectService {
           levels.map(async (l) => {
             const subject = await this.findByTitleAndLevel(e, l);
             // console.log(subject.id);
-            return { [l]: subject.id };
+            return { level: l, id: subject.id };
           }),
         );
 

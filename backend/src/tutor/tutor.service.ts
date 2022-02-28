@@ -118,6 +118,7 @@ export class TutorService {
       for (const tIndex in tutorIds) {
         const tutor = tutorIds[tIndex];
         const score = await this.calculateCredibility(tutor, subjectId);
+        console.log(tutorIds[tIndex]);
         result.push([score, tutor]);
       }
       const sortedResult = result.sort((n1, n2) => {
@@ -140,6 +141,7 @@ export class TutorService {
     });
 
     return sortedResults.map((e) => {
+      // console.log(e);
       const { password, ...result } = e[1];
       return { ...result, score: e[0] };
     });
