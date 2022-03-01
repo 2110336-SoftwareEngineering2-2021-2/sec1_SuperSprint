@@ -556,7 +556,7 @@ export async function getServerSideProps(context) {
   }
 
   return {
-    props: { profileData, subjects },
+    props: { profileData, subjects, session },
   };
 }
 

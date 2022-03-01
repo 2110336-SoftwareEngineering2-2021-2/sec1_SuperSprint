@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import ProfileDropdown from './ProfileDropdown';
 import { useSession } from 'next-auth/react';
-import { useEffect } from "react";
 
 const Navbar = (props) => {
   const { data: session } = useSession();
@@ -14,7 +13,6 @@ const Navbar = (props) => {
 
   function submitSearch(event) {
     event.preventDefault();
-    console.log('ssss')
     router.push(`/search?result=${event.target.search_term.value}`);
   }
   return (

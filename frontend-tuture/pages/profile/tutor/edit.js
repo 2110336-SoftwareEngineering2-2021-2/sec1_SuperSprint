@@ -709,12 +709,8 @@ export async function getServerSideProps(context) {
     };
   }
 
-  // console.log('all done');
-
-  // console.log(profileData);
-
   return {
-    props: { profileData, subjects },
+    props: { profileData, subjects, session },
   };
 }
 export default TutorProfileEdit;

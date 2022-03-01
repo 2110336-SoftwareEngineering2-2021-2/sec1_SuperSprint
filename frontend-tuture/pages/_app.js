@@ -10,13 +10,11 @@ import NavbarControl from '../components/NavbarControl';
 import NextNProgress from 'nextjs-progressbar';
 import { SessionProvider } from 'next-auth/react';
 config.autoAddCss = false;
-import { useEffect, useState } from 'react'
 
-function MyApp({ Component, pageProps }) {
-  console.log(pageProps);
+function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
     <ThemeProvider>
-      <SessionProvider session={pageProps.session}>
+      <SessionProvider session={session}>
         <NavbarControl signedIn={false}>
           <NextNProgress color="#ffc400" options={{ parent: 'main' }} />
           <Component {...pageProps} />
