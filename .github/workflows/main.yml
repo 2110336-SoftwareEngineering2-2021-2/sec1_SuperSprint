@@ -6,8 +6,11 @@ on:
       - main
 
 jobs:
-  build:
+  deployment:
     runs-on: ubuntu-latest
+    environment: 
+      name: production
+      url: https://tuture-frontend.herokuapp.com/
 
     steps:
       - uses: actions/checkout@v1
