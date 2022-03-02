@@ -50,13 +50,13 @@ export class AuthService {
       .lean();
     const foundEmail = await this.studentModel.findOne({ email: email }).lean();
     if (foundUsername && foundEmail) {
-      throw new NotFoundException('duplicate username and email');
+      throw new ForbiddenException('duplicate username and email');
     }
     if (foundUsername) {
-      throw new NotFoundException('duplicate username');
+      throw new ForbiddenException('duplicate username');
     }
     if (foundEmail) {
-      throw new NotFoundException('duplicate email');
+      throw new ForbiddenException('duplicate email');
     }
     const pass = password;
     try {
@@ -122,13 +122,13 @@ export class AuthService {
       .lean();
     const foundEmail = await this.tutorModel.findOne({ email: email }).lean();
     if (foundUsername && foundEmail) {
-      throw new NotFoundException('duplicate username and email');
+      throw new ForbiddenException('duplicate username and email');
     }
     if (foundUsername) {
-      throw new NotFoundException('duplicate username');
+      throw new ForbiddenException('duplicate username');
     }
     if (foundEmail) {
-      throw new NotFoundException('duplicate email');
+      throw new ForbiddenException('duplicate email');
     }
     const pass = password;
     try {

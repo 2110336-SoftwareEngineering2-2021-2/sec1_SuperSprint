@@ -265,20 +265,21 @@ export class TutorService {
     priceMax,
     dutyTime,
   ) {
-    // const foundUsername = await this.tutorModel
-    //   .findOne({ username: username })
-    //   .lean();
-    // const foundEmail = await this.tutorModel.findOne({ email: email }).lean();
+    const foundUsername = await this.tutorModel
+      .findOne({ username: username,_id: { $ne: id } })
+      .lean();
+    const foundEmail = await this.tutorModel.findOne({ email: email,_id: { $ne: id } }).lean();
+    console.log(foundUsername, foundEmail);
 
-    // if (foundUsername && foundEmail) {
-    //   throw new ForbiddenException('duplicate username and email');
-    // }
-    // if (foundUsername) {
-    //   throw new ForbiddenException('duplicate username');
-    // }
-    // if (foundEmail) {
-    //   throw new ForbiddenException('duplicate email');
-    // }
+    if (foundUsername && foundEmail) {
+      throw new ForbiddenException('duplicate username and email');
+    }
+    if (foundUsername) {
+      throw new ForbiddenException('duplicate username');
+    }
+    if (foundEmail) {
+      throw new ForbiddenException('duplicate email');
+    }
 
     const tutor = await this.tutorModel.findById(id);
 

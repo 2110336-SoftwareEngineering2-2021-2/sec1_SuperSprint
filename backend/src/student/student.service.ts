@@ -43,21 +43,21 @@ export class StudentService {
     image,
     preferSubject,
   ) {
-    // const foundUsername = await this.studentModel
-    //   .findOne({ username: username })
-    //   .lean();
+    const foundUsername = await this.studentModel
+      .findOne({ username: username ,_id: { $ne: id }})
+      .lean();
 
-    // const foundEmail = await this.studentModel.findOne({ email: email }).lean();
+    const foundEmail = await this.studentModel.findOne({ email: email,_id: { $ne: id } }).lean();
 
-    // if (foundUsername && foundEmail) {
-    //   throw new ForbiddenException('duplicate username and email');
-    // }
-    // if (foundUsername) {
-    //   throw new ForbiddenException('duplicate username');
-    // }
-    // if (foundEmail) {
-    //   throw new ForbiddenException('duplicate email');
-    // }
+    if (foundUsername && foundEmail) {
+      throw new ForbiddenException('duplicate username and email');
+    }
+    if (foundUsername) {
+      throw new ForbiddenException('duplicate username');
+    }
+    if (foundEmail) {
+      throw new ForbiddenException('duplicate email');
+    }
 
     const student = await this.studentModel.findById(id);
     if (image) {

@@ -48,13 +48,14 @@ export default nextAuth({
   ],
   pages: {
     signIn: '/login',
+    error: '/login',
   },
   session: { strategy: 'jwt' },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.accessToken = user.access_token;
-        token.user = user.user
+        token.user = user.user;
       }
       // console.log('token', token);
       return token;

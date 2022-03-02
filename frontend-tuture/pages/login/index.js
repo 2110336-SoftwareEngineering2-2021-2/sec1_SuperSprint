@@ -7,19 +7,24 @@ import StudentImage from '../../public/images/students-studying-physics-in-class
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { signIn } from 'next-auth/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
-export default function Login() {
+export default function Login({ error }) {
   const [role, setRole] = useState('s ');
+  const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   function onSignInClick() {
     console.log('onSignInClick', role, username, password);
+    setLoading(true);
     signIn('credentials', {
       username: role + username,
       password: password,
-      callbackUrl: '/'
+      callbackUrl: '/',
     });
+    setLoading(false);
   }
 
   return (
@@ -34,7 +39,7 @@ export default function Login() {
               role == 's '
                 ? 'shadow-xl shadow-primary-focus/30 hover:shadow-xl hover:shadow-primary-focus/40'
                 : 'shadow-sm hover:shadow-lg hover:shadow-primary-focus/20'
-            } card rounded-box glass card-compact box-border h-auto w-96 border transition-all duration-500 sm:card-normal`}
+            } card-compact card glass rounded-box box-border h-auto w-96 border transition-all duration-500 sm:card-normal`}
             onClick={() => setRole('s ')}
           >
             <figure className="px-2 pt-2">
@@ -66,7 +71,7 @@ export default function Login() {
               role == 't '
                 ? 'shadow-xl shadow-primary-focus/30 hover:shadow-xl hover:shadow-primary-focus/40'
                 : 'shadow-sm hover:shadow-lg hover:shadow-primary-focus/20'
-            } card rounded-box glass card-compact box-border h-auto w-96 border transition-all duration-500 sm:card-normal`}
+            } card-compact card glass rounded-box box-border h-auto w-96 border transition-all duration-500 sm:card-normal`}
             onClick={() => setRole('t ')}
           >
             <figure className="px-2 pt-2">
@@ -105,7 +110,7 @@ export default function Login() {
               <span class="label-text">Username</span>
             </label>
             <input
-              className="input-bordered input-primary input w-full max-w-xs"
+              className="input input-bordered input-primary w-full max-w-xs"
               type="text"
               value={username}
               placeholder="Enter Username"
@@ -119,7 +124,7 @@ export default function Login() {
             </label>
             <input
               type="password"
-              className="input-bordered input-primary input w-full max-w-xs"
+              className="input input-bordered input-primary w-full max-w-xs"
               value={password}
               placeholder="Enter Password"
               autoComplete="current-password"
@@ -127,9 +132,14 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
+          {error && <SignInError error={error} />}
           {/* <br/> */}
           <button type="submit" className="btn btn-primary my-2">
-            Sign In
+            {!loading ? (
+              'Sign In'
+            ) : (
+              <FontAwesomeIcon fixedWidth icon={faSpinner} spin />
+            )}
           </button>
         </form>
         {/* </form> */}
@@ -147,3 +157,34 @@ export default function Login() {
     </Layout>
   );
 }
+
+export async function getServerSideProps(context) {
+  const { query } = context;
+  const { error } = query;
+
+  return {
+    props: {
+      error: error || null,
+    },
+  };
+}
+
+const errors = {
+  Signin: 'Try signing with a different account.',
+  OAuthSignin: 'Try signing with a different account.',
+  OAuthCallback: 'Try signing with a different account.',
+  OAuthCreateAccount: 'Try signing with a different account.',
+  EmailCreateAccount: 'Try signing with a different account.',
+  Callback: 'Try signing with a different account.',
+  OAuthAccountNotLinked:
+    'To confirm your identity, sign in with the same account you used originally.',
+  EmailSignin: 'Check your email address.',
+  CredentialsSignin:
+    'Sign in failed. Check the details you provided are correct.',
+  default: 'Unable to sign in.',
+};
+
+const SignInError = ({ error }) => {
+  const errorMessage = error && (errors[error] ?? errors.default);
+  return <p className="mt-3 text-sm text-error">{errorMessage}</p>;
+};

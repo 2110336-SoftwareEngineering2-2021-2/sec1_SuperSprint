@@ -59,28 +59,14 @@ function TutorRegister({ subjects }) {
     },
     resolver: yupResolver(tutorRegisterSchema),
   });
-  // const router = useRouter();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
 
   function onPasswordChange(newPassword) {
     const evaluation = zxcvbn(newPassword);
     setPasswordState({ password: newPassword, score: evaluation.score });
   }
-
-  const router = useRouter();
-  // const schema = yup.object().shape({
-  //   avail_date: yup.date(),
-  //   avail_time_from: yup.string().required(),
-  //   avail_time_to: yup
-  //     .string()
-  //     .required()
-  //     .test('is-greater', 'end time should be greater', function (value) {
-  //       const { avail_time_from } = this.parent;
-  //       return moment(value, 'HH:mm').isSameOrAfter(
-  //         moment(avail_time_from, 'HH:mm')
-  //       );
-  //     }),
-  // });
 
   async function submitRegister(data) {
     // event.preventDefault();
@@ -111,18 +97,17 @@ function TutorRegister({ subjects }) {
     formData.append('priceMax', data.price.max);
 
     if (data.availability[0].from && data.availability[0].to) {
-
-    formData.append(
-      'dutyTime',
-      JSON.stringify(
-        data.availability.map((e) => {
-          if (e.from && e.to) {
-            return { start: e.from, end: e.to };
-          }
-        })
-      )
-    );
-      }
+      formData.append(
+        'dutyTime',
+        JSON.stringify(
+          data.availability.map((e) => {
+            if (e.from && e.to) {
+              return { start: e.from, end: e.to };
+            }
+          })
+        )
+      );
+    }
     // formData.append('image', data.);
 
     try {
@@ -137,13 +122,35 @@ function TutorRegister({ subjects }) {
         `http://${process.env.NEXT_PUBLIC_API_URL}/auth/register/tutor`,
         options
       );
-      if (!res.ok) throw new Error('Fetch Error');
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Fetch Error');
+      }
       const res_data = await res.json();
       console.log(res_data);
       setLoading(false);
       router.push('/login');
     } catch (error) {
-      console.error(error.stack);
+      switch (error.message) {
+        case 'duplicate email':
+          setFetchError({
+            location: ['email'],
+            message: error.message,
+          });
+          break;
+        case 'duplicate username':
+          setFetchError({
+            location: ['username'],
+            message: error.message,
+          });
+          break;
+        case 'duplicate username and email':
+          setFetchError({
+            location: ['username', 'email'],
+            message: error.message,
+          });
+          break;
+      }
     }
     setLoading(false);
   }
@@ -183,6 +190,13 @@ function TutorRegister({ subjects }) {
                 <label className="label">
                   <span className="label-text-alt text-error">
                     {errors.username.message}
+                  </span>
+                </label>
+              )}
+              {fetchError && fetchError?.location.includes('username') && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {fetchError.message}
                   </span>
                 </label>
               )}
@@ -388,6 +402,13 @@ function TutorRegister({ subjects }) {
             <label className="label">
               <span className="label-text-alt text-error">
                 {errors.email.message}
+              </span>
+            </label>
+          )}
+          {fetchError && fetchError?.location.includes('email') && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {fetchError.message}
               </span>
             </label>
           )}

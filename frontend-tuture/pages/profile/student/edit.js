@@ -56,6 +56,7 @@ function StudentProfileEdit(props) {
   const { data: session } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
 
   function onPasswordChange(newPassword) {
     const evaluation = zxcvbn(newPassword);
@@ -107,13 +108,36 @@ function StudentProfileEdit(props) {
         `http://${process.env.NEXT_PUBLIC_API_URL}/student/${session.user._id}`,
         options
       );
-      if (!res.ok) throw new Error('Fetch Error');
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Fetch Error');
+      }
+      setFetchError(null);
       setLoading(false);
       signOut();
       router.push('/login');
       // router.push('/profile/student');
     } catch (error) {
-      console.error(error.stack);
+      switch (error.message) {
+        case 'duplicate email':
+          setFetchError({
+            location: ['email'],
+            message: error.message,
+          });
+          break;
+        case 'duplicate username':
+          setFetchError({
+            location: ['username'],
+            message: error.message,
+          });
+          break;
+        case 'duplicate username and email':
+          setFetchError({
+            location: ['username', 'email'],
+            message: error.message,
+          });
+          break;
+      }
     }
     setLoading(false);
   }
@@ -155,6 +179,13 @@ function StudentProfileEdit(props) {
                 <label className="label">
                   <span className="label-text-alt text-error">
                     {errors.username.message}
+                  </span>
+                </label>
+              )}
+              {fetchError && fetchError?.location.includes('username') && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {fetchError.message}
                   </span>
                 </label>
               )}
@@ -361,6 +392,13 @@ function StudentProfileEdit(props) {
             <label className="label">
               <span className="label-text-alt text-error">
                 {errors.email.message}
+              </span>
+            </label>
+          )}
+          {fetchError && fetchError?.location.includes('email') && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {fetchError.message}
               </span>
             </label>
           )}

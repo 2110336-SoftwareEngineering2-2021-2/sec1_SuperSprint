@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import zxcvbn from 'zxcvbn';
 import Layout from '../../components/Layout';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -51,6 +53,7 @@ function StudentRegister({ subjects }) {
   });
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
 
   function onPasswordChange(newPassword) {
     const evaluation = zxcvbn(newPassword);
@@ -93,18 +96,41 @@ function StudentRegister({ subjects }) {
         credentials: 'same-origin',
         body: formData,
       };
-
+      setLoading(true);
       const res = await fetch(
         `http://${process.env.NEXT_PUBLIC_API_URL}/auth/register/student`,
         options
       );
-      if (!res.ok) throw new Error('Fetch Error');
-      const res_data = await res.json();
-      console.log(res_data);
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Fetch Error');
+      }
+      setFetchError(null);
+      setLoading(false);
       router.push('/login');
     } catch (error) {
-      console.error(error.stack);
+      switch (error.message) {
+        case 'duplicate email':
+          setFetchError({
+            location: ['email'],
+            message: error.message,
+          });
+          break;
+        case 'duplicate username':
+          setFetchError({
+            location: ['username'],
+            message: error.message,
+          });
+          break;
+        case 'duplicate username and email':
+          setFetchError({
+            location: ['username', 'email'],
+            message: error.message,
+          });
+          break;
+      }
     }
+    setLoading(false);
   }
 
   console.log(watch());
@@ -144,6 +170,13 @@ function StudentRegister({ subjects }) {
                 <label className="label">
                   <span className="label-text-alt text-error">
                     {errors.username.message}
+                  </span>
+                </label>
+              )}
+              {fetchError && fetchError?.location.includes('username') && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {fetchError.message}
                   </span>
                 </label>
               )}
@@ -349,6 +382,13 @@ function StudentRegister({ subjects }) {
             <label className="label">
               <span className="label-text-alt text-error">
                 {errors.email.message}
+              </span>
+            </label>
+          )}
+          {fetchError && fetchError?.location.includes('email') && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {fetchError.message}
               </span>
             </label>
           )}

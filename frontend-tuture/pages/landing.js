@@ -1,23 +1,26 @@
 import Layout from '../components/Layout';
+import Link from 'next/link';
+import StudentImage from '../public/images/students-studying-physics-in-classroom-2140100-2140100.svg';
+import Image from 'next/image';
 
 function Landing() {
   return (
     <Layout title="Tuture">
       <div className="hero h-full">
         <div className="hero-content flex-col lg:flex-row">
-          <img
-            src="https://api.lorem.space/image/movie?w=260&h=400"
+          <Image
+            src={StudentImage}
             className="max-w-sm rounded-lg shadow-2xl"
             alt="Tuture promo image"
           />
           <div>
             <h1 className="text-5xl font-bold">Tuture</h1>
             <p className="py-6">
-              Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-              excepturi exercitationem quasi. In deleniti eaque aut repudiandae
-              et a id nisi.
+              Platform where who love to teach and study met.
             </p>
-            <button className="btn btn-primary">Get Started</button>
+            <Link href="/register">
+              <button className="btn btn-primary">Get Started</button>
+            </Link>
           </div>
         </div>
       </div>
