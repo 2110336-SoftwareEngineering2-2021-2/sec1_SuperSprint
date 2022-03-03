@@ -28,10 +28,10 @@ export default function Login({ error }) {
   }
 
   return (
-    <Layout title="Login | Tuture" signedIn={false}>
+    <Layout title="Log In | Tuture" signedIn={false}>
       <div className="container m-auto mb-4 flex flex-col items-center">
         <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-          Sign In
+          Log In
         </h1>
         <div className="mx-auto my-3 flex w-full flex-col items-center justify-center px-2 sm:flex-row">
           <div
@@ -39,7 +39,7 @@ export default function Login({ error }) {
               role == 's '
                 ? 'shadow-xl shadow-primary-focus/30 hover:shadow-xl hover:shadow-primary-focus/40'
                 : 'shadow-sm hover:shadow-lg hover:shadow-primary-focus/20'
-            } card-compact card glass rounded-box box-border h-auto w-96 border transition-all duration-500 sm:card-normal`}
+            } card rounded-box glass card-compact box-border h-auto w-96 border transition-all duration-500 sm:card-normal`}
             onClick={() => setRole('s ')}
           >
             <figure className="px-2 pt-2">
@@ -55,7 +55,7 @@ export default function Login({ error }) {
             <div className="card-body items-center text-center">
               <h2 className="card-title">Student</h2>
               {/* <div className="card-actions">
-                <Link href="/register/tutor" passHref>
+                <Link href="/signup/tutor" passHref>
                   <button className="btn btn-primary btn-sm">Select</button>
                 </Link>
               </div> */}
@@ -71,7 +71,7 @@ export default function Login({ error }) {
               role == 't '
                 ? 'shadow-xl shadow-primary-focus/30 hover:shadow-xl hover:shadow-primary-focus/40'
                 : 'shadow-sm hover:shadow-lg hover:shadow-primary-focus/20'
-            } card-compact card glass rounded-box box-border h-auto w-96 border transition-all duration-500 sm:card-normal`}
+            } card rounded-box glass card-compact box-border h-auto w-96 border transition-all duration-500 sm:card-normal`}
             onClick={() => setRole('t ')}
           >
             <figure className="px-2 pt-2">
@@ -87,7 +87,7 @@ export default function Login({ error }) {
             <div className="card-body items-center text-center">
               <h2 className="card-title">Tutor</h2>
               {/* <div className="card-actions">
-                <Link href="/register/tutor" passHref>
+                <Link href="/signup/tutor" passHref>
                   <button className="btn btn-primary btn-sm">Select</button>
                 </Link>
               </div> */}
@@ -106,11 +106,11 @@ export default function Login({ error }) {
           }}
         >
           <div className="form-control mx-auto w-full max-w-xs">
-            <label class="label">
-              <span class="label-text">Username</span>
+            <label className="label">
+              <span className="label-text">Username</span>
             </label>
             <input
-              className="input input-bordered input-primary w-full max-w-xs"
+              className="input-bordered input-primary input w-full max-w-xs"
               type="text"
               value={username}
               placeholder="Enter Username"
@@ -119,12 +119,12 @@ export default function Login({ error }) {
               required
               onChange={(e) => setUsername(e.target.value)}
             />
-            <label class="label">
-              <span class="label-text">Password</span>
+            <label className="label">
+              <span className="label-text">Password</span>
             </label>
             <input
               type="password"
-              className="input input-bordered input-primary w-full max-w-xs"
+              className="input-bordered input-primary input w-full max-w-xs"
               value={password}
               placeholder="Enter Password"
               autoComplete="current-password"
@@ -134,9 +134,9 @@ export default function Login({ error }) {
           </div>
           {error && <SignInError error={error} />}
           {/* <br/> */}
-          <button type="submit" className="btn btn-primary my-2">
+          <button type="submit" className="btn btn-primary my-2 normal-case">
             {!loading ? (
-              'Sign In'
+              'Log In'
             ) : (
               <FontAwesomeIcon fixedWidth icon={faSpinner} spin />
             )}
@@ -145,8 +145,8 @@ export default function Login({ error }) {
         {/* </form> */}
         {/* <p className="overflow-hidden" align="center">or</p>  */}
         <div className="divider divider-vertical">OR</div>
-        <Link href="/register" passHref>
-          <button className="btn btn-ghost my-2">Register</button>
+        <Link href="/signup" passHref>
+          <button className="btn btn-ghost my-2 normal-case">Sign Up</button>
         </Link>
         {/* {session &&
                 <button onClick={() => signOut()}>

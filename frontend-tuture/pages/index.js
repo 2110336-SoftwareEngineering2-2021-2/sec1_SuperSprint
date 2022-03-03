@@ -32,7 +32,7 @@ export async function getServerSideProps(context) {
 
   try {
     const res = await fetch(
-      `http://${process.env.NEXT_PUBLIC_API_URL}/student/recommend`,
+      `${process.env.NEXT_PUBLIC_API_URL}/student/recommend`,
       {
         method: 'POST',
         mode: 'cors',

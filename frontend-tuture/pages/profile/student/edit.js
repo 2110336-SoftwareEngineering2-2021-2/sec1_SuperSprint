@@ -1,35 +1,20 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { getSession, useSession, signOut } from 'next-auth/react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import zxcvbn from 'zxcvbn';
-import Layout from '../../../components/Layout';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, useFormState } from 'react-hook-form';
-import {
-  uppercaseRegex,
-  lowercaseRegex,
-  numberRegex,
-  specialCharRegex,
-} from '../../../components/commons/Regex';
+
+import Layout from '../../../components/Layout';
+import { PasswordField } from '../../../components/signup-pages/PasswordField';
 import { studentEditSchema } from '../../../components/profile/StudentSchema';
 import AvatarUpload from '../../../components/AvatarUpload';
-import {
-  MAX_SUBJECT,
-  METER_BG_COLOR,
-  METER_TEXT_COLOR,
-  MIN_PWD_LENGTH,
-  PWD_STRENGTH,
-} from '../../../components/register-pages/Constants';
-import SubjectListForm from '../../../components/register-pages/SubjectListForm';
-import { getSession, useSession, signOut } from 'next-auth/react';
-import fetchWithTimeout from '../../../lib/fetchWithTimeout';
+import { MAX_SUBJECT } from '../../../components/signup-pages/Constants';
+import SubjectListForm from '../../../components/signup-pages/SubjectListForm';
 
 function StudentProfileEdit(props) {
-  const [passwordState, setPasswordState] = useState({
-    password: '',
-    score: 0,
-  });
   const {
     register,
     control,
@@ -58,31 +43,15 @@ function StudentProfileEdit(props) {
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
 
-  function onPasswordChange(newPassword) {
-    const evaluation = zxcvbn(newPassword);
-    setPasswordState({ password: newPassword, score: evaluation.score });
-  }
-
   async function submitRegister(data) {
-    // event.preventDefault();
-    console.log('Pass');
-    console.log(data);
     const formData = new FormData();
-
-    console.log(
-      'subjects',
-      data.subjects.map((e) => e.level)
-    );
-
     formData.append('image', data.avatar.file || '');
     formData.append('firstName', data.first_name);
-
     data.subjects.map((e) => {
       if (e.level) {
         formData.append('preferSubject', e.level);
       }
     });
-
     formData.append('lastName', data.last_name);
     formData.append('email', data.email);
     formData.append('phone', data.phone);
@@ -90,9 +59,6 @@ function StudentProfileEdit(props) {
     formData.append('username', data.username);
     formData.append('password', data.new_password);
 
-    // formData.append('image', data.);
-
-    console.log(session);
     try {
       const options = {
         method: 'PATCH',
@@ -105,7 +71,7 @@ function StudentProfileEdit(props) {
       };
       setLoading(true);
       const res = await fetch(
-        `http://${process.env.NEXT_PUBLIC_API_URL}/student/${session.user._id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/student/${session.user._id}`,
         options
       );
       if (!res.ok) {
@@ -114,9 +80,13 @@ function StudentProfileEdit(props) {
       }
       setFetchError(null);
       setLoading(false);
-      signOut();
-      router.push('/login');
+      // router.push('/login');
       // router.push('/profile/student');
+      toast('Profile Edited!', {
+        onClose: () => {
+          signOut();
+        },
+      });
     } catch (error) {
       switch (error.message) {
         case 'duplicate email':
@@ -142,9 +112,6 @@ function StudentProfileEdit(props) {
     setLoading(false);
   }
 
-  // console.log(watch());
-  console.log(errors);
-
   return (
     <Layout title="Edit Profile | Tuture" signedIn={false}>
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
@@ -165,7 +132,7 @@ function StudentProfileEdit(props) {
                 </span>
               </label>
               <input
-                className="input input-bordered input-primary w-full max-w-xs"
+                className="input-bordered input-primary input w-full max-w-xs"
                 {...register('username')}
                 id="username"
                 type="text"
@@ -195,97 +162,10 @@ function StudentProfileEdit(props) {
                   <span className="label-text text-red-500">*</span>
                 </span>
               </label>
-              <input
-                type="password"
-                className="input input-bordered input-primary w-full max-w-xs"
-                {...register('new_password', {
-                  onChange: (e) => onPasswordChange(e.target.value),
-                })}
-                id="new_password"
-                placeholder="Enter Password"
-                autoComplete="new-password"
+              <PasswordField
+                hookFormRegister={register}
+                hookFormErrors={errors}
               />
-              {errors.new_password && (
-                <label className="label">
-                  <span className="label-text-alt text-error">
-                    {errors.new_password.message}
-                  </span>
-                </label>
-              )}
-              <div className="my-2 flex max-w-xs">
-                {[...Array(5)].map((e, idx) => (
-                  <div key={idx} className="w-1/5 px-1">
-                    <div
-                      className={`h-2 rounded-xl ${
-                        passwordState.score !== 0 && passwordState.score >= idx
-                          ? METER_BG_COLOR[passwordState.score]
-                          : 'bg-base-300'
-                      } transition-colors`}
-                    ></div>
-                  </div>
-                ))}
-              </div>
-              <p
-                className={`max-w-xs text-right ${
-                  METER_TEXT_COLOR[passwordState.score]
-                } ${
-                  passwordState.password.length === 0 ? 'invisible' : 'visible'
-                } text-sm transition-all `}
-              >
-                {PWD_STRENGTH[passwordState.score]}
-              </p>
-              <ul className="ml-8 list-disc">
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    passwordState.password.length >= MIN_PWD_LENGTH
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least {MIN_PWD_LENGTH} characters
-                </li>
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    uppercaseRegex.test(passwordState.password)
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least 1 uppercase letters
-                </li>
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    lowercaseRegex.test(passwordState.password)
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least 1 lowercase letters
-                </li>
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    numberRegex.test(passwordState.password)
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least 1 numerical letters
-                </li>
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    specialCharRegex.test(passwordState.password)
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least 1 special letters
-                </li>
-              </ul>
               <label className="label" htmlFor="new_password_confirm">
                 <span className="label-text">
                   Confirm New Password{' '}
@@ -294,7 +174,7 @@ function StudentProfileEdit(props) {
               </label>
               <input
                 type="password"
-                className="input input-bordered input-primary w-full max-w-xs"
+                className="input-bordered input-primary input w-full max-w-xs"
                 {...register('new_password_confirm')}
                 id="new_password_confirm"
                 placeholder="Confirm Password"
@@ -335,7 +215,7 @@ function StudentProfileEdit(props) {
               </label>
               <input
                 type="text"
-                className="input input-bordered input-primary w-full"
+                className="input-bordered input-primary input w-full"
                 {...register('first_name')}
                 id="first_name"
                 placeholder="Enter First name"
@@ -358,7 +238,7 @@ function StudentProfileEdit(props) {
               </label>
               <input
                 type="text"
-                className="input input-bordered input-primary w-full"
+                className="input-bordered input-primary input w-full"
                 {...register('last_name')}
                 id="last_name"
                 placeholder="Enter Last name"
@@ -381,7 +261,7 @@ function StudentProfileEdit(props) {
           </label>
           <input
             type="email"
-            className="input input-bordered input-primary w-full max-w-xs"
+            className="input-bordered input-primary input w-full max-w-xs"
             {...register('email')}
             id="email"
             placeholder="Enter Email Address"
@@ -409,7 +289,7 @@ function StudentProfileEdit(props) {
           </label>
           <input
             type="tel"
-            className="input input-bordered input-primary w-full max-w-xs"
+            className="input-bordered input-primary input w-full max-w-xs"
             {...register('phone')}
             id="phone"
             placeholder="Enter Phone number"
@@ -431,7 +311,7 @@ function StudentProfileEdit(props) {
             </span>
           </label>
           <select
-            className="select select-bordered select-primary w-48"
+            className="select-bordered select-primary select w-48"
             {...register('gender')}
             id="gender"
             defaultValue=""
@@ -512,7 +392,7 @@ export async function getServerSideProps(context) {
   var subjects;
   try {
     const subjectsRes = await fetch(
-      `http://${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`
+      `${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`
     );
     if (!subjectsRes.ok) {
       throw new Error('Fetch error');
@@ -545,7 +425,7 @@ export async function getServerSideProps(context) {
   var profileData;
   try {
     const res = await fetch(
-      `http://${process.env.NEXT_PUBLIC_API_URL}/student/getById?id=${session.user._id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/student/getById?id=${session.user._id}`,
       { headers: { Authorization: `Bearer ${session.accessToken}` } }
     );
     if (!res.ok) {

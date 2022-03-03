@@ -35,7 +35,7 @@ export async function getServerSideProps(context) {
     console.log(body);
     console.log(session);
     const res = await fetch(
-      `http://${process.env.NEXT_PUBLIC_API_URL}/tutor/match`,
+      `${process.env.NEXT_PUBLIC_API_URL}/tutor/match`,
       {
         method: 'POST',
         mode: 'cors',

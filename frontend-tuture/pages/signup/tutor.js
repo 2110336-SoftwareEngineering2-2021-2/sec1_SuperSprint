@@ -2,35 +2,22 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import zxcvbn from 'zxcvbn';
-import Layout from '../../components/Layout';
-import {
-  uppercaseRegex,
-  lowercaseRegex,
-  numberRegex,
-  specialCharRegex,
-} from '../../components/commons/Regex';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { tutorRegisterSchema } from '../../components/register-pages/TutorSchema';
+
+import { tutorRegisterSchema } from '../../components/signup-pages/TutorSchema';
 import AvatarUpload from '../../components/AvatarUpload';
 import {
-  METER_BG_COLOR,
-  METER_TEXT_COLOR,
-  MIN_PWD_LENGTH,
-  PWD_STRENGTH,
   MAX_SUBJECT,
   MAX_AVAILABILITY,
-} from '../../components/register-pages/Constants';
-import SubjectListForm from '../../components/register-pages/SubjectListForm';
-import AvailabilityListForm from '../../components/register-pages/AvailabilityListForm';
-import PriceRangeForm from '../../components/register-pages/PriceRangeForm';
+} from '../../components/signup-pages/Constants';
+import Layout from '../../components/Layout';
+import SubjectListForm from '../../components/signup-pages/SubjectListForm';
+import AvailabilityListForm from '../../components/signup-pages/AvailabilityListForm';
+import PriceRangeForm from '../../components/signup-pages/PriceRangeForm';
+import { PasswordField } from '../../components/signup-pages/PasswordField';
 
 function TutorRegister({ subjects }) {
-  const [passwordState, setPasswordState] = useState({
-    password: '',
-    score: 0,
-  });
   const {
     register,
     handleSubmit,
@@ -62,11 +49,6 @@ function TutorRegister({ subjects }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
-
-  function onPasswordChange(newPassword) {
-    const evaluation = zxcvbn(newPassword);
-    setPasswordState({ password: newPassword, score: evaluation.score });
-  }
 
   async function submitRegister(data) {
     // event.preventDefault();
@@ -119,7 +101,7 @@ function TutorRegister({ subjects }) {
       };
 
       const res = await fetch(
-        `http://${process.env.NEXT_PUBLIC_API_URL}/auth/register/tutor`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/signup/tutor`,
         options
       );
       if (!res.ok) {
@@ -129,7 +111,11 @@ function TutorRegister({ subjects }) {
       const res_data = await res.json();
       console.log(res_data);
       setLoading(false);
-      router.push('/login');
+      toast('Sign Up Success!', {
+        onClose: () => {
+          router.push('/login');
+        },
+      });
     } catch (error) {
       switch (error.message) {
         case 'duplicate email':
@@ -158,7 +144,7 @@ function TutorRegister({ subjects }) {
   console.log(errors);
 
   return (
-    <Layout title="Register Tutor | Tuture" signedIn={false}>
+    <Layout title="Sign Up Tutor | Tuture" signedIn={false}>
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
         Create Tutor Account
       </h1>
@@ -177,7 +163,7 @@ function TutorRegister({ subjects }) {
                 </span>
               </label>
               <input
-                className="input input-bordered input-primary w-full max-w-xs"
+                className="input-bordered input-primary input w-full max-w-xs"
                 {...register('username')}
                 id="username"
                 type="text"
@@ -205,97 +191,10 @@ function TutorRegister({ subjects }) {
                   Password <span className="label-text text-red-500">*</span>
                 </span>
               </label>
-              <input
-                type="password"
-                className="input input-bordered input-primary w-full max-w-xs"
-                {...register('new_password', {
-                  onChange: (e) => onPasswordChange(e.target.value),
-                })}
-                id="new_password"
-                placeholder="Enter Password"
-                autoComplete="new-password"
+              <PasswordField
+                hookFormRegister={register}
+                hookFormErrors={errors}
               />
-              {errors.new_password && (
-                <label className="label">
-                  <span className="label-text-alt text-error">
-                    {errors.new_password.message}
-                  </span>
-                </label>
-              )}
-              <div className="my-2 flex max-w-xs">
-                {[...Array(5)].map((e, idx) => (
-                  <div key={idx} className="w-1/5 px-1">
-                    <div
-                      className={`h-2 rounded-xl ${
-                        passwordState.score !== 0 && passwordState.score >= idx
-                          ? METER_BG_COLOR[passwordState.score]
-                          : 'bg-base-300'
-                      } transition-colors`}
-                    ></div>
-                  </div>
-                ))}
-              </div>
-              <p
-                className={`max-w-xs text-right ${
-                  METER_TEXT_COLOR[passwordState.score]
-                } ${
-                  passwordState.password.length === 0 ? 'invisible' : 'visible'
-                } text-sm transition-all `}
-              >
-                {PWD_STRENGTH[passwordState.score]}
-              </p>
-              <ul className="ml-8 list-disc">
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    passwordState.password.length >= MIN_PWD_LENGTH
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least {MIN_PWD_LENGTH} characters
-                </li>
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    uppercaseRegex.test(passwordState.password)
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least 1 uppercase letters
-                </li>
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    lowercaseRegex.test(passwordState.password)
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least 1 lowercase letters
-                </li>
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    numberRegex.test(passwordState.password)
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least 1 numerical letters
-                </li>
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    specialCharRegex.test(passwordState.password)
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least 1 special letters
-                </li>
-              </ul>
               <label className="label" htmlFor="new_password_confirm">
                 <span className="label-text">
                   Confirm Password{' '}
@@ -304,7 +203,7 @@ function TutorRegister({ subjects }) {
               </label>
               <input
                 type="password"
-                className="input input-bordered input-primary w-full max-w-xs"
+                className="input-bordered input-primary input w-full max-w-xs"
                 {...register('new_password_confirm')}
                 id="new_password_confirm"
                 placeholder="Confirm Password"
@@ -345,7 +244,7 @@ function TutorRegister({ subjects }) {
               </label>
               <input
                 type="text"
-                className="input input-bordered input-primary w-full"
+                className="input-bordered input-primary input w-full"
                 {...register('first_name')}
                 id="first_name"
                 placeholder="Enter First name"
@@ -368,7 +267,7 @@ function TutorRegister({ subjects }) {
               </label>
               <input
                 type="text"
-                className="input input-bordered input-primary w-full"
+                className="input-bordered input-primary input w-full"
                 {...register('last_name')}
                 id="last_name"
                 placeholder="Enter Last name"
@@ -391,7 +290,7 @@ function TutorRegister({ subjects }) {
           </label>
           <input
             type="email"
-            className="input input-bordered input-primary w-full max-w-xs"
+            className="input-bordered input-primary input w-full max-w-xs"
             {...register('email')}
             id="email"
             placeholder="Enter Email Address"
@@ -419,7 +318,7 @@ function TutorRegister({ subjects }) {
           </label>
           <input
             type="tel"
-            className="input input-bordered input-primary w-full max-w-xs"
+            className="input-bordered input-primary input w-full max-w-xs"
             {...register('phone')}
             id="phone"
             placeholder="Enter Phone number"
@@ -441,7 +340,7 @@ function TutorRegister({ subjects }) {
             </span>
           </label>
           <select
-            className="select select-bordered select-primary w-48"
+            className="select-bordered select-primary select w-48"
             {...register('gender')}
             id="gender"
             defaultValue=""
@@ -551,7 +450,7 @@ function TutorRegister({ subjects }) {
 export async function getServerSideProps(context) {
   try {
     const subjectsRes = await fetch(
-      `http://${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`
+      `${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`
     );
     const subjectsData = await subjectsRes.json();
 

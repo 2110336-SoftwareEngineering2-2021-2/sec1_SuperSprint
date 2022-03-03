@@ -7,7 +7,6 @@ import Link from 'next/link';
 const AnonNavbar = ({ children }) => {
   const { theme, setTheme } = useTheme();
 
-
   return (
     <>
       <div className="navbar top-0 z-50 w-full text-neutral-content shadow-md shadow-primary-focus/25">
@@ -17,8 +16,7 @@ const AnonNavbar = ({ children }) => {
               Tuture
             </button>
           </Link>
-          <div>
-          </div>
+          <div></div>
         </div>
 
         <div className="flex flex-none items-center">
@@ -33,12 +31,19 @@ const AnonNavbar = ({ children }) => {
             <FontAwesomeIcon fixedWidth icon={faMoon} className="swap-on" />
           </label>
           <div className="divider divider-horizontal"></div>
-          <a onClick={() => signIn()} className="w-20 min-w-fit text-center text-sm normal-case text-base-content transition-colors hover:text-primary-focus sm:w-24 sm:text-base cursor-pointer">
+          <a
+            href="/login"
+            onClick={(e) => {
+              e.preventDefault();
+              signIn();
+            }}
+            className="w-20 min-w-fit cursor-pointer text-center text-sm normal-case text-base-content transition-colors hover:text-primary-focus sm:w-24 sm:text-base"
+          >
             Log In
           </a>
-          <Link href="/register">
+          <Link href="/signup">
             <a className="btn btn-primary btn-sm w-20 text-sm normal-case text-primary-content sm:btn-md sm:w-24 sm:text-base">
-              Register
+              Sign Up
             </a>
           </Link>
         </div>

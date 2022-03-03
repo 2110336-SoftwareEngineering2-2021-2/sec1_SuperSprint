@@ -22,7 +22,7 @@ export default function TutorProfile({
       <div className="flex flex-1 flex-col items-center justify-center gap-2">
         <div className="avatar">
           <div className="m-2 w-40 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100 md:w-48">
-            <img src={imgUrl} />
+            <img src={imgUrl} alt="Profile Avatar" />
           </div>
         </div>
         {session && session.user.role === 'tutor' && (

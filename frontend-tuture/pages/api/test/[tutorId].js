@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  await fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/student/chooseTutor`, {
+  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/student/chooseTutor`, {
     method: 'POST',
     mode: 'cors',
     credentials: 'same-origin',

@@ -73,7 +73,7 @@ function ProfileDropdown({ name, profileImg }) {
         <li>
           <a onClick={() => signOut({callbackUrl: "/login"})}>
             <FontAwesomeIcon fixedWidth icon={faSignOutAlt} />
-            Logout
+            Log Out
           </a>
         </li>
       </ul>

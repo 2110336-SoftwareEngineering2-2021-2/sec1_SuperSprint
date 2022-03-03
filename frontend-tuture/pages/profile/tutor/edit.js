@@ -1,32 +1,24 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { useSession, getSession, signOut } from 'next-auth/react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import zxcvbn from 'zxcvbn';
 import Layout from '../../../components/Layout';
-import {
-  uppercaseRegex,
-  lowercaseRegex,
-  numberRegex,
-  specialCharRegex,
-} from '../../../components/commons/Regex';
-import { useForm, useFormState } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+
 import AvatarUpload from '../../../components/AvatarUpload';
 import {
-  METER_BG_COLOR,
-  METER_TEXT_COLOR,
-  MIN_PWD_LENGTH,
-  PWD_STRENGTH,
   MAX_SUBJECT,
   MAX_AVAILABILITY,
-} from '../../../components/register-pages/Constants';
-import SubjectListForm from '../../../components/register-pages/SubjectListForm';
-import AvailabilityListForm from '../../../components/register-pages/AvailabilityListForm';
-import PriceRangeForm from '../../../components/register-pages/PriceRangeForm';
-import { useSession, getSession, signOut } from 'next-auth/react';
+} from '../../../components/signup-pages/Constants';
+import SubjectListForm from '../../../components/signup-pages/SubjectListForm';
+import AvailabilityListForm from '../../../components/signup-pages/AvailabilityListForm';
+import PriceRangeForm from '../../../components/signup-pages/PriceRangeForm';
 import fetchWithTimeout from '../../../lib/fetchWithTimeout';
 import { tutorEditSchema } from '../../../components/profile/TutorSchema';
+import { PasswordField } from '../../../components/signup-pages/PasswordField';
 
 function TutorProfileEdit(props) {
   // destringify date item
@@ -39,12 +31,6 @@ function TutorProfileEdit(props) {
     });
   }
 
-  console.log(props.profileData);
-
-  const [passwordState, setPasswordState] = useState({
-    password: '',
-    score: 0,
-  });
   const {
     register,
     handleSubmit,
@@ -84,58 +70,9 @@ function TutorProfileEdit(props) {
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
 
-  function onPasswordChange(newPassword) {
-    const evaluation = zxcvbn(newPassword);
-    setPasswordState({ password: newPassword, score: evaluation.score });
-  }
-
-  //const router = useRouter();
-  // const schema = yup.object().shape({
-  //   avail_date: yup.date(),
-  //   avail_time_from: yup.string().required(),
-  //   avail_time_to: yup
-  //     .string()
-  //     .required()
-  //     .test('is-greater', 'end time should be greater', function (value) {
-  //       const { avail_time_from } = this.parent;
-  //       return moment(value, 'HH:mm').isSameOrAfter(
-  //         moment(avail_time_from, 'HH:mm')
-  //       );
-  //     }),
-  // });
-  console.log(errors);
-
   async function submitRegister(data) {
-    // event.preventDefault();
-    console.log(data);
-    console.log('Pass');
-    // if (!(await validateForm(data))) {
-    //   return;
-    // }
-    // router.push(
-    //   {
-    //     pathname: '/matching/result/[result]',
-    //     query: {
-    //       result: JSON.stringify({
-    //         study_subject: event.target.study_subject.value,
-    //         levels: event.target.edu_level.value,
-    //         price_min: event.target.price_min.value,
-    //         price_max: event.target.price_max.value,
-    //         availability: availFormVals,
-    //       }),
-    //     },
-    //   },
-    //   '/matching/result/'
-    // );
     const formData = new FormData();
-
-    console.log(
-      'subjects',
-      data.subjects.map((e) => e.level)
-    );
-
     formData.append('image', data.avatar.file || '');
-
     formData.append('username', data.username);
     formData.append('password', data.new_password);
     formData.append('firstName', data.first_name);
@@ -163,7 +100,6 @@ function TutorProfileEdit(props) {
       );
     }
 
-    console.log(session);
     try {
       const options = {
         method: 'PATCH',
@@ -177,7 +113,7 @@ function TutorProfileEdit(props) {
 
       setLoading(true);
       const res = await fetch(
-        `http://${process.env.NEXT_PUBLIC_API_URL}/tutor/${session.user._id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/tutor/${session.user._id}`,
         options
       );
       if (!res.ok) {
@@ -188,7 +124,11 @@ function TutorProfileEdit(props) {
       const res_data = await res.json();
       console.log(res_data);
       setLoading(false);
-      signOut();
+      toast('Profile Edited!', {
+        onClose: () => {
+          signOut();
+        },
+      });
       // router.push('/login');
       // router.push('/profile/tutor');
     } catch (error) {
@@ -266,97 +206,10 @@ function TutorProfileEdit(props) {
                   <span className="label-text text-red-500">*</span>
                 </span>
               </label>
-              <input
-                type="password"
-                className="input input-bordered input-primary w-full max-w-xs"
-                {...register('new_password', {
-                  onChange: (e) => onPasswordChange(e.target.value),
-                })}
-                id="new_password"
-                placeholder="Enter Password"
-                autoComplete="new-password"
+              <PasswordField
+                hookFormRegister={register}
+                hookFormErrors={errors}
               />
-              {errors.new_password && (
-                <label className="label">
-                  <span className="label-text-alt text-error">
-                    {errors.new_password.message}
-                  </span>
-                </label>
-              )}
-              <div className="my-2 flex max-w-xs">
-                {[...Array(5)].map((e, idx) => (
-                  <div key={idx} className="w-1/5 px-1">
-                    <div
-                      className={`h-2 rounded-xl ${
-                        passwordState.score !== 0 && passwordState.score >= idx
-                          ? METER_BG_COLOR[passwordState.score]
-                          : 'bg-base-300'
-                      } transition-colors`}
-                    ></div>
-                  </div>
-                ))}
-              </div>
-              <p
-                className={`max-w-xs text-right ${
-                  METER_TEXT_COLOR[passwordState.score]
-                } ${
-                  passwordState.password.length === 0 ? 'invisible' : 'visible'
-                } text-sm transition-all `}
-              >
-                {PWD_STRENGTH[passwordState.score]}
-              </p>
-              <ul className="ml-8 list-disc">
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    passwordState.password.length >= MIN_PWD_LENGTH
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least {MIN_PWD_LENGTH} characters
-                </li>
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    uppercaseRegex.test(passwordState.password)
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least 1 uppercase letters
-                </li>
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    lowercaseRegex.test(passwordState.password)
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least 1 lowercase letters
-                </li>
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    numberRegex.test(passwordState.password)
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least 1 numerical letters
-                </li>
-                <li
-                  className={`text-sm transition-colors ${
-                    passwordState.password.length === 0 ||
-                    specialCharRegex.test(passwordState.password)
-                      ? 'text-zinc-500/70'
-                      : 'text-error'
-                  }`}
-                >
-                  Contains at least 1 special letters
-                </li>
-              </ul>
               <label className="label" htmlFor="new_password_confirm">
                 <span className="label-text">
                   Confirm New Password{' '}
@@ -634,7 +487,7 @@ export async function getServerSideProps(context) {
   var subjects;
   try {
     const subjectsRes = await fetchWithTimeout(
-      `http://${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`,
+      `${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`,
       {
         timeout: 2000,
       }
@@ -669,7 +522,7 @@ export async function getServerSideProps(context) {
   var profileData;
   try {
     const res = await fetch(
-      `http://${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${session.user._id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${session.user._id}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,

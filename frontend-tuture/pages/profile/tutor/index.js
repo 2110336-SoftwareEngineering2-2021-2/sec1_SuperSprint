@@ -20,7 +20,7 @@ export default function tutor(props) {
     <Layout>
       <div className="mb-4">
         <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-          Tutor's Profile
+            {`${props.data.tutorName}'s Profile`}
         </h1>
         <div className="mx-2 items-center justify-center">
           <TutorProfile {...props.data} />
@@ -43,8 +43,8 @@ export async function getServerSideProps(context) {
   const session = await getSession(context);
   try {
     const res = await fetch(
-      // `http://${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
-      `http://${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${session.user._id}`,
+      // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
+      `${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${session.user._id}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,

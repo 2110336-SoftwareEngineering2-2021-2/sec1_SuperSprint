@@ -68,7 +68,7 @@ export default function Testpage() {
               })
             }
           >
-            Sign in
+            Log In
           </button>
         </>
       )}

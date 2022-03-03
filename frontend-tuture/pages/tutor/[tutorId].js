@@ -30,7 +30,7 @@ export default function tutorOther({ data }) {
       <Layout>
         <div className="text-b flex justify-center text-3xl">
           <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-            Tutor's Profile
+            {`${data.tutorName}'s Profile`}
           </h1>
         </div>
         <div className="items-center justify-center px-20">
@@ -58,7 +58,7 @@ export async function getServerSideProps(context) {
 
   try {
     const res = await fetch(
-      `http://${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${query.tutorId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${query.tutorId}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
