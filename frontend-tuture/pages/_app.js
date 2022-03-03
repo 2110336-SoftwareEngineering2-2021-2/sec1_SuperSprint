@@ -16,7 +16,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     <ThemeProvider>
       <SessionProvider session={session}>
         <NavbarControl signedIn={false}>
-          <NextNProgress color="#ffc400" options={{ parent: 'main' }} />
+          <NextNProgress color="#ffab00" options={{ parent: 'main' }} />
           <Component {...pageProps} />
         </NavbarControl>
       </SessionProvider>
@@ -28,7 +28,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 //   const session = await getSession(context);
 //   const userRole = session.user.role;
 //   const res = await fetch(
-//     `http://${process.env.NEXT_PUBLIC_API_URL}/${userRole}/getById?id=${session.user._id}`,
+//     `${process.env.NEXT_PUBLIC_API_URL}/${userRole}/getById?id=${session.user._id}`,
 //     {
 //       headers: {
 //         Authorization: `Bearer ${session.accessToken}`,

@@ -106,8 +106,8 @@ export default function Login({ error }) {
           }}
         >
           <div className="form-control mx-auto w-full max-w-xs">
-            <label class="label">
-              <span class="label-text">Username</span>
+            <label className="label">
+              <span className="label-text">Username</span>
             </label>
             <input
               className="input input-bordered input-primary w-full max-w-xs"
@@ -119,8 +119,8 @@ export default function Login({ error }) {
               required
               onChange={(e) => setUsername(e.target.value)}
             />
-            <label class="label">
-              <span class="label-text">Password</span>
+            <label className="label">
+              <span className="label-text">Password</span>
             </label>
             <input
               type="password"
