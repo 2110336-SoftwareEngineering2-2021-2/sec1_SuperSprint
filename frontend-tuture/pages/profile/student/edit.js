@@ -1,16 +1,18 @@
-import { PasswordField } from './PasswordField';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { getSession, useSession, signOut } from 'next-auth/react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import Layout from '../../../components/Layout';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
+
+import Layout from '../../../components/Layout';
+import { PasswordField } from '../../../components/signup-pages/PasswordField';
 import { studentEditSchema } from '../../../components/profile/StudentSchema';
 import AvatarUpload from '../../../components/AvatarUpload';
-import { MAX_SUBJECT } from '../../../components/register-pages/Constants';
-import SubjectListForm from '../../../components/register-pages/SubjectListForm';
-import { getSession, useSession, signOut } from 'next-auth/react';
+import { MAX_SUBJECT } from '../../../components/signup-pages/Constants';
+import SubjectListForm from '../../../components/signup-pages/SubjectListForm';
 
 function StudentProfileEdit(props) {
   const {
@@ -78,9 +80,13 @@ function StudentProfileEdit(props) {
       }
       setFetchError(null);
       setLoading(false);
-      signOut();
-      router.push('/login');
+      // router.push('/login');
       // router.push('/profile/student');
+      toast('Profile Edited!', {
+        onClose: () => {
+          signOut();
+        },
+      });
     } catch (error) {
       switch (error.message) {
         case 'duplicate email':

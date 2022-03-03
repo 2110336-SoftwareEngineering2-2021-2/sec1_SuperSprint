@@ -1,23 +1,24 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { useSession, getSession, signOut } from 'next-auth/react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import zxcvbn from 'zxcvbn';
 import Layout from '../../../components/Layout';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+
 import AvatarUpload from '../../../components/AvatarUpload';
 import {
   MAX_SUBJECT,
   MAX_AVAILABILITY,
-} from '../../../components/register-pages/Constants';
-import SubjectListForm from '../../../components/register-pages/SubjectListForm';
-import AvailabilityListForm from '../../../components/register-pages/AvailabilityListForm';
-import PriceRangeForm from '../../../components/register-pages/PriceRangeForm';
-import { useSession, getSession, signOut } from 'next-auth/react';
+} from '../../../components/signup-pages/Constants';
+import SubjectListForm from '../../../components/signup-pages/SubjectListForm';
+import AvailabilityListForm from '../../../components/signup-pages/AvailabilityListForm';
+import PriceRangeForm from '../../../components/signup-pages/PriceRangeForm';
 import fetchWithTimeout from '../../../lib/fetchWithTimeout';
 import { tutorEditSchema } from '../../../components/profile/TutorSchema';
-import { PasswordField } from '../../../components/register-pages/PasswordField';
+import { PasswordField } from '../../../components/signup-pages/PasswordField';
 
 function TutorProfileEdit(props) {
   // destringify date item
@@ -123,7 +124,11 @@ function TutorProfileEdit(props) {
       const res_data = await res.json();
       console.log(res_data);
       setLoading(false);
-      signOut();
+      toast('Profile Edited!', {
+        onClose: () => {
+          signOut();
+        },
+      });
       // router.push('/login');
       // router.push('/profile/tutor');
     } catch (error) {

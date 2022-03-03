@@ -2,20 +2,20 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import zxcvbn from 'zxcvbn';
-import Layout from '../../components/Layout';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { tutorRegisterSchema } from '../../components/register-pages/TutorSchema';
+
+import { tutorRegisterSchema } from '../../components/signup-pages/TutorSchema';
 import AvatarUpload from '../../components/AvatarUpload';
 import {
   MAX_SUBJECT,
   MAX_AVAILABILITY,
-} from '../../components/register-pages/Constants';
-import SubjectListForm from '../../components/register-pages/SubjectListForm';
-import AvailabilityListForm from '../../components/register-pages/AvailabilityListForm';
-import PriceRangeForm from '../../components/register-pages/PriceRangeForm';
-import { PasswordField } from '../../components/register-pages/PasswordField';
+} from '../../components/signup-pages/Constants';
+import Layout from '../../components/Layout';
+import SubjectListForm from '../../components/signup-pages/SubjectListForm';
+import AvailabilityListForm from '../../components/signup-pages/AvailabilityListForm';
+import PriceRangeForm from '../../components/signup-pages/PriceRangeForm';
+import { PasswordField } from '../../components/signup-pages/PasswordField';
 
 function TutorRegister({ subjects }) {
   const {
@@ -101,7 +101,7 @@ function TutorRegister({ subjects }) {
       };
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/register/tutor`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/signup/tutor`,
         options
       );
       if (!res.ok) {
@@ -111,7 +111,11 @@ function TutorRegister({ subjects }) {
       const res_data = await res.json();
       console.log(res_data);
       setLoading(false);
-      router.push('/login');
+      toast('Sign Up Success!', {
+        onClose: () => {
+          router.push('/login');
+        },
+      });
     } catch (error) {
       switch (error.message) {
         case 'duplicate email':
@@ -140,7 +144,7 @@ function TutorRegister({ subjects }) {
   console.log(errors);
 
   return (
-    <Layout title="Register Tutor | Tuture" signedIn={false}>
+    <Layout title="Sign Up Tutor | Tuture" signedIn={false}>
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
         Create Tutor Account
       </h1>

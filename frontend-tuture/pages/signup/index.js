@@ -7,7 +7,7 @@ import StudentImage from '../../public/images/students-studying-physics-in-class
 
 function Register() {
   return (
-    <Layout title="Register | Tuture" signedIn={false}>
+    <Layout title="Sign Up | Tuture" signedIn={false}>
       <div className="container m-auto flex flex-col gap-4">
         <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
           Sign Up
@@ -27,7 +27,7 @@ function Register() {
             <div className="card-body items-center text-center">
               <h2 className="card-title">Student</h2>
               <div className="card-actions">
-                <Link href="/register/student" passHref>
+                <Link href="/signup/student" passHref>
                   <button className="btn btn-primary btn-sm">Select</button>
                 </Link>
               </div>
@@ -48,7 +48,7 @@ function Register() {
             <div className="card-body items-center text-center">
               <h2 className="card-title">Tutor</h2>
               <div className="card-actions">
-                <Link href="/register/tutor" passHref>
+                <Link href="/signup/tutor" passHref>
                   <button className="btn btn-primary btn-sm">Select</button>
                 </Link>
               </div>

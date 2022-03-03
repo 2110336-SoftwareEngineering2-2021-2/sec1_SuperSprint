@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import Layout from '../../components/Layout';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
-import { studentRegisterSchema } from '../../components/register-pages/StudentSchema';
+
+import Layout from '../../components/Layout';
+import { studentRegisterSchema } from '../../components/signup-pages/StudentSchema';
 import AvatarUpload from '../../components/AvatarUpload';
-import { MAX_SUBJECT } from '../../components/register-pages/Constants';
-import SubjectListForm from '../../components/register-pages/SubjectListForm';
-import { PasswordField } from '../../components/register-pages/PasswordField';
+import { MAX_SUBJECT } from '../../components/signup-pages/Constants';
+import SubjectListForm from '../../components/signup-pages/SubjectListForm';
+import { PasswordField } from '../../components/signup-pages/PasswordField';
 
 function StudentRegister({ subjects }) {
   const {
@@ -64,7 +66,7 @@ function StudentRegister({ subjects }) {
       };
       setLoading(true);
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/register/student`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/signup/student`,
         options
       );
       if (!res.ok) {
@@ -73,7 +75,11 @@ function StudentRegister({ subjects }) {
       }
       setFetchError(null);
       setLoading(false);
-      router.push('/login');
+      toast('Sign Up Success!', {
+        onClose: () => {
+          router.push('/login');
+        },
+      });
     } catch (error) {
       switch (error.message) {
         case 'duplicate email':
@@ -100,7 +106,7 @@ function StudentRegister({ subjects }) {
   }
 
   return (
-    <Layout title="Register Student | Tuture" signedIn={false}>
+    <Layout title="Sign Up Student | Tuture" signedIn={false}>
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
         Create Student Account
       </h1>
@@ -161,7 +167,7 @@ function StudentRegister({ subjects }) {
                 type="password"
                 className="input-bordered input-primary input w-full max-w-xs"
                 {...register('new_password_confirm')}
-              id="new_password_confirm"
+                id="new_password_confirm"
                 placeholder="Confirm Password"
                 autoComplete="new-password"
                 required

@@ -18,7 +18,7 @@ function Landing() {
             <p className="py-6">
               Platform where who love to teach and study met.
             </p>
-            <Link href="/register" passHref>
+            <Link href="/signup" passHref>
               <button className="btn btn-primary">Get Started</button>
             </Link>
           </div>
