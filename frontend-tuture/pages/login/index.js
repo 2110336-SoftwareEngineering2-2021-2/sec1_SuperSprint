@@ -17,14 +17,14 @@ export default function Login({ error }) {
   const [password, setPassword] = useState('');
 
   function onSignInClick() {
-    console.log('onSignInClick', role, username, password);
+    // console.log('onSignInClick', role, username, password);
     setLoading(true);
     signIn('credentials', {
       username: role + username,
       password: password,
       callbackUrl: '/',
     });
-    setLoading(false);
+    // setLoading(false);
   }
 
   return (

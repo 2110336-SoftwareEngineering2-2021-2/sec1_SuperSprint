@@ -24,6 +24,7 @@ function TutorRegister({ subjects }) {
     formState: { errors },
     control,
     setValue,
+    setFocus,
     watch,
     reset,
   } = useForm({
@@ -123,18 +124,21 @@ function TutorRegister({ subjects }) {
             location: ['email'],
             message: error.message,
           });
+          setFocus('email');
           break;
         case 'duplicate username':
           setFetchError({
             location: ['username'],
             message: error.message,
           });
+          setFocus('username');
           break;
         case 'duplicate username and email':
           setFetchError({
             location: ['username', 'email'],
             message: error.message,
           });
+          setFocus('username');
           break;
       }
     }
@@ -155,7 +159,7 @@ function TutorRegister({ subjects }) {
           onSubmit={handleSubmit(submitRegister)}
         >
           <h2 className="-mx-4 my-3 text-xl font-bold">Account</h2>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col flex-wrap gap-4 sm:flex-row">
             <div className="w-full flex-[2] sm:w-2/3">
               <label className="label" htmlFor="username">
                 <span className="label-text">
@@ -163,7 +167,7 @@ function TutorRegister({ subjects }) {
                 </span>
               </label>
               <input
-                className="input-bordered input-primary input w-full max-w-xs"
+                className="input input-bordered input-primary w-full max-w-xs"
                 {...register('username')}
                 id="username"
                 type="text"
@@ -203,7 +207,7 @@ function TutorRegister({ subjects }) {
               </label>
               <input
                 type="password"
-                className="input-bordered input-primary input w-full max-w-xs"
+                className="input input-bordered input-primary w-full max-w-xs"
                 {...register('new_password_confirm')}
                 id="new_password_confirm"
                 placeholder="Confirm Password"
@@ -218,7 +222,7 @@ function TutorRegister({ subjects }) {
                 </label>
               )}
             </div>
-            <div className="flex w-full flex-1 flex-col items-center sm:w-1/3">
+            <div className="flex w-fit flex-1 flex-col items-center sm:w-1/3">
               <label className="label w-fit" htmlFor="avatar">
                 <span className="label-text">Profile picture </span>
               </label>
@@ -235,7 +239,7 @@ function TutorRegister({ subjects }) {
 
           <h2 className="-mx-4 mb-3 text-xl font-bold">Personal Information</h2>
 
-          <div className="mb-2 flex w-full flex-wrap gap-4">
+          <div className="mb-2 flex w-full flex-wrap gap-0 sm:gap-4">
             <div className="relative mb-2 w-64 sm:mb-0">
               <label className="label w-fit" htmlFor="first_name">
                 <span className="label-text">
@@ -244,7 +248,7 @@ function TutorRegister({ subjects }) {
               </label>
               <input
                 type="text"
-                className="input-bordered input-primary input w-full"
+                className="input input-bordered input-primary w-full"
                 {...register('first_name')}
                 id="first_name"
                 placeholder="Enter First name"
@@ -267,7 +271,7 @@ function TutorRegister({ subjects }) {
               </label>
               <input
                 type="text"
-                className="input-bordered input-primary input w-full"
+                className="input input-bordered input-primary w-full"
                 {...register('last_name')}
                 id="last_name"
                 placeholder="Enter Last name"
@@ -290,7 +294,7 @@ function TutorRegister({ subjects }) {
           </label>
           <input
             type="email"
-            className="input-bordered input-primary input w-full max-w-xs"
+            className="input input-bordered input-primary w-full max-w-xs"
             {...register('email')}
             id="email"
             placeholder="Enter Email Address"
@@ -318,7 +322,7 @@ function TutorRegister({ subjects }) {
           </label>
           <input
             type="tel"
-            className="input-bordered input-primary input w-full max-w-xs"
+            className="input input-bordered input-primary w-full max-w-xs"
             {...register('phone')}
             id="phone"
             placeholder="Enter Phone number"
@@ -340,7 +344,7 @@ function TutorRegister({ subjects }) {
             </span>
           </label>
           <select
-            className="select-bordered select-primary select w-48"
+            className="select select-bordered select-primary w-48"
             {...register('gender')}
             id="gender"
             defaultValue=""

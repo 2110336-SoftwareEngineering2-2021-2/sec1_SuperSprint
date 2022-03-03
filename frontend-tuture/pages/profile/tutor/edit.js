@@ -37,6 +37,7 @@ function TutorProfileEdit(props) {
     formState: { errors },
     control,
     setValue,
+    setFocus,
     watch,
     reset,
   } = useForm({
@@ -119,7 +120,7 @@ function TutorProfileEdit(props) {
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.message || 'Fetch Error');
-      };
+      }
       setFetchError(null);
       const res_data = await res.json();
       console.log(res_data);
@@ -138,18 +139,21 @@ function TutorProfileEdit(props) {
             location: ['email'],
             message: error.message,
           });
+          setFocus('email');
           break;
         case 'duplicate username':
           setFetchError({
             location: ['username'],
             message: error.message,
           });
+          setFocus('username');
           break;
         case 'duplicate username and email':
           setFetchError({
             location: ['username', 'email'],
             message: error.message,
           });
+          setFocus('username');
           break;
       }
     }
@@ -168,7 +172,7 @@ function TutorProfileEdit(props) {
           onSubmit={handleSubmit(submitRegister)}
         >
           <h2 className="-mx-4 my-3 text-xl font-bold">Account</h2>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col flex-wrap gap-4 sm:flex-row">
             <div className="w-full flex-[2] sm:w-2/3">
               <label className="label" htmlFor="username">
                 <span className="label-text">
@@ -232,7 +236,7 @@ function TutorProfileEdit(props) {
                 </label>
               )}
             </div>
-            <div className="flex w-full flex-1 flex-col items-center sm:w-1/3">
+            <div className="flex w-fit flex-1 flex-col items-center sm:w-1/3">
               <label className="label w-fit" htmlFor="avatar">
                 <span className="label-text">Profile picture </span>
               </label>
@@ -251,7 +255,7 @@ function TutorProfileEdit(props) {
 
           <h2 className="-mx-4 mb-3 text-xl font-bold">Personal Information</h2>
 
-          <div className="mb-2 flex w-full flex-wrap gap-4">
+          <div className="mb-2 flex w-full flex-wrap gap-0 sm:gap-4">
             <div className="relative mb-2 w-64 sm:mb-0">
               <label className="label w-fit" htmlFor="first_name">
                 <span className="label-text">
