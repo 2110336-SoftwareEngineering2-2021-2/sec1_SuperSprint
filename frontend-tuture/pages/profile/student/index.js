@@ -20,7 +20,7 @@ export default function student(props) {
     <Layout>
       <div className="mb-4">
         <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-          {`${props.data.studentName}'s Profile`}
+          {`${props.data.firstName}'s Profile`}
         </h1>
         <div className="mx-2 items-center justify-center">
           <StudentProfile {...props.data} />
@@ -81,7 +81,8 @@ export async function getServerSideProps(context) {
         data: {
           username: 'johndoe',
           e_mail: 'johndoe@gmail.com',
-          studentName: 'studentName',
+          firstName: 'John',
+          lastName: 'Doe',
           gender: 'yes',
           // birthDate: '1 Jan 1000',
           phoneNumber: '0123456789',

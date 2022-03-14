@@ -88,7 +88,8 @@ export async function getServerSideProps(context) {
         data: {
           username: 'johndoe',
           e_mail: 'johndoe@gmail.com',
-          tutorName: 'JohnDoe',
+          firstName: 'John',
+          lastName: 'Doe',
           gender: 'fegirl',
           // birthDate: '1 Jan 1000',
           phoneNumber: '0123456789',
