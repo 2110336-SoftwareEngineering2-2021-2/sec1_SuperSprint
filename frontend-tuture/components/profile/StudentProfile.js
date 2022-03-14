@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import AvatarUrl from '../AvatarUrl';
+import avatarUrl from '../../lib/avatarUrl';
 // import LineImage from '../../public/images/Yellow-Vertical-Line.svg';
 
 export default function StudentProfile({
@@ -20,7 +20,7 @@ export default function StudentProfile({
       <div className="flex flex-1 flex-col items-center justify-center gap-2">
         <div className="avatar">
           <div className="m-2 w-40 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100 md:w-48">
-            <img src={AvatarUrl(imgUrl, firstName + lastName + id)} alt="Profile Avatar" />
+            <img src={avatarUrl(imgUrl, firstName + lastName + id)} alt="Profile Avatar" />
           </div>
         </div>
         <div className="mx-auto w-fit">

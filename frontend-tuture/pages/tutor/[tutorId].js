@@ -1,43 +1,21 @@
 import TutorProfile from '../../components/profile/TutorProfile';
-
 import React from 'react';
 import Layout from '../../components/Layout';
-import TutorImage from '../../public/images/President-Putin.png';
-import { useRouter } from 'next/router';
 import { getSession } from 'next-auth/react';
-
-function whatGender(smile) {
-  if (smile === 'f') {
-    return 'female';
-  } else if (smile === 'm') {
-    return 'male';
-  } else {
-    return 'Unspecified';
-  }
-}
+import whatGender from '../../lib/whatGender';
 
 export default function tutorOther({ data }) {
-  const subjects = ['CEM III', 'Algorithm II', 'Physics VII'];
-
-  // const router = useRouter();
-
-  // const { tutorId } = router.query;
-
-  // console.log(tutorId);
-
   return (
-    <div>
-      <Layout>
-        <div className="text-b flex justify-center text-3xl">
-          <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-            {`${data.firstName}'s Profile`}
-          </h1>
-        </div>
-        <div className="items-center justify-center px-20">
-          <TutorProfile {...data} />
-        </div>
-      </Layout>
-    </div>
+    <Layout>
+      <div className="text-b flex justify-center text-3xl">
+        <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
+          {`${data.firstName}'s Profile`}
+        </h1>
+      </div>
+      <div className="items-center justify-center px-20">
+        <TutorProfile {...data} />
+      </div>
+    </Layout>
   );
 }
 
@@ -70,7 +48,6 @@ export async function getServerSideProps(context) {
           firstName: data.firstName,
           lastName: data.lastName,
           gender: whatGender(data.gender),
-          // birthDate: data.birthDate, //!
           phoneNumber: data.phone,
           preferredSubjects: data.teachSubject,
           priceMin: data.priceMin,

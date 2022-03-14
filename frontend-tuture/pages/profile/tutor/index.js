@@ -3,25 +3,16 @@ import Link from 'next/link';
 import React from 'react';
 import Layout from '../../../components/Layout';
 import { getSession } from 'next-auth/react';
-
-function whatGender(smile) {
-  if (smile === 'f') {
-    return 'female';
-  } else if (smile === 'm') {
-    return 'male';
-  } else {
-    return 'unspecified';
-  }
-}
+import whatGender from '../../../lib/whatGender';
 
 export default function tutor(props) {
   return (
     <Layout>
       <div className="mb-4">
         <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-            {`${props.data.firstName}'s Profile`}
+          {`${props.data.firstName}'s Profile`}
         </h1>
-        <div className="mx-2 items-center justify-center">
+        <div className="items-center justify-center px-20">
           <TutorProfile {...props.data} />
         </div>
         <div className="flex w-full justify-center">

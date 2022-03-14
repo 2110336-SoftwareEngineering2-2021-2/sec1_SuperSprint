@@ -6,7 +6,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Transition } from '@headlessui/react';
 import { useEffect, useState } from 'react';
-import AvatarUrl from './AvatarUrl';
+import avatarUrl from '../lib/avatarUrl';
 
 export default function TutorCard({
   firstName,
@@ -51,7 +51,7 @@ export default function TutorCard({
         tabIndex={0}
       >
         <img
-          src={AvatarUrl(profileImg, firstName + lastName + tutorId)}
+          src={avatarUrl(profileImg, firstName + lastName + tutorId)}
           alt="Profile picture of the tutor"
           className="h-36 w-24 flex-1 rounded-lg object-cover sm:w-48"
           loading="lazy"
