@@ -100,7 +100,8 @@ function TutorRegister({ subjects }) {
         credentials: 'same-origin',
         body: formData,
       };
-
+      
+      setLoading(true);
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/signup/tutor`,
         options

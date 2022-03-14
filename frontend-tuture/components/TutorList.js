@@ -22,10 +22,10 @@ const SORT_OPTION = [
   {
     sortMode: 'name',
     func: (a, b) => {
-      if (a.first_name !== b.first_name)
-        return a.first_name < b.first_name ? -1 : 1;
-      if (a.last_name !== b.last_name)
-        return a.last_name < b.last_name ? -1 : 1;
+      if (a.firstName !== b.firstName)
+        return a.firstName < b.firstName ? -1 : 1;
+      if (a.lastName !== b.lastName)
+        return a.lastName < b.lastName ? -1 : 1;
       return 0;
     },
   },
@@ -85,17 +85,17 @@ function TutorList({
         {tutors.length > 0 ? (
           tutorsHandling(tutors).map((item, idx) => (
             <TutorCard
-              key={idx}
-              tutor_id={item.tutor_id}
-              first_name={item.first_name}
-              last_name={item.last_name}
+              key={item.tutorId}
+              tutorId={item.tutorId}
+              firstName={item.firstName}
+              lastName={item.lastName}
               profileImg={item.profileImg}
               subjects={item.subjects}
               levels={item.levels}
               rating={item.rating}
               price={item.price}
-              onCardClick={() => router.push(`/tutor/${item.tutor_id}`)}
-              onChooseClick={() => chooseTutorHandler(item.tutor_id)}
+              onCardClick={() => router.push(`/tutor/${item.tutorId}`)}
+              onChooseClick={() => chooseTutorHandler(item.tutorId)}
             />
           ))
         ) : (

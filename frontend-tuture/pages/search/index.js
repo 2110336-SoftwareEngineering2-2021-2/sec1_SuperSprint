@@ -34,9 +34,9 @@ export async function getServerSideProps(context) {
 
     const tutors = data.tutorList.map((item) => {
       return {
-        first_name: item.firstName,
-        last_name: item.lastName,
-        tutor_id: item._id,
+        firstName: item.firstName,
+        lastName: item.lastName,
+        tutorId: item._id,
         profileImg: item.profileUrl,
         subjects: item.teachSubject.map((e) => e.title),
         levels: Array.from(new Set(item.teachSubject.map((e) => e.level))),

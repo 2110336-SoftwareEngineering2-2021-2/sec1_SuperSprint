@@ -5,8 +5,6 @@ import Layout from '../../../components/Layout';
 import TutorImage from '../../../public/images/President-Putin.png';
 import { getSession } from 'next-auth/react';
 
-// const subjects = ["CEM III","Algorithm II","Physics VII"];
-
 function whatGender(smile) {
   if (smile === 'f') {
     return 'female';
@@ -22,7 +20,7 @@ export default function student(props) {
     <Layout>
       <div className="mb-4">
         <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-            {`${props.data.studentName}'s Profile`}
+          {`${props.data.studentName}'s Profile`}
         </h1>
         <div className="mx-2 items-center justify-center">
           <StudentProfile {...props.data} />
@@ -44,12 +42,8 @@ export default function student(props) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  // console.log("user id is:");
-  // console.log(session.user._id);
-
   try {
     const res = await fetch(
-      // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
       `${process.env.NEXT_PUBLIC_API_URL}/student/getById?id=${session.user._id}`,
       {
         headers: {
@@ -67,9 +61,11 @@ export async function getServerSideProps(context) {
     return {
       props: {
         data: {
+          id: data._id,
           username: data.username,
           e_mail: data.email,
-          studentName: data.firstName + ' ' + data.lastName,
+          firstName: data.firstName,
+          lastName: data.lastName,
           gender: whatGender(data.gender),
           // birthDate: data.birthDate, //!
           phoneNumber: data.phone,

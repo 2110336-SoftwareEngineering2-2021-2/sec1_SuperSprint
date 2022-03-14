@@ -1,5 +1,4 @@
 import {
-  faAdjust,
   faCog,
   faMoon,
   faSignOutAlt,

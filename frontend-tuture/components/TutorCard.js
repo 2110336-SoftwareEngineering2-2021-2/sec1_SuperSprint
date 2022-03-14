@@ -6,21 +6,22 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Transition } from '@headlessui/react';
 import { useEffect, useState } from 'react';
+import AvatarUrl from './AvatarUrl';
 
 export default function TutorCard({
-  first_name,
-  last_name,
+  firstName,
+  lastName,
   profileImg,
   subjects,
   levels,
   rating,
   price,
-  tutor_id,
+  tutorId,
   onCardClick,
   onChooseClick,
 }) {
   const [showCard, setShowCard] = useState(false);
-  console.log(tutor_id)
+  // console.log(tutorId);
 
   useEffect(() => {
     setShowCard(true);
@@ -45,19 +46,19 @@ export default function TutorCard({
       leaveTo="opacity-0 scale-95"
     >
       <div
-        className="flex w-auto max-w-3xl justify-between rounded-lg bg-base-100 shadow-lg transition-all hover:scale-105 hover:shadow-amber-400/40 cursor-pointer"
+        className="flex w-auto max-w-3xl cursor-pointer justify-between rounded-lg bg-base-100 shadow-lg transition-all hover:scale-105 hover:shadow-amber-400/40"
         onClick={onCardClick ?? null}
         tabIndex={0}
       >
         <img
-          src={profileImg}
+          src={AvatarUrl(profileImg, firstName + lastName + tutorId)}
           alt="Profile picture of the tutor"
           className="h-36 w-24 flex-1 rounded-lg object-cover sm:w-48"
           loading="lazy"
         />
         <div className="inline-flex w-64 flex-col justify-between p-4 sm:w-96">
           <h3 className="text-md w-40 max-w-fit overflow-hidden overflow-ellipsis whitespace-nowrap font-bold text-base-content transition-colors hover:cursor-pointer hover:text-primary-focus xs:w-52 sm:w-80 sm:text-xl">
-            {first_name} {last_name}
+            {firstName} {lastName}
           </h3>
           <p className="cursor-default text-sm text-base-content text-opacity-80 selection:bg-primary sm:text-base">
             <FontAwesomeIcon size="sm" icon={faBookOpen} fixedWidth />{' '}
@@ -69,7 +70,9 @@ export default function TutorCard({
           </p>
           <p className="cursor-default text-sm text-base-content text-opacity-80 selection:bg-primary sm:text-base">
             <FontAwesomeIcon size="sm" icon={faDollarSign} fixedWidth />{' '}
-            {`${price.min || 'undefined'} - ${price.max || 'undefined'} baht/hr`}
+            {`${price.min || 'undefined'} - ${
+              price.max || 'undefined'
+            } baht/hr`}
           </p>
         </div>
         <div className="inline-flex select-none flex-col justify-between p-2">

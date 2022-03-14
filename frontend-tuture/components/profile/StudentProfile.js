@@ -1,11 +1,14 @@
 import React from 'react';
 import Image from 'next/image';
+import AvatarUrl from '../AvatarUrl';
 // import LineImage from '../../public/images/Yellow-Vertical-Line.svg';
 
 export default function StudentProfile({
+  id,
   username,
   e_mail,
-  studentName,
+  firstName,
+  lastName,
   gender,
   // birthDate,
   phoneNumber,
@@ -17,7 +20,7 @@ export default function StudentProfile({
       <div className="flex flex-1 flex-col items-center justify-center gap-2">
         <div className="avatar">
           <div className="m-2 w-40 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100 md:w-48">
-            <img src={imgUrl} alt="Profile Avatar" />
+            <img src={AvatarUrl(imgUrl, firstName + lastName + id)} alt="Profile Avatar" />
           </div>
         </div>
         <div className="mx-auto w-fit">
@@ -34,7 +37,7 @@ export default function StudentProfile({
           <p>Preferred subjects</p>
         </div>
         <div className="mx-4 my-4 flex flex-1 flex-col items-start gap-1 md:mx-0">
-          <p>{studentName}</p>
+          <p>{`${firstName} ${lastName}`}</p>
           <p>{gender}</p>
           {/* <p>{birthDate}</p> */}
           <p>{phoneNumber}</p>

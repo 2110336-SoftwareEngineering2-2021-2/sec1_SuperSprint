@@ -30,22 +30,11 @@ export default function tutorOther({ data }) {
       <Layout>
         <div className="text-b flex justify-center text-3xl">
           <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-            {`${data.tutorName}'s Profile`}
+            {`${data.firstName}'s Profile`}
           </h1>
         </div>
         <div className="items-center justify-center px-20">
-          <TutorProfile
-            tutorName={data.tutorName}
-            gender={data.gender}
-            birthDate={data.birthDate}
-            phoneNumber={data.phoneNumber}
-            preferredSubjects={data.preferredSubjects}
-            priceMin={data.priceMin}
-            priceMax={data.priceMax}
-            rating={data.rating}
-            imgUrl={data.imgUrl}
-            successMatch={data.successMatch}
-          />
+          <TutorProfile {...data} />
         </div>
       </Layout>
     </div>
@@ -75,9 +64,11 @@ export async function getServerSideProps(context) {
     return {
       props: {
         data: {
+          id: data._id,
           username: data.username,
           e_mail: data.email,
-          tutorName: `${data.firstName} ${data.lastName}`,
+          firstName: data.firstName,
+          lastName: data.lastName,
           gender: whatGender(data.gender),
           // birthDate: data.birthDate, //!
           phoneNumber: data.phone,

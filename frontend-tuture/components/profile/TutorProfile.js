@@ -1,11 +1,14 @@
 import React from 'react';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
+import AvatarUrl from '../AvatarUrl';
 
 export default function TutorProfile({
+  id,
   username,
   e_mail,
-  tutorName,
+  firstName,
+  lastName,
   gender,
   phoneNumber,
   preferredSubjects,
@@ -22,7 +25,7 @@ export default function TutorProfile({
       <div className="flex flex-1 flex-col items-center justify-center gap-2">
         <div className="avatar">
           <div className="m-2 w-40 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100 md:w-48">
-            <img src={imgUrl} alt="Profile Avatar" />
+            <img src={AvatarUrl(imgUrl, firstName + lastName + id)} alt="Profile Avatar" />
           </div>
         </div>
         {session && session.user.role === 'tutor' && (
@@ -44,7 +47,7 @@ export default function TutorProfile({
           <p>Teaching Subjects</p>
         </div>
         <div className="mx-4 my-4 flex flex-1 flex-col items-start gap-1 md:mx-0">
-          <p>{tutorName}</p>
+          <p>{`${firstName} ${lastName}`}</p>
           <p>{gender}</p>
           <p>{phoneNumber}</p>
           <p>
