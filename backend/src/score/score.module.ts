@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ScoreSchema } from '../models/score.model';
 
 import { TutorSchema } from '../models/tutor.model';
+import { S3Service } from '@src/services/S3Sevices.service';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { TutorSchema } from '../models/tutor.model';
     ]),
   ],
   controllers: [ScoreController],
-  providers: [ScoreService],
+  providers: [ScoreService, S3Service],
   exports: [ScoreService],
 })
 export class ScoreModule {}

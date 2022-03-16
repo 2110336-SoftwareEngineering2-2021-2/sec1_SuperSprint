@@ -36,7 +36,24 @@ export class AppointmentService {
       appointments: appointments,
     };
   }
-
+  // each pair of student and tutor has only one appoinment  ????
+  async getStatus(
+    tutorId: string,
+    studentId: string,
+    date: string,
+    start: string,
+    end: string,
+  ) {
+    const startTime = new Date(date + 'T' + start);
+    const endTime = new Date(date + 'T' + end);
+    const appointment = await this.appointmentModel.findOne({
+      tutorId,
+      studentId,
+      startTime,
+      endTime,
+    });
+    return { status: appointment.status };
+  }
   async createAppointment(
     tutorId: string,
     studentId: string,

@@ -266,9 +266,11 @@ export class TutorService {
     dutyTime,
   ) {
     const foundUsername = await this.tutorModel
-      .findOne({ username: username,_id: { $ne: id } })
+      .findOne({ username: username, _id: { $ne: id } })
       .lean();
-    const foundEmail = await this.tutorModel.findOne({ email: email,_id: { $ne: id } }).lean();
+    const foundEmail = await this.tutorModel
+      .findOne({ email: email, _id: { $ne: id } })
+      .lean();
     console.log(foundUsername, foundEmail);
 
     if (foundUsername && foundEmail) {
