@@ -19,6 +19,11 @@ export const ScoreSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    images: [
+      {
+        type: String,
+      },
+    ],
     maxScore: {
       type: Number,
       required: true,
