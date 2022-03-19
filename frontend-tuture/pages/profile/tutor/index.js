@@ -7,12 +7,12 @@ import whatGender from '../../../lib/whatGender';
 
 export default function tutor(props) {
   return (
-    <Layout>
+    <Layout title={`${props.data.firstName}'s Profile | Tuture`}>
       <div className="mb-4">
         <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
           {`${props.data.firstName}'s Profile`}
         </h1>
-        <div className="items-center justify-center px-20">
+        <div className="items-center justify-center md:px-20 sm:px-5 px-2">
           <TutorProfile {...props.data} />
         </div>
         <div className="flex w-full justify-center">
@@ -47,7 +47,7 @@ export async function getServerSideProps(context) {
     }
     const data = await res.json();
 
-    console.log(data);
+    // console.log(data);
 
     return {
       props: {

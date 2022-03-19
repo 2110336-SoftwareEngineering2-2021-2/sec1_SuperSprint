@@ -380,7 +380,6 @@ function StudentProfileEdit(props) {
 }
 
 export async function getServerSideProps(context) {
-  console.log('here');
   const session = await getSession(context);
   if (!session) {
     return {
@@ -390,8 +389,6 @@ export async function getServerSideProps(context) {
       },
     };
   }
-
-  console.log(session);
 
   var subjects;
   try {
@@ -437,7 +434,7 @@ export async function getServerSideProps(context) {
     }
     const data = await res.json();
 
-    console.log(data);
+    // console.log(data);
 
     console.log('done fetching');
 

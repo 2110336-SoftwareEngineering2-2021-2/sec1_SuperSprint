@@ -122,8 +122,7 @@ function TutorProfileEdit(props) {
         throw new Error(err.message || 'Fetch Error');
       }
       setFetchError(null);
-      const res_data = await res.json();
-      console.log(res_data);
+      const resData = await res.json();
       setLoading(false);
       toast('Profile Edited!', {
         onClose: () => {
@@ -538,7 +537,7 @@ export async function getServerSideProps(context) {
     }
     const data = await res.json();
 
-    console.log('data----------------', data);
+    // console.log('data----------------', data);
 
     console.log('done fetching');
 

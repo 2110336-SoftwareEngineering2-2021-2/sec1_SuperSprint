@@ -8,7 +8,6 @@ import { useSession } from 'next-auth/react';
 
 const Navbar = (props) => {
   const { data: session } = useSession();
-  console.log(session);
   const router = useRouter();
 
   function submitSearch(event) {
@@ -69,13 +68,13 @@ const Navbar = (props) => {
                 Match
               </a>
             </Link>
-            <button className="btn btn-ghost btn-square btn-sm sm:btn-md">
+            {/* <button className="btn btn-ghost btn-square btn-sm sm:btn-md">
               <FontAwesomeIcon
                 fixedWidth
                 icon={faBell}
                 className="text-primary-content"
               />
-            </button>
+            </button> */}
             <ProfileDropdown
               name={`${session.user.firstName} ${session.user.lastName}`}
               profileImg={session.user.profileUrl}

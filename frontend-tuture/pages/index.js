@@ -65,7 +65,7 @@ export async function getServerSideProps(context) {
         credit: item.score,
       };
     });
-    console.log('done fetching');
+    // console.log('done fetching');
 
     return {
       props: { tutors: tutors, session: session },

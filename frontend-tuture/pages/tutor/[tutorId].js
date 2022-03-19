@@ -4,16 +4,16 @@ import Layout from '../../components/Layout';
 import { getSession } from 'next-auth/react';
 import whatGender from '../../lib/whatGender';
 
-export default function tutorOther({ data }) {
+export default function tutorOther(props) {
   return (
-    <Layout>
+    <Layout title={`${props.data.firstName}'s Profile | Tuture`}>
       <div className="text-b flex justify-center text-3xl">
         <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-          {`${data.firstName}'s Profile`}
+          {`${props.data.firstName}'s Profile`}
         </h1>
       </div>
-      <div className="items-center justify-center px-20">
-        <TutorProfile {...data} />
+      <div className="items-center justify-center md:px-20 sm:px-5 px-2">
+        <TutorProfile {...props.data} />
       </div>
     </Layout>
   );
@@ -37,7 +37,7 @@ export async function getServerSideProps(context) {
     }
     const data = await res.json();
 
-    console.log(data);
+    // console.log(data);
 
     return {
       props: {

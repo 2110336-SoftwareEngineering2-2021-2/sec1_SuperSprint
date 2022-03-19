@@ -54,7 +54,7 @@ function TutorRegister({ subjects }) {
   async function submitRegister(data) {
     // event.preventDefault();
     console.log('Pass');
-    console.log(data);
+    // console.log(data);
     const formData = new FormData();
 
     console.log(
@@ -111,7 +111,7 @@ function TutorRegister({ subjects }) {
         throw new Error(err.message || 'Fetch Error');
       }
       const res_data = await res.json();
-      console.log(res_data);
+      // console.log(res_data);
       setLoading(false);
       toast('Sign Up Success!', {
         onClose: () => {
