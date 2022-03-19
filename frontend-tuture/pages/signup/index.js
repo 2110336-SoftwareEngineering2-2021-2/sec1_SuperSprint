@@ -7,7 +7,7 @@ import StudentImage from '../../public/images/students-studying-physics-in-class
 
 function Register() {
   return (
-    <Layout title="Sign Up | Tuture" signedIn={false}>
+    <Layout title="Sign Up | Tuture">
       <div className="container m-auto flex flex-col gap-4">
         <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
           Sign Up

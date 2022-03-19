@@ -20,7 +20,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
     <ThemeProvider>
       <SessionProvider session={session}>
-        <NavbarControl signedIn={false}>
+        <NavbarControl>
           <NextNProgress color="#ffab00" options={{ parent: 'main' }} />
           <Component {...pageProps} />
           <Toaster />

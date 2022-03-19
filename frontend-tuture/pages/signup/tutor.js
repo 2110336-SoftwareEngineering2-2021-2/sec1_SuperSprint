@@ -149,7 +149,7 @@ function TutorRegister({ subjects }) {
   console.log(errors);
 
   return (
-    <Layout title="Sign Up Tutor | Tuture" signedIn={false}>
+    <Layout title="Sign Up Tutor | Tuture">
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
         Create Tutor Account
       </h1>
