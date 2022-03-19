@@ -3,17 +3,43 @@ import React from 'react';
 import Layout from '../../components/Layout';
 import { getSession } from 'next-auth/react';
 import whatGender from '../../lib/whatGender';
+import TutorScorePanel from '../../components/profile/TutorScorePanel';
+
+const scoresTest = Array.from({ length: 7 }, (_, idx) => {
+  return {
+    subject: 'PAT' + (idx + 1),
+    level: 'PAT',
+    subjectId: idx,
+    year: '2022',
+    score: 300,
+    maxScore: 300,
+    scoreImage: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+  };
+});
 
 export default function tutorOther(props) {
   return (
     <Layout title={`${props.data.firstName}'s Profile | Tuture`}>
-      <div className="text-b flex justify-center text-3xl">
-        <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-          {`${props.data.firstName}'s Profile`}
-        </h1>
-      </div>
-      <div className="items-center justify-center md:px-20 sm:px-5 px-2">
-        <TutorProfile {...props.data} />
+      <div className="mx-0 mb-4 flex flex-col lg:mx-8 lg:flex-row min-h-full">
+        <section className="flex-[8]">
+          <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
+            {`${props.data.firstName}'s Profile`}
+          </h1>
+          <div className="px-2 sm:px-5">
+            <TutorProfile {...props.data} />
+          </div>
+        </section>
+
+        <div className="divider divider-vertical lg:divider-horizontal"></div>
+
+        <section className="flex-[3]">
+          <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
+            {`${props.data.firstName}'s Score`}
+          </h1>
+          <div className="my-4 px-2 sm:px-5">
+            <TutorScorePanel scores={scoresTest} />
+          </div>
+        </section>
       </div>
     </Layout>
   );
