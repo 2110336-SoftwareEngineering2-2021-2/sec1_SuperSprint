@@ -4,12 +4,13 @@ import Layout from '../../components/Layout';
 import TutorCard from '../../components/TutorCard';
 import ProfileDropdown from '../../components/ProfileDropdown';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import AppointmentCard from '../../components/appointment/AppointmentCard';
 
 const names = [
-  'Adam Benson',
-  'Clare Donaldsdfadsfdsfson',
-  'Phusaratis Jong',
-  'Donald Clarkson',
+  ['Adam', 'Benson'],
+  ['Clare', 'Donaldsdfadsfdsfson'],
+  ['Phusaratis', 'Jong'],
+  ['Donald', 'Clarkson'],
 ];
 
 export default function Testpage() {
@@ -18,18 +19,20 @@ export default function Testpage() {
   let temp = [];
   for (let i = 0; i < 4; i++) {
     temp.push(
-      <TutorCard
+      <AppointmentCard
         key={i}
-        name={names[i]}
+        firstName={names[i][0]}
+        lastName={names[i][1]}
         profileImg={
           'https://www.chicagotribune.com/resizer/a-16fPYl-SK8W6HPnzjOHK1rqho=/800x551/top/arc-anglerfish-arc2-prod-tronc.s3.amazonaws.com/public/IEYVMAFZ7BBXHM46GFNLWRN3ZA.jpg'
         }
         subjects={['Physics', 'Chemistry']}
         levels={['High school', 'Middle school']}
-        rating={Math.random() * 5}
-        price={{ min: 300, max: 500 }}
-        onCardClick={() => console.log(`Card click ${names[i]}`)}
-        onChooseClick={() => console.log(`Choose button click ${names[i]}`)}
+        createdDate={new Date(Date.now() - Math.random()*2*24*60*60*1000)}
+        apptDate={new Date(Date.now() - Math.random()*2*24*60*60*1000)}
+        accepted
+        onCardClick={() => console.log(`Card click ${names[i][0]}`)}
+        onChooseClick={() => console.log(`Choose button click ${names[i][0]}`)}
       />
     );
   }
@@ -51,12 +54,12 @@ export default function Testpage() {
         <>
           Not signed in <br />
           <input
-            className="input-bordered input"
+            className="input input-bordered"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
           <input
-            className="input-bordered input"
+            className="input input-bordered"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
