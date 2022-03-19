@@ -31,7 +31,7 @@ export default function TutorProfile({
             />
           </div>
         </div>
-        {session && session.user.role === 'tutor' && (
+        {session && session.user._id === id && (
           <div className="mx-auto w-fit">
             <p>Username: {username}</p>
             <p>E-mail : {e_mail}</p>
@@ -68,7 +68,7 @@ export default function TutorProfile({
         </div>
         <div className="flex flex-[2]">
           <p className="mx-4 flex-1 md:mx-0">Teaching Subjects</p>
-          <p className="mx-4 flex-1 md:mx-0">
+          <div className="mx-4 flex-1 md:mx-0">
             {preferredSubjects.length > 0 ? (
               <ul className="ml-6 list-disc">
                 {preferredSubjects?.map((subject, idx) => {
@@ -82,7 +82,7 @@ export default function TutorProfile({
             ) : (
               <p>-</p>
             )}
-          </p>
+          </div>
         </div>
       </div>
     </div>

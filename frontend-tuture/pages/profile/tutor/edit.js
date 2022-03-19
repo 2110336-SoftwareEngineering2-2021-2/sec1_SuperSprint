@@ -160,7 +160,7 @@ function TutorProfileEdit(props) {
   }
 
   return (
-    <Layout title="Edit Profile | Tuture" signedIn={false}>
+    <Layout title="Edit Profile | Tuture">
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
         Edit Profile
       </h1>
