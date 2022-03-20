@@ -22,6 +22,7 @@ export const AppointmentSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
+      default: 'pending',
       enum: ['pending', 'canceled', 'negotiating', 'offering', 'confirmed'],
     },
     price: {
@@ -32,10 +33,7 @@ export const AppointmentSchema = new mongoose.Schema(
       ref: 'Subject',
       required: true,
     },
-    level: {
-      type: String,
-      required: true,
-    },
+
     startTime: {
       type: Date,
       default: null,

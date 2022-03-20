@@ -3,6 +3,8 @@ import {
   Body,
   Get,
   Post,
+  Query,
+  Param,
   Injectable,
   UploadedFile,
   UseGuards,
@@ -51,7 +53,6 @@ export class ScoreController {
     @Body('tutorId') tutorId: string,
     @Body('subjectId') subjectId: string,
   ) {
-    // console.log(tutorId);
     const scoreId = await this.scoreService.deleteScore(tutorId, subjectId);
     return { deletedScore: scoreId };
   }
@@ -77,5 +78,20 @@ export class ScoreController {
       image,
     );
     return scoreId;
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('')
+  async getScore(
+    @Query('tutorId') tutorId: string,
+    @Query('subjectId') subjectId: string,
+  ) {
+    const score = await this.scoreService.getScore(tutorId, subjectId);
+    return {
+      subject: score.subjectId,
+      score: score.currentScore,
+      maxScore: score.maxScore,
+      scoreImage: score.imageUrl,
+    };
   }
 }

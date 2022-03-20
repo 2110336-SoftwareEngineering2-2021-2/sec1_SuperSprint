@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Tutor } from '../models/tutor.model';
@@ -9,30 +13,32 @@ import { S3Service } from '@src/services/S3Sevices.service';
 export class ScoreService {
   constructor(
     @InjectModel('Score') private readonly scoreModel: Model<Score>,
+    @InjectModel('Tutor') private readonly tutorModel: Model<Tutor>,
     private readonly s3Service: S3Service,
   ) {}
 
-  async getScore(tutor: Tutor, sId: string) {
-    const res = await this.findScore(tutor, sId);
+  async getScore(tutorId: string, sId: string) {
+    const res = await this.findScore(tutorId, sId);
     return res;
   }
 
-  private async findScore(tutor: Tutor, sId: string): Promise<number> {
+  private async findScore(tId: string, sId: string): Promise<Score> {
     let score;
-    const tId = tutor._id;
     try {
       score = await this.scoreModel
-        .find({ tutorId: tId, subjectId: sId })
+        .findOne({ tutorId: tId, subjectId: sId })
         .lean();
+      if (!score) {
+        return null;
+        // return 0;
+        // throw new NotFoundException('Could not find score.');
+      }
     } catch (error) {
-      throw new NotFoundException('Could not find score.');
+      throw new BadRequestException(`get score from tutor ${tId} failed`);
     }
-    if (score.length === 0) {
-      return 0;
-    }
-    return score.currentScore;
-  }
 
+    return score;
+  }
   async insertScore(
     tutorId: string,
     subjectId: string,

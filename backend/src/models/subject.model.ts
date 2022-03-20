@@ -15,6 +15,10 @@ export const SubjectSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    maxScore: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
@@ -27,4 +31,6 @@ export class Subject {
   level: string;
   @ApiProperty()
   description: string;
+  @ApiProperty()
+  maxScore: number;
 }

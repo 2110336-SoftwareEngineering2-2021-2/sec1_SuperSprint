@@ -27,11 +27,6 @@ export class StudentService {
     return student.preferSubject;
   }
 
-  chooseTutor(studentId: string, tutorId: string) {
-    console.log([studentId, 'choose', tutorId]);
-    return 'pending';
-  }
-
   async updateStudent(
     id,
     firstName,
@@ -44,10 +39,12 @@ export class StudentService {
     preferSubject,
   ) {
     const foundUsername = await this.studentModel
-      .findOne({ username: username ,_id: { $ne: id }})
+      .findOne({ username: username, _id: { $ne: id } })
       .lean();
 
-    const foundEmail = await this.studentModel.findOne({ email: email,_id: { $ne: id } }).lean();
+    const foundEmail = await this.studentModel
+      .findOne({ email: email, _id: { $ne: id } })
+      .lean();
 
     if (foundUsername && foundEmail) {
       throw new ForbiddenException('duplicate username and email');
