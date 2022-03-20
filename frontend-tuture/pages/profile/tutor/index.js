@@ -66,7 +66,7 @@ export default function TutorProfilePage(props) {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  console.log(session);
+  
   try {
     const res = await fetch(
       // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
