@@ -11,15 +11,16 @@ function TutorScorePanel({ scores, isOwner }) {
             score.subjectId
           )} text-primary-content shadow`}
         >
-          <div key={idx} className={`stat`}>
-            <div className="stat-title text-base-content">
+          <div key={idx} className="stat ">
+            <div className="stat-title">
               {score.subject} ({score.level})
             </div>
-            <div className="stat-value">
+            <div className="stat-value text-center">
               {score.score}/{score.maxScore}
             </div>
+            <div class="stat-desc text-right">{score.year}</div>
             {isOwner && (
-              <div className="stat-actions">
+              <div className="stat-actions ">
                 <Link href={score.scoreImage}>
                   <a className={`btn btn-ghost btn-sm`} target="_blank">
                     View Score Image
