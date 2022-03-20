@@ -69,11 +69,13 @@ export class SubjectController {
     @Body('title') title: string,
     @Body('level') level: string,
     @Body('description') description: string,
+    @Body('maxScore') maxScore: number,
   ) {
     const newSubject = await this.subjectService.insertSubject(
       title,
       level,
       description,
+      maxScore,
     );
     return { id: newSubject };
   }

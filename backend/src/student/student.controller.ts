@@ -17,6 +17,7 @@ import { Student } from '../models/student.model';
 import { Tutor } from '../models/tutor.model';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
+
 @ApiTags('student')
 @Controller('student')
 export class StudentController {
@@ -24,6 +25,7 @@ export class StudentController {
     private readonly studentService: StudentService,
     private readonly tutorService: TutorService,
   ) {}
+
   @UseGuards(AuthGuard('jwt'))
   @Post('recommend')
   @ApiOkResponse({ type: [Tutor] })
@@ -39,36 +41,21 @@ export class StudentController {
     const result = await this.tutorService.recommendTutor(subjects);
     return { tutorList: result };
   }
-  @UseGuards(AuthGuard('jwt'))
-  @Post('chooseTutor')
-  @ApiBody({
-    schema: {
-      example: {
-        studentId: '00001',
-        tutorId: '00001',
-      },
-    },
-  })
-  @ApiOkResponse({ schema: { example: 'pending' } })
-  chooseTutor(
-    @Body('studentId') studentId: string,
-    @Body('tutorId') tutorId: string,
-  ) {
-    const status = this.studentService.chooseTutor(studentId, tutorId);
-    return { appoinmentStatus: status };
-  }
+
   @UseGuards(AuthGuard('jwt'))
   @Get('getAllStudents')
   @ApiOkResponse({ type: [Student] })
   getAllStudents() {
     return this.studentService.getStudents();
   }
+
   @UseGuards(AuthGuard('jwt'))
   @Get('getById')
   @ApiOkResponse({ type: Student })
   getStudentById(@Query('id') id: string) {
     return this.studentService.getStudentById(id);
   }
+
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))

@@ -19,6 +19,9 @@ export const ScoreSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    imageUrl: {
+      type: String,
+    },
     maxScore: {
       type: Number,
       required: true,
@@ -26,6 +29,11 @@ export const ScoreSchema = new mongoose.Schema(
     year: {
       type: Number,
       required: true,
+    },
+    status: {
+      type: String,
+      required: true,
+      enum: ['pending', 'approved', 'rejected'],
     },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
@@ -40,7 +48,11 @@ export class Score {
   @ApiProperty()
   currentScore: number;
   @ApiProperty()
+  imageUrl: string;
+  @ApiProperty()
   maxScore: number;
   @ApiProperty()
   year: number;
+  @ApiProperty()
+  status: string;
 }

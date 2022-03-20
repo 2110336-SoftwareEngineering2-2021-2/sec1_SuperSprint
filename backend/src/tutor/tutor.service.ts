@@ -266,9 +266,11 @@ export class TutorService {
     dutyTime,
   ) {
     const foundUsername = await this.tutorModel
-      .findOne({ username: username,_id: { $ne: id } })
+      .findOne({ username: username, _id: { $ne: id } })
       .lean();
-    const foundEmail = await this.tutorModel.findOne({ email: email,_id: { $ne: id } }).lean();
+    const foundEmail = await this.tutorModel
+      .findOne({ email: email, _id: { $ne: id } })
+      .lean();
     console.log(foundUsername, foundEmail);
 
     if (foundUsername && foundEmail) {
@@ -324,14 +326,17 @@ export class TutorService {
     tutor: Tutor,
     subjectId: string,
   ): Promise<number> {
-    const score = await this.scoreSevice.getScore(tutor, subjectId);
+    const score = await this.scoreSevice.getScore(tutor._id, subjectId);
+    let tutorScore;
+    if (!score) tutorScore = 0;
+    else tutorScore = score.currentScore;
     const tutorAvgRating = tutor.avgRating;
     const tutorSuccessMatch = tutor.successMatch;
     const weightScore = 0.33;
     const weightAvgRating = 0.33;
     const weightSuccessMatch = 0.34;
     return (
-      score * weightScore +
+      tutorScore * weightScore +
       tutorAvgRating * weightAvgRating +
       tutorSuccessMatch * weightSuccessMatch
     );
