@@ -140,7 +140,10 @@ export async function getServerSideProps(context) {
       score: 250,
       maxScore: 300,
       scoreImage: {
-        preview: 'https://api.lorem.space/image/shoes?w=320&h=320',
+        preview:
+          Math.random() > 0.5
+            ? 'https://api.lorem.space/image/shoes?w=320&h=320'
+            : '',
         name: '',
         file: '',
       },

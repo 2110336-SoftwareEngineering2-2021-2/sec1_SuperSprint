@@ -42,7 +42,7 @@ export default function ScoreEditCard({
         tabIndex={0}
       >
         <div className="inline-flex w-full flex-col justify-between p-4 sm:w-full">
-          <h3 className="text-md w-40 max-w-fit overflow-hidden overflow-ellipsis whitespace-nowrap font-bold text-base-content transition-colors hover:cursor-pointer hover:text-primary-focus xs:w-52 sm:w-80 sm:text-xl">
+          <h3 className="text-lg w-40 max-w-fit overflow-hidden overflow-ellipsis whitespace-nowrap font-bold text-base-content transition-colors hover:cursor-pointer hover:text-primary-focus xs:w-52 sm:w-80 sm:text-xl">
             {scoreData.subject} ({scoreData.level})
           </h3>
           <div className="divider"></div>
@@ -76,7 +76,7 @@ export default function ScoreEditCard({
           <ScoreImageUpload
             subjectId={scoreData.subjectId}
             hookFormControl={hookFormControl}
-            defaultValue={'https://api.lorem.space/image/shoes?w=320&h=320'}
+            defaultValue={scoreData.scoreImage.preview}
           />
           <button
             className="btn btn-circle btn-ghost btn-sm"

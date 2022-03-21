@@ -1,13 +1,9 @@
-import { faCamera } from '@fortawesome/free-solid-svg-icons';
+import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useEffect, useState } from 'react';
 import Dropzone from 'react-dropzone';
 import { Controller } from 'react-hook-form';
-import * as style from '@dicebear/avatars-identicon-sprites';
 
 function ScoreImageUpload({ subjectId, hookFormControl, defaultValue = '' }) {
-  const [uploaded, setUploaded] = useState(false);
-
   function onAvatarDrop(value, acceptedFiles, onChange) {
     URL.revokeObjectURL(value.preview);
     try {
@@ -16,7 +12,6 @@ function ScoreImageUpload({ subjectId, hookFormControl, defaultValue = '' }) {
         file: acceptedFiles[0],
         name: acceptedFiles[0].name,
       });
-      setUploaded(true);
     } catch (error) {
       console.error(error.message);
     }
@@ -36,26 +31,36 @@ function ScoreImageUpload({ subjectId, hookFormControl, defaultValue = '' }) {
           accept="image/jpeg,image/png"
         >
           {({ getRootProps, getInputProps }) => (
-            <div className="w-fit mask mask-square">
-              <div className="relative h-32 w-32 sm:h-40 sm:w-40">
-                <div
-                  className="absolute h-32 w-32 sm:h-40 sm:w-40"
-                  {...getRootProps()}
-                >
-                  <input id="scoreImage" {...getInputProps()} />
-                  <div className="flex h-32 w-32 flex-col items-center justify-center gap-1 border-2 text-primary opacity-0 transition-all hover:border-primary hover:opacity-100 sm:h-40 sm:w-40">
-                    <FontAwesomeIcon fixedWidth icon={faCamera} size="2x" />
-                    <p className="text-center text-sm">
-                      Click or Drop Here to upload
-                    </p>
-                  </div>
+            <div className="relative flex h-32 w-32 overflow-hidden rounded-xl sm:h-40 sm:w-40">
+              <div className="absolute h-full w-full" {...getRootProps()}>
+                <input id="scoreImage" {...getInputProps()} />
+                <div className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-zinc-300 text-black opacity-80 transition-all hover:border-primary hover:text-primary hover:opacity-100">
+                  <FontAwesomeIcon fixedWidth icon={faFileUpload} size="2x" />
+                  {value.file && (
+                    <span className="w-full overflow-hidden text-ellipsis whitespace-nowrap px-2 text-center text-xs">
+                      {value.name}
+                    </span>
+                  )}
+                  <p className="text-center text-xs">
+                    Click or Drop Here to upload
+                  </p>
                 </div>
-                {uploaded ? (
-                  <img src={value.preview} alt={value.name} />
-                ) : (
-                  <img src={defaultValue} alt="Score Image" />
-                )}
               </div>
+              {value.file ? (
+                <img
+                  src={value.preview}
+                  alt={value.name}
+                  className="my-auto h-full w-full object-cover"
+                />
+              ) : (
+                defaultValue && (
+                  <img
+                    src={defaultValue}
+                    alt="Score Image"
+                    className="my-auto h-full w-full object-cover"
+                  />
+                )
+              )}
             </div>
           )}
         </Dropzone>
