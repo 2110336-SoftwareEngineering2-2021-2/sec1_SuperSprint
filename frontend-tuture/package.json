@@ -16,7 +16,7 @@
     "@fortawesome/react-fontawesome": "^0.1.17",
     "@headlessui/react": "^1.4.3",
     "@hookform/resolvers": "^2.8.8",
-    "daisyui": "^2.0.6",
+    "daisyui": "^2.11.0",
     "dicebear": "^4.10.2",
     "framer-motion": "^6.2.3",
     "moment": "^2.29.1",

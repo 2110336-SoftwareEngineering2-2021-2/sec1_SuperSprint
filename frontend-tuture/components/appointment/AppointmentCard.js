@@ -3,12 +3,15 @@ import {
   faGraduationCap,
   faTimes,
   faCheck,
+  faComment,
+  faBan
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Transition } from '@headlessui/react';
 import { useEffect, useState } from 'react';
 import avatarUrl from '../../lib/avatarUrl';
 import moment from 'moment';
+import Modal from 'react-modal';
 
 function AppointmentCard({
   studentId,
@@ -19,10 +22,13 @@ function AppointmentCard({
   levels,
   createdDate,
   apptDate,
-  accepted = false,
+  status = "pending",
   onCardClick,
   onAccept,
   onDecline,
+  onCancel, //Peem added this
+  onChatClick,
+  POV="student"
 }) {
   const [showCard, setShowCard] = useState(false);
   // console.log(studentId);
@@ -39,6 +45,8 @@ function AppointmentCard({
   }
 
   return (
+    // <input type="checkbox" id="my-modal" class="modal-toggle" >
+    <div>
     <Transition
       appear={true}
       show={showCard}
@@ -49,6 +57,10 @@ function AppointmentCard({
       leaveFrom="opacity-100 scale-100 "
       leaveTo="opacity-0 scale-95"
     >
+      {/* <Modal isOpen={true}>
+        <h2>Test modal</h2>
+        <p>modal body</p>
+      </Modal> */}
       <div
         className="flex w-auto max-w-3xl cursor-pointer justify-between rounded-lg bg-base-100 shadow-lg transition-all hover:scale-105 hover:shadow-amber-400/40"
         onClick={onCardClick ?? null}
@@ -73,8 +85,11 @@ function AppointmentCard({
             {levels.join(', ')}
           </p>
         </div>
-        <div className="-ml-24 inline-flex select-none flex-col items-end justify-between p-2">
-          {accepted && apptDate && (
+
+        {/* R and L Seperation */}
+
+        <div className="-ml-24 inline-flex select-none flex-col items-end justify-between p-2">  
+          {(status=="offering"||status=="confirmed") && apptDate && (
             <div className="flex items-center">
               <div>
                 <p className="sm:text-md text-center text-xs">
@@ -106,25 +121,180 @@ function AppointmentCard({
               {moment(createdDate).fromNow()}
             </p>
           )}
-          {!accepted && (
+          {(status=="confirmed" || status=="negotiating" || (status=="offering" && POV=="tutor")) &&(
+            <div>
+          <button
+                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-yellow-500"
+                onClick={onChatClick}
+              >
+                <FontAwesomeIcon fixedWidth icon={faComment} size="lg"/>
+          </button>
+          <label
+                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
+                // onClick={onCancel}
+                for ="cancelModal" 
+              >
+                <div className="pt-1.5">
+                  <FontAwesomeIcon fixedWidth icon={faBan} size="lg"/>
+                </div>
+          </label>
+          </div>
+          
+          )}
+          {status=="offering" && POV=="student" && (
             <div>
               <button
+                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-yellow-500"
+                onClick={onChatClick}
+              >
+                <FontAwesomeIcon fixedWidth icon={faComment} size="lg"/>
+              </button>
+              <label
                 className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
-                onClick={onDecline}
+                // onClick={onDecline}
+                for ="declineModal"
               >
+                <div className="pt-1.5">
                 <FontAwesomeIcon fixedWidth icon={faTimes} size="lg" />
-              </button>
-              <button
+                </div>
+              </label>
+              <label
                 className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-success"
-                onClick={onAccept}
+                // onClick={onAccept}
+                for ="acceptModal"
               >
+                <div className="pt-1.5">
                 <FontAwesomeIcon fixedWidth icon={faCheck} size="lg" />
-              </button>
+                </div>
+              </label>
+            </div>
+          )}
+          {status=="pending" && POV=="tutor" && (
+            <div>
+              <label
+                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
+                // onClick={onDecline}
+                for ="declineModal"
+              >
+                <div className="pt-1.5">
+                <FontAwesomeIcon fixedWidth icon={faTimes} size="lg" />
+                </div>
+              </label>
+              <label
+                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-success"
+                // onClick={onAccept}
+                for ="acceptModal"
+              >
+                <div className="pt-1.5">
+                <FontAwesomeIcon fixedWidth icon={faCheck} size="lg" />
+                </div>
+              </label>
+            </div>
+          )}
+          {status=="pending" && POV=="student" && (
+            <div>
+              <label
+                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error modal-button"
+                // onClick={onCancel}
+                for ="cancelModal" 
+              >
+                <div className="pt-1.5">
+                  <FontAwesomeIcon fixedWidth icon={faBan} size="lg"/>
+                </div>
+              </label>
             </div>
           )}
         </div>
       </div>
+
+      <input type="checkbox" id="cancelModal" class="modal-toggle" />
+      <div class="modal">
+        <div class="modal-box">   
+          <h3 class="font-bold text-lg">Warning!</h3>
+          <p class="py-4">{(status == "pending" && POV=="student" && "Are you sure you want to cancel this tutor?") || 
+                            (status == "negotiating" && POV=="student" && "Are you sure you want to cancel this negotiation?") ||
+                            (status == "confirmed" && POV=="student" && "Are you sure you want to cancel this appointment?") ||
+                            (status == "negotiating" && POV=="tutor" && "Are you sure you want to cancel this negotiation?") ||
+                            (status == "offering" && POV=="tutor" && "Are you sure you want to cancel this offering?")||
+                            (status == "confirmed" && POV=="tutor" && "Are you sure you want to cancel this appointment?")}</p>
+        <div class="modal-action">
+              <label
+                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
+                for ="cancelModal"
+              >
+                <div className="pt-1.5">
+                <FontAwesomeIcon fixedWidth icon={faTimes} size="xl" />
+                </div>
+              </label>
+              <label
+                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-success"
+                onClick={onCancel}
+                for ="cancelModal"
+              >
+                <div className="pt-1.5">
+                <FontAwesomeIcon fixedWidth icon={faCheck} size="xl" />
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <input type="checkbox" id="acceptModal" class="modal-toggle" />
+      <div class="modal">
+        <div class="modal-box">   
+          <h3 class="font-bold text-lg">Warning!</h3>
+          <p class="py-4">{(POV == "student" && "Are you sure you want to accept this deal?") || (POV == "tutor" && "Are you sure you to accept this student?")}</p>
+        <div class="modal-action">
+              <label
+                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
+                for ="acceptModal"
+              >
+                <div className="pt-1.5">
+                <FontAwesomeIcon fixedWidth icon={faTimes} size="xl" />
+                </div>
+              </label>
+              <label
+                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-success"
+                onClick={onAccept}
+                for ="acceptModal"
+              >
+                <div className="pt-1.5">
+                <FontAwesomeIcon fixedWidth icon={faCheck} size="xl" />
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <input type="checkbox" id="declineModal" class="modal-toggle" />
+      <div class="modal">
+        <div class="modal-box">   
+          <h3 class="font-bold text-lg">Warning!</h3>
+          <p class="py-4">{(POV == "student" && "Are you sure you want to decline this deal?") || (POV == "tutor" && "Are you sure you to decline this student?")}</p>
+        <div class="modal-action">
+              <label
+                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
+                for ="declineModal"
+              >
+                <div className="pt-1.5">
+                <FontAwesomeIcon fixedWidth icon={faTimes} size="xl" />
+                </div>
+              </label>
+              <label
+                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-success"
+                onClick={onDecline}
+                for ="declineModal"
+              >
+                <div className="pt-1.5">
+                <FontAwesomeIcon fixedWidth icon={faCheck} size="xl" />
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
     </Transition>
+    </div>
   );
 }
 
