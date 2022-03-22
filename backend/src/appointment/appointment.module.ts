@@ -7,24 +7,23 @@ import { JwtStrategy } from '../auth/jwt.strategy';
 import { jwtConstants } from '../auth/constants';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { ChatSchema } from 'src/models/chat.model';
-import { ChatService } from '@src/chat/chat.service';
-import { ChatModule } from '@src/chat/chat.module';
+import { TutorSchema } from '@src/models/tutor.model';
+import { TutorModule } from '@src/tutor/tutor.module';
 
 @Module({
   imports: [
+    TutorModule,
     MongooseModule.forFeature([
       { name: 'Appointment', schema: AppointmentSchema },
-      { name: 'Chat', schema: ChatSchema },
+      { name: 'Tutor', schema: TutorSchema },
     ]),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1800s' },
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    ChatModule,
   ],
   controllers: [AppointmentController],
-  providers: [AppointmentService, ChatService, JwtStrategy],
+  providers: [AppointmentService, JwtStrategy],
 })
 export class AppointmentModule {}

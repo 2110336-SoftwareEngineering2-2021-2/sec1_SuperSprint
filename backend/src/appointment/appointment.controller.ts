@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   Query,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { ApiBody, ApiTags, ApiOkResponse } from '@nestjs/swagger';
@@ -22,88 +23,66 @@ import { AuthGuard } from '@nestjs/passport';
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
-  // @UseGuards(AuthGuard('jwt'))
-  @Get()
-  @ApiOkResponse({ type: [Appointment] })
-  async getAllAppointments(
-    @Query('tutorId') tutorId: string,
-    @Query('studentId') studentId: string,
-  ) {
-    return await this.appointmentService.getAppointments(tutorId, studentId);
-  }
-
-  @UseGuards(AuthGuard('jwt'))
-  @Post('appointmentStatus')
-  async getAppointmentStatus(
-    @Body('tutorId') tutorId: string,
-    @Body('studentId') studentId: string,
-    @Body('date') date: string,
-    @Body('startTime') startTime: string,
-    @Body('endTime') endTime: string,
-  ) {
-    return await this.appointmentService.getStatus(
-      tutorId,
-      studentId,
-      date,
-      startTime,
-      endTime,
-    );
-  }
-
-  // @UseGuards(AuthGuard('jwt'))
-  @Patch('tutorUpdate')
-  async tutorUpdate(
-    @Body('appointmentId') appointmentId: string,
-    @Body('tutorId') tutorId: string,
-    @Body('studentId') studentId: string,
-    @Body('status') status: string, // incoming status
-    @Body('price') price: number,
-    @Body('startTime') startTime: string,
-    @Body('endTime') endTime: string,
-  ) {
-    return await this.appointmentService.tutorUpdateAppointment(
-      appointmentId,
-      tutorId,
-      studentId,
-      status,
-      price,
-      startTime,
-      endTime,
-    );
-  }
-
-  // @UseGuards(AuthGuard('jwt'))
-  @Patch('studentUpdate')
-  async studentUpdate(
-    @Body('appointmentId') appointmentId: string,
-    @Body('tutorId') tutorId: string,
-    @Body('studentId') studentId: string,
-    @Body('status') status: string, // incoming status
-    @Body('price') price: number,
-    @Body('startTime') startTime: string,
-    @Body('endTime') endTime: string,
-  ) {
-    return await this.appointmentService.studentUpdateAppointment(
-      appointmentId,
-      tutorId,
-      studentId,
-      status,
-      price,
-      startTime,
-      endTime,
-    );
-  }
-
-  @Post('create')
+  @Post('')
   async createAppointment(
     @Body('tutorId') tutorId: string,
     @Body('studentId') studentId: string,
     @Body('subjectId') subjectId: string,
+    @Body('price') price: number,
+    @Body('startTime') startTime: string,
+    @Body('endTime') endTime: string,
   ) {
     return await this.appointmentService.createAppointment(
       tutorId,
       studentId,
       subjectId,
+      price,
+      startTime,
+      endTime,
+    );
+  }
+
+  // offering
+  // @UseGuards(AuthGuard('jwt'))
+  @Get('/:userType/:id/:status')
+  @ApiOkResponse({ type: [Appointment] })
+  async getAppointmentsByType(
+    @Param('userType') userType: string,
+    @Param('id') id: string,
+    @Param('status') status: string,
+  ) {
+    return await this.appointmentService.getAppointmentsByStatus(
+      userType,
+      id,
+      status,
+    );
+  }
+
+  // @UseGuards(AuthGuard('jwt'))
+  @Get('/chat')
+  @ApiOkResponse({ type: [Appointment] })
+  async getAppointmentsByChat(
+    @Query('tutorId') tutorId: string,
+    @Query('studentId') studentId: string,
+  ) {
+    return await this.appointmentService.getAppointmentsByChat(
+      tutorId,
+      studentId,
+    );
+  }
+
+  // @UseGuards(AuthGuard('jwt'))
+  @Delete('/:appointmentId')
+  @ApiOkResponse({ type: [Appointment] })
+  async cancelAppointment(@Param('appointmentId') appointmentId: string) {
+    return await this.appointmentService.cancelAppointment(appointmentId);
+  }
+
+  // @UseGuards(AuthGuard('jwt'))
+  @Patch('student/accept/:appointmentId')
+  async studentAcceptAppointment(@Body('appointmentId') appointmentId: string) {
+    return await this.appointmentService.studentAcceptAppointment(
+      appointmentId,
     );
   }
 }
