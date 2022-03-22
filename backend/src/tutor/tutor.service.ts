@@ -310,6 +310,29 @@ export class TutorService {
     return { message: 'successfully update', tutor: updatedTutor };
   }
 
+  async addDutyTime(
+    tutorId: string,
+    addDate: string,
+    addStartTime: string,
+    addEndTime: string,
+  ) {
+    const datetimeStart = new Date(addDate + 'T' + addStartTime);
+    datetimeStart.setHours(datetimeStart.getHours() + 7);
+    const datetimeEnd = new Date(addDate + 'T' + addEndTime);
+    datetimeEnd.setHours(datetimeEnd.getHours() + 7);
+    // console.log(datetimeStart, datetimeEnd);
+
+    const tutor = await this.tutorModel.findById(tutorId);
+    const dutyTime = tutor.dutyTime;
+
+    for (let i = 0; i < dutyTime.length; i++) {
+      if (dutyTime[i].end == datetimeStart) {
+        dutyTime[i].end = datetimeEnd;
+      }
+    }
+    await tutor.save();
+  }
+
   private async findTutor(tutorId: string): Promise<Tutor> {
     let tutor;
     try {

@@ -6,214 +6,181 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Appointment } from '@src/models/appointment.model';
-import { Chat } from '@src/models/chat.model';
-import { ChatService } from '@src/chat/chat.service';
+import { Tutor } from '@src/models/tutor.model';
+import { TutorService } from '../tutor/tutor.service';
 
 @Injectable()
 export class AppointmentService {
   constructor(
     @InjectModel('Appointment')
     private readonly appointmentModel: Model<Appointment>,
-    @InjectModel('Chat') private readonly chatModel: Model<Chat>,
-    private readonly chatService: ChatService,
+    @InjectModel('Tutor')
+    private readonly tutorModel: Model<Tutor>,
+    private readonly tutorService: TutorService,
   ) {}
 
-  async getAppointments(tutorId: string, studentId: string) {
+  async getAppointmentsByStatus(userType: string, id: string, status: string) {
     let appointments;
-    if (tutorId) {
+    if (userType === 'student') {
       appointments = await this.appointmentModel.find({
-        tutorId: tutorId,
+        studentId: id,
+        status: status,
       });
-    } else if (studentId) {
+    } else if (userType === 'tutor') {
       appointments = await this.appointmentModel.find({
-        studentId: studentId,
+        tutorId: id,
+        status: status,
       });
+    } else {
+      throw new NotFoundException('user type not found');
     }
     return {
-      message: 'get appointments successfully',
+      message: 'get appointments by status successfully',
       appointments: appointments,
     };
   }
-  // each pair of student and tutor has only one appoinment  ????
-  async getStatus(
-    tutorId: string,
-    studentId: string,
-    date: string,
-    start: string,
-    end: string,
-  ) {
-    const startTime = new Date(date + 'T' + start);
-    const endTime = new Date(date + 'T' + end);
-    const appointment = await this.appointmentModel.findOne({
-      tutorId,
-      studentId,
-      startTime,
-      endTime,
+
+  async getAppointmentsByChat(tutorId: string, studentId: string) {
+    const appointments = await this.appointmentModel.find({
+      tutorId: tutorId,
+      studentId: studentId,
     });
-    return { status: appointment.status };
+    return {
+      message: 'get appointments by chat successfully',
+      appointments: appointments,
+    };
   }
 
   async createAppointment(
     tutorId: string,
     studentId: string,
     subjectId: string,
+    price: number,
+    startTime: string,
+    endTime: string,
   ) {
+    // check tutor's availability
+    const availability = await this.tutorModel.findOne({
+      _id: tutorId,
+      $and: [
+        {
+          'dutyTime.startTime': { $lte: startTime },
+        },
+        {
+          'dutyTime.endTime': { $gte: endTime },
+        },
+      ],
+    });
+    if (!availability) {
+      throw new ForbiddenException('tutor is not available');
+    }
+
     const appointment = new this.appointmentModel({
       tutorId,
       studentId,
       subjectId,
-      status: 'pending',
+      price,
+      startTime,
+      endTime,
     });
     await appointment.save();
-
     return {
-      message: 'created appointment successfully!!',
+      message: 'created appointment successfully',
       appointment: appointment,
     };
   }
 
-  async tutorUpdateAppointment(
-    id: string,
-    tutorId: string,
-    studentId: string,
-    status: string,
-    price: number,
-    startTime: string,
-    endTime: string,
-  ) {
-    const appointment = await this.appointmentModel.findById(id);
-    switch (appointment.status) {
-      case 'pending':
-        if (status === 'accept') {
-          appointment.status = 'negotiating';
-          // create chatroom
-          const chatId = await this.chatService.insertChat(tutorId, studentId);
-          appointment.chatId = chatId;
-          await appointment.save();
-          return {
-            message: 'updated appointment successfully',
-            appointment: appointment._id,
-            chatId: chatId,
-          };
-        } else if (status === 'decline') {
-          appointment.status = 'canceled';
-        } else if (status === 'cancel') {
-          appointment.status = 'canceled';
-        } else {
-          throw new ForbiddenException('You can not change status');
-        }
-        break;
-      case 'negotiating':
-        if (status === 'offer') {
-          // check tutor availability
-          appointment.status = 'offering';
-          const startDateTime = new Date(startTime);
-          const endDateTime = new Date(endTime);
-          appointment.startTime = startDateTime;
-          appointment.endTime = endDateTime;
-          appointment.price = price;
-        } else if (status === 'cancel') {
-          appointment.status = 'canceled';
-        } else {
-          throw new ForbiddenException('You can not change status');
-        }
-        break;
-      case 'offering':
-        if (status === 'decline') {
-          appointment.status = 'negotiating';
-          appointment.startTime = null;
-          appointment.endTime = null;
-          appointment.price = null;
-        } else if (status === 'cancel') {
-          appointment.status = 'canceled';
-        } else {
-          throw new ForbiddenException('You can not change status');
-        }
-      default:
-        throw new ForbiddenException('No status to change');
-        break;
-    }
-    // update appointment
-    appointment.save();
+  async cancelAppointment(id: string) {
+    const appointment = await this.appointmentModel.findByIdAndUpdate(
+      id,
+      {
+        status: 'canceled',
+      },
+      {
+        new: true,
+      },
+    );
     return {
-      message: 'updated appointment successfully',
-      appointment: appointment._id,
+      message: 'canceled appointment successfully',
+      appointment: appointment,
     };
   }
 
-  async studentUpdateAppointment(
-    id: string,
-    tutorId: string,
-    studentId: string,
-    status: string,
-    price: number,
-    startTime: string,
-    endTime: string,
-  ) {
+  async studentAcceptAppointment(id: string) {
+    // remove tutor's avalability
     const appointment = await this.appointmentModel.findById(id);
-    // update appointment
-    switch (appointment.status) {
-      case 'pending':
-        if (status === 'cancel') {
-          appointment.status = 'canceled';
-        } else {
-          throw new ForbiddenException('You can not change status');
-        }
-        break;
-      case 'negotiating':
-        if (status === 'cancel') {
-          appointment.status = 'canceled';
-        } else {
-          throw new ForbiddenException('You can not change status');
-        }
-        break;
-      case 'offering':
-        if (status === 'accept') {
-          appointment.status = 'confirmed';
-          // remove tutor availability
-        } else if (status === 'decline') {
-          appointment.status = 'negotiating';
-          appointment.startTime = null;
-          appointment.endTime = null;
-          appointment.price = null;
-        } else if (status === 'cancel') {
-          appointment.status = 'canceled';
-        } else {
-          throw new ForbiddenException('You can not change status');
-        }
-        break;
-      default:
-        throw new ForbiddenException('No status to change');
-    }
-    return {
-      message: 'updated appointment successfully!!',
-      appointment: appointment.save(),
-    };
-  }
+    const tutor = await this.tutorModel.findOne({
+      _id: appointment.tutorId,
+      $and: [
+        {
+          'dutyTime.start': { $lte: appointment.startTime },
+        },
+        {
+          'dutyTime.end': { $gte: appointment.endTime },
+        },
+      ],
+    });
 
-  async canceledAppointment(id: string) {
-    const appointment = await this.appointmentModel.findById(id);
-    appointment.status = 'canceled';
+    if (!tutor) {
+      this.cancelAppointment(id);
+      throw new ForbiddenException('tutor is not available');
+    }
+
+    const availabilityTime = tutor.dutyTime.find(
+      (dutyTime) =>
+        dutyTime.start <= appointment.startTime &&
+        appointment.endTime <= dutyTime.end,
+    );
+
+    tutor.dutyTime = tutor.dutyTime.filter(
+      (dutyTime) =>
+        dutyTime.start > appointment.startTime &&
+        appointment.endTime > dutyTime.end,
+    );
+
+    await tutor.save();
+
+    if (
+      availabilityTime.start == appointment.startTime &&
+      availabilityTime.end == appointment.endTime
+    ) {
+      // do nothing
+    } else if (availabilityTime.start == appointment.startTime) {
+      // tutorId:string,addDate:string,addStartTime:string,addEndTime:string
+      this.tutorService.addDutyTime(
+        tutor.id,
+        appointment.endTime.getDate().toString(),
+        appointment.endTime.getHours().toString(),
+        availabilityTime.end.getHours().toString(),
+      );
+    } else if (availabilityTime.end == appointment.endTime) {
+      this.tutorService.addDutyTime(
+        tutor.id,
+        availabilityTime.start.getDate().toString(),
+        availabilityTime.start.getHours().toString(),
+        appointment.startTime.getHours().toString(),
+      );
+    } else {
+      this.tutorService.addDutyTime(
+        tutor.id,
+        availabilityTime.start.getDate().toString(),
+        availabilityTime.start.getHours().toString(),
+        appointment.startTime.getHours().toString(),
+      );
+      this.tutorService.addDutyTime(
+        tutor.id,
+        appointment.endTime.getDate().toString(),
+        appointment.endTime.getHours().toString(),
+        availabilityTime.end.getHours().toString(),
+      );
+    }
+
+    appointment.status = 'confirmed';
     await appointment.save();
-    return {
-      message: 'updated appointment successfully',
-      appointment: appointment._id,
-    };
-  }
 
-  async tutorGetAppointments(tutorId: string) {
-    const appointments = await this.appointmentModel.find({ tutorId });
     return {
-      message: 'get tutors appointments successfully!!',
-      data: appointments,
-    };
-  }
-
-  async studentGetAppointments(studentId: string) {
-    const appointments = await this.appointmentModel.find({ studentId });
-    return {
-      message: 'get students appointments successfully!!',
-      data: appointments,
+      message: `confirmed ${id} appointment successfully`,
+      appointment: appointment,
     };
   }
 }

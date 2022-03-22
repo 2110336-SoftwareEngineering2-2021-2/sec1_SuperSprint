@@ -15,40 +15,28 @@ export const AppointmentSchema = new mongoose.Schema(
       ref: 'Student',
       required: true,
     },
-    chatId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Chat',
-    },
     status: {
       type: String,
       required: true,
-      default: 'pending',
-      enum: ['pending', 'canceled', 'negotiating', 'offering', 'confirmed'],
+      default: 'offering',
+      enum: ['canceled', 'offering', 'confirmed'],
     },
     price: {
       type: Number,
+      required: true,
     },
     subjectId: {
       type: Schema.Types.ObjectId,
       ref: 'Subject',
       required: true,
     },
-
     startTime: {
       type: Date,
-      default: null,
+      required: true,
     },
     endTime: {
       type: Date,
-      default: null,
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
-    deletedAt: {
-      type: Date,
-      default: null,
+      required: true,
     },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
@@ -62,15 +50,11 @@ export class Appointment {
   @ApiProperty()
   studentId: string;
   @ApiProperty()
-  chatId: string;
-  @ApiProperty()
   status: string;
   @ApiProperty()
   price: number;
   @ApiProperty()
   subjectId: string;
-  @ApiProperty()
-  level: string;
   @ApiProperty()
   startTime: Date;
   @ApiProperty()

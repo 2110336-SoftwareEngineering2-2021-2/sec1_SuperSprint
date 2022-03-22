@@ -20,6 +20,10 @@ export const ChatSchema = new mongoose.Schema(
         ref: 'Message',
       },
     ],
+    accepted: {
+      type: Boolean,
+      required: true,
+    },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
@@ -29,4 +33,5 @@ export interface Chat {
   tutorId: string;
   studentId: string;
   messages: Array<string>;
+  accepted: boolean;
 }
