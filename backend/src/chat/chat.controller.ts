@@ -23,15 +23,15 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  @UseGuards(AuthGuard('jwt'))
-  @Post('create')
+  // @UseGuards(AuthGuard('jwt'))
+  @Post('request')
   @ApiBody({ type: String })
   async addChat(
     @Body('tutorId') tutorId: string,
     @Body('studentId') studentId: string,
   ) {
-    const newChat = await this.chatService.insertChat(tutorId, studentId);
-    return { id: newChat };
+    const chat = await this.chatService.requestChat(tutorId, studentId);
+    return { chat };
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -44,7 +44,7 @@ export class ChatController {
     return { deletedChat: chatId };
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(AuthGuard('jwt'))
   @Get('')
   async getChat(
     @Query('tutorId') tutorId: string,
@@ -52,5 +52,38 @@ export class ChatController {
   ) {
     const chat = await this.chatService.getChat(tutorId, studentId);
     return chat;
+  }
+
+  // @UseGuards(AuthGuard('jwt'))
+  @Get('getChatsTutor')
+  async getChatsTutor(@Query('tutorId') tutorId: string) {
+    console.log(tutorId);
+    return await this.chatService.getChatTutor(tutorId);
+  }
+
+  @Get('getChatsStudent')
+  async getChatsStudent(@Query('studentId') studentId: string) {
+    console.log(studentId);
+    return await this.chatService.getChatStudent(studentId);
+  }
+
+  // @UseGuards(AuthGuard('jwt'))
+  @Post('tutorAcceptedChat')
+  async tutorAcceptedChat(
+    @Body('tutorId') tutorId: string,
+    @Body('studentId') studentId: string,
+  ) {
+    const chat = await this.chatService.tutorAcceptedChat(tutorId, studentId);
+    return { chat: chat };
+  }
+
+  // @UseGuards(AuthGuard('jwt'))
+  @Delete('tutorDeclinedChat')
+  async tutorDeclinedChat(
+    @Body('tutorId') tutorId: string,
+    @Body('studentId') studentId: string,
+  ) {
+    const chatId = await this.chatService.tutorDeclineChat(tutorId, studentId);
+    return { chatId: chatId };
   }
 }
