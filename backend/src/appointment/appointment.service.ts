@@ -22,18 +22,23 @@ export class AppointmentService {
   async getAppointmentsByStatus(userType: string, id: string, status: string) {
     let appointments;
     if (userType === 'student') {
-      appointments = await this.appointmentModel.find({
-        studentId: id,
-        status: status,
-      });
+      appointments = await this.appointmentModel
+        .find({
+          studentId: id,
+          status: status,
+        })
+        .populate('subjectId');
     } else if (userType === 'tutor') {
-      appointments = await this.appointmentModel.find({
-        tutorId: id,
-        status: status,
-      });
+      appointments = await this.appointmentModel
+        .find({
+          tutorId: id,
+          status: status,
+        })
+        .populate('subjectId');
     } else {
       throw new NotFoundException('user type not found');
     }
+
     return {
       message: 'get appointments by status successfully',
       appointments: appointments,
@@ -41,10 +46,12 @@ export class AppointmentService {
   }
 
   async getAppointmentsByChat(tutorId: string, studentId: string) {
-    const appointments = await this.appointmentModel.find({
-      tutorId: tutorId,
-      studentId: studentId,
-    });
+    const appointments = await this.appointmentModel
+      .find({
+        tutorId: tutorId,
+        studentId: studentId,
+      })
+      .populate('subjectId');
     return {
       message: 'get appointments by chat successfully',
       appointments: appointments,
@@ -60,17 +67,17 @@ export class AppointmentService {
     endTime: string,
   ) {
     // check tutor's availability
-    const availability = await this.tutorModel.findOne({
+    console.log(tutorId);
+    const tutor = await this.tutorModel.findOne({
       _id: tutorId,
-      $and: [
-        {
-          'dutyTime.startTime': { $lte: startTime },
-        },
-        {
-          'dutyTime.endTime': { $gte: endTime },
-        },
-      ],
     });
+
+    const availability = tutor.dutyTime.find(
+      (dutyTime) =>
+        dutyTime.start <= new Date(startTime) &&
+        new Date(endTime) <= dutyTime.end,
+    );
+
     if (!availability) {
       throw new ForbiddenException('tutor is not available');
     }
@@ -108,72 +115,67 @@ export class AppointmentService {
 
   async studentAcceptAppointment(id: string) {
     // remove tutor's avalability
+
     const appointment = await this.appointmentModel.findById(id);
+
+    const appointmentStartTime = new Date(appointment.startTime);
+    const appointmentEndTime = new Date(appointment.endTime);
+
+    if (appointment.status === 'confirmed') {
+      throw new ForbiddenException('appointment is already confirmed');
+    } else if (appointment.status === 'canceled') {
+      throw new ForbiddenException('appointment is already canceled');
+    }
+
     const tutor = await this.tutorModel.findOne({
       _id: appointment.tutorId,
-      $and: [
-        {
-          'dutyTime.start': { $lte: appointment.startTime },
-        },
-        {
-          'dutyTime.end': { $gte: appointment.endTime },
-        },
-      ],
     });
 
-    if (!tutor) {
+    const availabilityTimeIndex = tutor.dutyTime.findIndex(
+      (dutyTime) =>
+        new Date(dutyTime.start) <= appointmentStartTime &&
+        appointmentEndTime <= new Date(dutyTime.end),
+    );
+
+    if (availabilityTimeIndex === -1) {
       this.cancelAppointment(id);
       throw new ForbiddenException('tutor is not available');
     }
-
-    const availabilityTime = tutor.dutyTime.find(
-      (dutyTime) =>
-        dutyTime.start <= appointment.startTime &&
-        appointment.endTime <= dutyTime.end,
-    );
-
-    tutor.dutyTime = tutor.dutyTime.filter(
-      (dutyTime) =>
-        dutyTime.start > appointment.startTime &&
-        appointment.endTime > dutyTime.end,
-    );
-
-    await tutor.save();
+    const availabilityTime = tutor.dutyTime[availabilityTimeIndex];
+    tutor.dutyTime.splice(availabilityTimeIndex, 1);
 
     if (
-      availabilityTime.start == appointment.startTime &&
-      availabilityTime.end == appointment.endTime
+      new Date(availabilityTime.start) == appointmentStartTime &&
+      new Date(availabilityTime.end) == appointmentEndTime
     ) {
       // do nothing
-    } else if (availabilityTime.start == appointment.startTime) {
+    } else if (new Date(availabilityTime.start) == appointmentStartTime) {
       // tutorId:string,addDate:string,addStartTime:string,addEndTime:string
-      this.tutorService.addDutyTime(
+      this.tutorService.addDutyTimeDateTime(
         tutor.id,
-        appointment.endTime.getDate().toString(),
-        appointment.endTime.getHours().toString(),
-        availabilityTime.end.getHours().toString(),
+        appointmentEndTime.toString(),
+        new Date(availabilityTime.end).toString(),
       );
-    } else if (availabilityTime.end == appointment.endTime) {
-      this.tutorService.addDutyTime(
+    } else if (new Date(availabilityTime.end) == appointmentEndTime) {
+      this.tutorService.addDutyTimeDateTime(
         tutor.id,
-        availabilityTime.start.getDate().toString(),
-        availabilityTime.start.getHours().toString(),
-        appointment.startTime.getHours().toString(),
+        new Date(availabilityTime.start).toString(),
+        appointmentStartTime.toString(),
       );
     } else {
-      this.tutorService.addDutyTime(
+      this.tutorService.addDutyTimeDateTime(
         tutor.id,
-        availabilityTime.start.getDate().toString(),
-        availabilityTime.start.getHours().toString(),
-        appointment.startTime.getHours().toString(),
+        new Date(availabilityTime.start).toString(),
+        appointmentStartTime.toString(),
       );
-      this.tutorService.addDutyTime(
+      this.tutorService.addDutyTimeDateTime(
         tutor.id,
-        appointment.endTime.getDate().toString(),
-        appointment.endTime.getHours().toString(),
-        availabilityTime.end.getHours().toString(),
+        appointmentEndTime.toString(),
+        new Date(availabilityTime.end).toString(),
       );
     }
+
+    await tutor.save();
 
     appointment.status = 'confirmed';
     await appointment.save();

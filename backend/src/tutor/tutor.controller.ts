@@ -115,7 +115,6 @@ export class TutorController {
     @Body('dutyTime') dutyTime: string,
   ) {
     let newDutyTime = null;
-    console.log('-----------duty', dutyTime);
 
     if (dutyTime) {
       newDutyTime = JSON.parse(dutyTime);

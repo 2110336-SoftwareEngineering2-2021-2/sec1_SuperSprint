@@ -155,7 +155,7 @@ export class AuthService {
         teachSubject: teachSubject,
         priceMin: priceMin,
         priceMax: priceMax,
-        dutyTime: dutyTime,
+        dutyTime: dutyTime.sort((a, b) => +a.start - +b.start),
       });
 
       const newT = await newTutor.save();
