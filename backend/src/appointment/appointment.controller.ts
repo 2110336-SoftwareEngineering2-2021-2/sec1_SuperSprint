@@ -80,7 +80,9 @@ export class AppointmentController {
 
   // @UseGuards(AuthGuard('jwt'))
   @Patch('student/accept/:appointmentId')
-  async studentAcceptAppointment(@Body('appointmentId') appointmentId: string) {
+  async studentAcceptAppointment(
+    @Param('appointmentId') appointmentId: string,
+  ) {
     return await this.appointmentService.studentAcceptAppointment(
       appointmentId,
     );

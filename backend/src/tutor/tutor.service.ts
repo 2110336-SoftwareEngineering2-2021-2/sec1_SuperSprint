@@ -299,7 +299,10 @@ export class TutorService {
     tutor.priceMin = priceMin || tutor.priceMin;
     tutor.priceMax = priceMax || tutor.priceMax;
     if (dutyTime) {
-      tutor.dutyTime = dutyTime;
+      dutyTime.forEach((element) => {
+        this.addDutyTimeDateTime(tutor._id, element.start, element.end);
+      });
+      // tutor.dutyTime = dutyTime;
     }
     tutor.phone = phone || tutor.phone;
     tutor.username = username || tutor.username;
@@ -318,19 +321,78 @@ export class TutorService {
   ) {
     const datetimeStart = new Date(addDate + 'T' + addStartTime);
     datetimeStart.setHours(datetimeStart.getHours() + 7);
+
     const datetimeEnd = new Date(addDate + 'T' + addEndTime);
     datetimeEnd.setHours(datetimeEnd.getHours() + 7);
-    // console.log(datetimeStart, datetimeEnd);
 
     const tutor = await this.tutorModel.findById(tutorId);
     const dutyTime = tutor.dutyTime;
 
-    for (let i = 0; i < dutyTime.length; i++) {
-      if (dutyTime[i].end == datetimeStart) {
-        dutyTime[i].end = datetimeEnd;
-      }
+    const startFound = dutyTime.findIndex(
+      (element) => element.end === datetimeStart,
+    );
+
+    const endFound = dutyTime.findIndex(
+      (element) => element.start === datetimeEnd,
+    );
+
+    if (startFound !== -1 && endFound !== -1) {
+      // ชิดซ้ายขวา
+      dutyTime[endFound].end = dutyTime[startFound].end;
+      dutyTime.splice(startFound, 1);
+    } else if (startFound !== -1 && endFound === -1) {
+      // ตัวแทรกไปชิดซ้ายตัวที่มีอยู่ -> แก้ end ของตัวที่มีอยู่
+      dutyTime[startFound].end = datetimeEnd;
+    } else if (startFound === -1 && endFound !== -1) {
+      // ชิดขวา
+      dutyTime[endFound].start = datetimeStart;
+    } else {
+      // ไม่ชิดเลย
+      dutyTime.push({ start: datetimeStart, end: datetimeEnd });
+      dutyTime.sort((a, b) => +a.start - +b.start);
     }
     await tutor.save();
+    return { message: 'successfully add duty time', dutyTime: tutor.dutyTime };
+  }
+
+  async addDutyTimeDateTime(
+    tutorId: string,
+    addStartDate: string,
+    addEndDate: string,
+  ) {
+    const datetimeStart = new Date(addStartDate);
+
+    const datetimeEnd = new Date(addEndDate);
+
+    const tutor = await this.tutorModel.findById(tutorId);
+    const dutyTime = tutor.dutyTime;
+
+    const startFound = dutyTime.findIndex(
+      (element) => element.end === datetimeStart,
+    );
+
+    const endFound = dutyTime.findIndex(
+      (element) => element.start === datetimeEnd,
+    );
+
+    if (startFound !== -1 && endFound !== -1) {
+      // ชิดซ้ายขวา
+      dutyTime[endFound].end = dutyTime[startFound].end;
+      dutyTime.splice(startFound, 1);
+    } else if (startFound !== -1 && endFound === -1) {
+      // ตัวแทรกไปชิดซ้ายตัวที่มีอยู่ -> แก้ end ของตัวที่มีอยู่
+      dutyTime[startFound].end = datetimeEnd;
+    } else if (startFound === -1 && endFound !== -1) {
+      // ชิดขวา
+      dutyTime[endFound].start = datetimeStart;
+    } else {
+      // ไม่ชิดเลย
+      dutyTime.push({ start: datetimeStart, end: datetimeEnd });
+      dutyTime.sort((a, b) => +a.start - +b.start);
+    }
+    this.tutorModel.findByIdAndUpdate(tutorId, { dutyTime });
+
+    return { message: 'successfully add duty time', dutyTime: tutor.dutyTime };
   }
 
   private async findTutor(tutorId: string): Promise<Tutor> {
