@@ -21,7 +21,7 @@ export default function OtherMessage({
             {
                 messages.map((message) => {
                     return (
-                        <div class="relative max-w-xl px-4 py-2 text-base-content bg-gray-100 rounded-box shadow float-left flex ml-3 w-max">
+                        <div class="relative max-w-xl px-4 py-2 text-base-content bg-base-200 rounded-box shadow float-left flex ml-3 w-max">
                             <span className="block">{message}</span>
                         </div>
                     )

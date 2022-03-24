@@ -12,7 +12,7 @@ export default function SelfMessage({ messages }) {
               </span>
             </div>
             <div className="flex flex-col gap-y-3">
-              <div class="rounded-box relative float-right mr-3 flex max-w-xl bg-primary px-4 py-2 text-base-content shadow">
+              <div class="rounded-box relative float-right mr-3 flex max-w-xl bg-primary px-4 py-2 text-primary-content shadow">
                 {message.sendImage ? (
                   <img src={message.msg} className="rounded-box" />
                 ) : (

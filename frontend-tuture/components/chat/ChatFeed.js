@@ -70,7 +70,7 @@ export default function ChatFeed() {
   };
 
   return (
-    <div className="flex-col items-center space-y-5 pb-3 pl-3 pr-3 align-middle">
+    <div className="flex-col items-center space-y-5 pb-2 pl-3 pr-3 align-middle justify-end relative">
       <ChatTitle {...titleData} />
       <div className="flex flex-row items-center justify-center">
         <div className="badge badge-primary h-full w-screen max-w-screen-xs">
@@ -80,9 +80,12 @@ export default function ChatFeed() {
       <OtherMessage {...otherData1} />
       <SelfMessage {...selfData} />
       <OtherMessage {...otherData2} />
-      <div className="fixed bottom-0">
-        <MessageForm />
-      </div>
+      <footer>
+        <div className="flex fixed bottom-0 justify-center items-start bg-base-100 w-full h-max align-middle justify-items-center">
+          <MessageForm />
+        </div>
+      </footer>
+      
     </div>
   );
 }

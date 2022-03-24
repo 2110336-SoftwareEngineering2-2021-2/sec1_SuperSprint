@@ -1,7 +1,7 @@
 import React from 'react';
-import ChatFeed from '../../components/chat/ChatFeed';
-import ChatList from '../../components/chat/ChatList';
-import Layout from '../../components/Layout';
+import ChatFeed from '../../../components/chat/ChatFeed';
+import ChatList from '../../../components/chat/ChatList';
+import Layout from '../../../components/Layout';
 
 export default function Chat() {
   return (

@@ -5,12 +5,13 @@ import {
   faPaperPlane,
   faImage,
   faCalendarAlt,
+  faSmile,
 } from '@fortawesome/free-solid-svg-icons';
 
 export default function MessageForm() {
   return (
-    <div className="sticky bottom-0 flex w-full space-x-3 pb-5">
-      <div className="flex-1 items-center">
+    <div className="sticky flex w-max space-x-3 pb-2 pt-2 bg-base-100">
+      <div className="flex items-center">
         <div class="dropdown-top dropdown">
           <button
             tabIndex="0"
@@ -86,14 +87,26 @@ export default function MessageForm() {
           </div>
         </div>
       </div>
-      <div className="flex-2 w-screen max-w-7xl items-center">
+      <div className="flex relative justify-end items-center">
         <input
           type="text"
           placeholder="Enter your message"
-          className="input input-bordered input-primary input-warning w-screen max-w-screen-xl"
+          className="input input-bordered input-primary input-warning md:w-screen w-full max-w-screen-md bg-base-100"
         />
+        <button
+            tabIndex="0"
+            className="btn btn-ghost btn-circle border-transparent bg-base-100 absolute btn-sm right-3"
+          >
+            <FontAwesomeIcon
+              icon={faSmile}
+              size="xl"
+              fixedWidth
+              color="primary"
+            />
+          </button>
       </div>
-      <div className="flex-2 items-center">
+
+      <div className="flex items-center">
         <button className="btn btn-ghost">
           <FontAwesomeIcon
             icon={faPaperPlane}
