@@ -11,6 +11,7 @@ import NavbarControl from '../components/NavbarControl';
 import NextNProgress from 'nextjs-progressbar';
 import { SessionProvider } from 'next-auth/react';
 import dynamic from 'next/dynamic';
+import 'simplebar/dist/simplebar.min.css';
 
 config.autoAddCss = false;
 
