@@ -1,61 +1,68 @@
 import React, { useEffect, useState } from 'react';
 import AppointmentCard from '../../../components/appointment/AppointmentCard';
+import Layout from '../../../components/Layout';
+import { Modal } from '../../../components/Modal';
 
-const APPO_STATUS= [
-    {
-      title: 'Pending',
-      key: 'pending',
-    },
-    {
-      title: 'Negotiating',
-      key: 'negotiating',
-    },
-    {
-      title: 'Offering',
-      key: 'offering',
-    },
-    {
-      title: 'Confirmed',
-      key: 'confirmed',
-    },
-  ];
+const APPO_STATUS = [
+  {
+    title: 'Pending',
+    key: 'pending',
+  },
+  {
+    title: 'Negotiating',
+    key: 'negotiating',
+  },
+  {
+    title: 'Offering',
+    key: 'offering',
+  },
+  {
+    title: 'Confirmed',
+    key: 'confirmed',
+  },
+];
 
-  const names = [
-    ['Adam', 'Benson'],
-    ['Clare', 'Donaldsdfadsfdsfson'],
-    ['Phusaratis', 'Jong'],
-    ['Donald', 'Clarkson'],
-  ];
+const names = [
+  ['Adam', 'Benson'],
+  ['Clare', 'Donaldsdfadsfdsfson'],
+  ['Phusaratis', 'Jong'],
+  ['Donald', 'Clarkson'],
+];
 
 export default function StudentAppointment() {
-    const [selectedStatus, setSelectedStatus] = useState(APPO_STATUS[0]);
+  const [selectedStatus, setSelectedStatus] = useState(APPO_STATUS[2]);
+  const [modalOpen, setModalOpen] = useState(false);
 
-    function changeTab(event) {
-        const selected = event.target.getAttribute('tabStatus');
-        setSelectedStatus(APPO_STATUS.find((item) => item.key === selected));
-      }
+  function changeTab(event) {
+    const selected = event.target.getAttribute('tabStatus');
+    setSelectedStatus(APPO_STATUS.find((item) => item.key === selected));
+  }
 
-    function goToChat(){
-        //add function detail
+  function goToChat() {
+    //add function detail
+  }
 
-    }
+  function acceptDeal() {
+    //add function detail
+  }
 
-    function acceptDeal(){
-        //add function detail
-        
-    }
+  function declineDeal() {
+    //add function detail
+  }
 
-    function declineDeal(){
-        //add function detail
-        
-    }
+  function cancelAppointment() {
+    //add function detail
+  }
 
-    function cancelAppointment(){
-        //add function detail
-        
-    }
+  function openModal() {
+    setModalOpen(true);
+  }
 
-      let temp = [];
+  function closeModal() {
+    setModalOpen(false);
+  }
+
+  let temp = [];
   for (let i = 0; i < 4; i++) {
     temp.push(
       <AppointmentCard
@@ -67,82 +74,103 @@ export default function StudentAppointment() {
         }
         subjects={['Physics', 'Chemistry']}
         levels={['High school', 'Middle school']}
-        createdDate={new Date(Date.now() - Math.random()*2*24*60*60*1000)}
-        apptDate={new Date(Date.now() - Math.random()*2*24*60*60*1000)}
+        createdDate={
+          new Date(Date.now() - Math.random() * 2 * 24 * 60 * 60 * 1000)
+        }
+        apptDate={
+          new Date(Date.now() - Math.random() * 2 * 24 * 60 * 60 * 1000)
+        }
         status={selectedStatus.key}
         onCardClick={() => console.log(`Card click ${names[i][0]}`)}
         onChooseClick={() => console.log(`Choose button click ${names[i][0]}`)}
-        onAccept={() => console.log(`Choose button click ${names[i][0]}`)}
-        onDecline={() => console.log(`Choose button click ${names[i][0]}`)}
-        onCancel={() => console.log(`Choose button click ${names[i][0]}`)}
-        onChatClick={() => console.log(`Choose button click ${names[i][0]}`)}
+        onAccept={() =>
+          console.log(`Accept: Choose button click ${names[i][0]}`)
+        }
+        onDecline={() =>
+          console.log(`Decline: Choose button click ${names[i][0]}`)
+        }
+        onCancel={() =>
+          console.log(`Cancel: Choose button click ${names[i][0]}`)
+        }
+        onChatClick={() =>
+          console.log(`Chat: Choose button click ${names[i][0]}`)
+        }
         POV="student"
       />
     );
   }
 
   return (
-    <div>
-        <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
-          Student's Appointment Status
-        </h1>
-        <br/>
-      
-      {(selectedStatus.key == "pending") && (<div>
-      <div className="my-1 flex flex-wrap justify-center gap-4">
-      <div class="tabs">
-        <a onClick={changeTab} class="tab tab-bordered tab-active tab-lg" tabStatus="pending">Pending</a>
-        <a onClick={changeTab} class="tab tab-bordered tab-lg" tabStatus="negotiating">Negotiating</a>
-        <a onClick={changeTab} class="tab tab-bordered tab-lg" tabStatus="offering">Offering</a>
-        <a onClick={changeTab} class="tab tab-bordered tab-lg" tabStatus="confirmed">Confirmed</a>
+    <Layout>
+      <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
+        Student's Appointment Status
+      </h1>
+      <br />
+
+      <div className="mx-2 sm:mx-20">
+        <div className="my-1 flex flex-wrap justify-center gap-4">
+          <div className="tabs flex w-full flex-row justify-center">
+            {/* <a
+              onClick={changeTab}
+              className={`tab tab-bordered tab-lg w-1/4 ${
+                selectedStatus.key === 'pending' ? 'tab-active' : ''
+              }`}
+              tabStatus="pending"
+            >
+              Pending
+            </a>
+            <a
+              onClick={changeTab}
+              className={`tab tab-bordered tab-lg w-1/4 ${
+                selectedStatus.key === 'negotiating' ? 'tab-active' : ''
+              }`}
+              tabStatus="negotiating"
+            >
+              Negotiating
+            </a> */}
+            <a
+              onClick={changeTab}
+              className={`tab tab-bordered tab-lg w-1/4 ${
+                selectedStatus.key === 'offering' ? 'tab-active' : ''
+              }`}
+              tabStatus="offering"
+            >
+              Offering
+            </a>
+            <a
+              onClick={changeTab}
+              className={`tab tab-bordered tab-lg w-1/4 ${
+                selectedStatus.key === 'confirmed' ? 'tab-active' : ''
+              }`}
+              tabStatus="confirmed"
+            >
+              Confirmed
+            </a>
+          </div>
+        </div>
+        <div className="my-2 flex flex-wrap justify-center gap-4">{temp}</div>
       </div>
-      </div>
-      <div className="my-2 flex flex-wrap justify-center gap-4">{temp}</div>
-      </div>
-      )}
-      {(selectedStatus.key == "negotiating") && (
-      <div>
-      <div className="my-1 flex flex-wrap justify-center gap-4">
-      <div class="tabs">
-        <a onClick={changeTab} class="tab tab-bordered tab-lg" tabStatus="pending">Pending</a>
-        <a onClick={changeTab} class="tab tab-bordered tab-active tab-lg" tabStatus="negotiating">Negotiating</a>
-        <a onClick={changeTab} class="tab tab-bordered tab-lg" tabStatus="offering">Offering</a>
-        <a onClick={changeTab} class="tab tab-bordered tab-lg" tabStatus="confirmed">Confirmed</a>
-      </div>
-      </div>
-      <div className="my-2 flex flex-wrap justify-center gap-4">{temp}</div>
-      </div>
-      )}
-      {(selectedStatus.key == "offering") && (
-      <div>
-      <div className="my-1 flex flex-wrap justify-center gap-4">
-      <div class="tabs">
-        <a onClick={changeTab} class="tab tab-bordered tab-lg" tabStatus="pending">Pending</a>
-        <a onClick={changeTab} class="tab tab-bordered tab-lg" tabStatus="negotiating">Negotiating</a>
-        <a onClick={changeTab} class="tab tab-bordered tab-active tab-lg" tabStatus="offering">Offering</a>
-        <a onClick={changeTab} class="tab tab-bordered tab-lg" tabStatus="confirmed">Confirmed</a>
-      </div>
-      </div>
-      <div className="my-2 flex flex-wrap justify-center gap-4">{temp}</div>
-      </div>
-      )}
-      {(selectedStatus.key == "confirmed") && (
-      <div>
-      <div className="my-1 flex flex-wrap justify-center gap-4">
-      <div class="tabs">
-        <a onClick={changeTab} class="tab tab-bordered tab-lg" tabStatus="pending">Pending</a>
-        <a onClick={changeTab} class="tab tab-bordered tab-lg" tabStatus="negotiating">Negotiating</a>
-        <a onClick={changeTab} class="tab tab-bordered tab-lg" tabStatus="offering">Offering</a>
-        <a onClick={changeTab} class="tab tab-bordered tab-active tab-lg" tabStatus="confirmed">Confirmed</a>
-      </div>
-      </div>
-      <div className="my-2 flex flex-wrap justify-center gap-4">{temp}</div>
-      </div>
-      )}
-    </div>
+      <Modal
+        isOpen={modalOpen}
+        title="Confirmation"
+        onClose={closeModal}
+        onSubmit={() => {
+          closeModal();
+          // handleSubmit(submitScore)();
+        }}
+        onCancel={closeModal}
+        submitBtnText="yes"
+        cancelBtnText="no"
+      >
+        {
+          <p className="text-sm text-base-content">
+            Are you sure you want to cancel the appointment?
+          </p>
+        }
+      </Modal>
+    </Layout>
   );
 }
-
 
 // {createdDate && (
 //     <p className="w-28 text-right text-xs text-base-content/50">

@@ -1,25 +1,23 @@
-import React from 'react'
+import React from 'react';
 
-export default function ChatTitle({
-    name,
-    profileImg
-}) {
+export default function ChatTitle({ name, profileImg }) {
   return (
     <div>
-        <nav className="w-full h-20 bg-base-200 rounded-lg flex justify-between items-center">
-            <div className="flex justify-center items-center ml-3"> 
-                <div class="avatar w-fit h-fit online">
-                    <div class="w-14 rounded-full">
-                        <img src={profileImg} alt="Profile Image"/>
-                    </div>
-                </div>
-                <div className="flex flex-col">
-                    <span className="text-lg text-base-content text ml-3 font-bold">{name}</span>
-                    <span className="text-sm text-base-content ml-3">Active Now</span>
-                </div>
+      <div className="flex h-20 w-full items-center justify-between rounded-b-lg bg-base-200">
+        <div className="ml-3 flex items-center justify-center">
+          <div class="avatar online h-fit w-fit">
+            <div class="w-14 rounded-full">
+              <img src={profileImg} alt="Profile Image" />
             </div>
-
-        </nav>
+          </div>
+          <div className="flex flex-col">
+            <span className="text ml-3 text-lg font-bold text-base-content">
+              {name}
+            </span>
+            <span className="ml-3 text-sm text-base-content">Active Now</span>
+          </div>
+        </div>
+      </div>
     </div>
-  )
+  );
 }

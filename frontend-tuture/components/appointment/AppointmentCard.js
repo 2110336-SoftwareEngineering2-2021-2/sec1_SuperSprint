@@ -4,7 +4,7 @@ import {
   faTimes,
   faCheck,
   faComment,
-  faBan
+  faBan,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Transition } from '@headlessui/react';
@@ -22,13 +22,13 @@ function AppointmentCard({
   levels,
   createdDate,
   apptDate,
-  status = "pending",
+  status = 'pending',
   onCardClick,
   onAccept,
   onDecline,
   onCancel, //Peem added this
   onChatClick,
-  POV="student"
+  POV = 'student',
 }) {
   const [showCard, setShowCard] = useState(false);
   // console.log(studentId);
@@ -47,167 +47,168 @@ function AppointmentCard({
   return (
     // <input type="checkbox" id="my-modal" class="modal-toggle" >
     <div>
-    <Transition
-      appear={true}
-      show={showCard}
-      enter="transform transition duration-[400ms]"
-      enterFrom="opacity-0 translate-y-10"
-      enterTo="opacity-100 translate-y-0"
-      leave="transform duration-200 transition ease-in-out"
-      leaveFrom="opacity-100 scale-100 "
-      leaveTo="opacity-0 scale-95"
-    >
-      {/* <Modal isOpen={true}>
+      <Transition
+        appear={true}
+        show={showCard}
+        enter="transform transition duration-[400ms]"
+        enterFrom="opacity-0 translate-y-10"
+        enterTo="opacity-100 translate-y-0"
+        leave="transform duration-200 transition ease-in-out"
+        leaveFrom="opacity-100 scale-100 "
+        leaveTo="opacity-0 scale-95"
+      >
+        {/* <Modal isOpen={true}>
         <h2>Test modal</h2>
         <p>modal body</p>
       </Modal> */}
-      <div
-        className="flex w-auto max-w-3xl cursor-pointer justify-between rounded-lg bg-base-100 shadow-lg transition-all hover:scale-105 hover:shadow-amber-400/40"
-        onClick={onCardClick ?? null}
-        tabIndex={0}
-      >
-        <img
-          src={avatarUrl(profileImg, firstName + lastName + studentId)}
-          alt="Profile picture of the tutor"
-          className="h-36 w-24 flex-1 rounded-lg object-cover sm:w-48"
-          loading="lazy"
-        />
-        <div className="inline-flex w-64 flex-col justify-start pt-4 pl-4 pb-4 sm:w-96">
-          <h3 className="text-md my-2 w-40 max-w-fit overflow-hidden overflow-ellipsis whitespace-nowrap font-bold text-base-content transition-colors hover:cursor-pointer hover:text-primary-focus sm:w-64 sm:text-xl">
-            {firstName} {lastName}
-          </h3>
-          <p className="cursor-default text-sm text-base-content text-opacity-80 selection:bg-primary sm:text-base">
-            <FontAwesomeIcon size="sm" icon={faBookOpen} fixedWidth />{' '}
-            {subjects.join(', ')}
-          </p>
-          <p className="cursor-default text-sm text-base-content text-opacity-80 selection:bg-primary sm:text-base">
-            <FontAwesomeIcon size="sm" icon={faGraduationCap} fixedWidth />{' '}
-            {levels.join(', ')}
-          </p>
-        </div>
-
-        {/* R and L Seperation */}
-
-        <div className="-ml-24 inline-flex select-none flex-col items-end justify-between p-2">  
-          {(status=="offering"||status=="confirmed") && apptDate && (
-            <div className="flex items-center">
-              <div>
-                <p className="sm:text-md text-center text-xs">
-                  {moment(apptDate).format('MMM YYYY')}
-                </p>
-                <p className="text-center text-lg sm:text-xl">
-                  {moment(apptDate).format('D')}
-                </p>{' '}
-                <p className="sm:text-md text-center text-xs">
-                  {moment(apptDate).format('hh:mm')}
-                </p>
-              </div>
-              <span className="mx-1">-</span>
-              <div>
-                <p className="sm:text-md text-center text-xs">
-                  {moment(apptDate).format('MMM YYYY')}
-                </p>
-                <p className="text-center text-lg sm:text-xl">
-                  {moment(apptDate).format('D')}
-                </p>{' '}
-                <p className="sm:text-md text-center text-xs">
-                  {moment(apptDate).format('hh:mm')}
-                </p>
-              </div>
-            </div>
-          )}
-          {createdDate && (
-            <p className="w-28 text-right text-xs text-base-content/50">
-              {moment(createdDate).fromNow()}
+        <div
+          className="flex w-auto max-w-3xl cursor-pointer justify-between rounded-lg bg-base-100 shadow-lg transition-all hover:scale-105 hover:shadow-amber-400/40"
+          onClick={onCardClick ?? null}
+          tabIndex={0}
+        >
+          <img
+            src={avatarUrl(profileImg, firstName + lastName + studentId)}
+            alt="Profile picture of the tutor"
+            className="h-36 w-24 flex-1 rounded-lg object-cover sm:w-48"
+            loading="lazy"
+          />
+          <div className="inline-flex w-64 flex-col justify-start pt-4 pl-4 pb-4 sm:w-96">
+            <h3 className="text-md my-2 w-40 max-w-fit overflow-hidden overflow-ellipsis whitespace-nowrap font-bold text-base-content transition-colors hover:cursor-pointer hover:text-primary-focus sm:w-64 sm:text-xl">
+              {firstName} {lastName}
+            </h3>
+            <p className="cursor-default text-sm text-base-content text-opacity-80 selection:bg-primary sm:text-base">
+              <FontAwesomeIcon size="sm" icon={faBookOpen} fixedWidth />{' '}
+              {subjects.join(', ')}
             </p>
-          )}
-          {(status=="confirmed" || status=="negotiating" || (status=="offering" && POV=="tutor")) &&(
-            <div>
-          <button
-                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-yellow-500"
-                onClick={onChatClick}
-              >
-                <FontAwesomeIcon fixedWidth icon={faComment} size="lg"/>
-          </button>
-          <label
-                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
-                // onClick={onCancel}
-                for ="cancelModal" 
-              >
-                <div className="pt-1.5">
-                  <FontAwesomeIcon fixedWidth icon={faBan} size="lg"/>
-                </div>
-          </label>
+            <p className="cursor-default text-sm text-base-content text-opacity-80 selection:bg-primary sm:text-base">
+              <FontAwesomeIcon size="sm" icon={faGraduationCap} fixedWidth />{' '}
+              {levels.join(', ')}
+            </p>
           </div>
-          
-          )}
-          {status=="offering" && POV=="student" && (
-            <div>
-              <button
-                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-yellow-500"
-                onClick={onChatClick}
-              >
-                <FontAwesomeIcon fixedWidth icon={faComment} size="lg"/>
-              </button>
-              <label
-                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
-                // onClick={onDecline}
-                for ="declineModal"
-              >
-                <div className="pt-1.5">
-                <FontAwesomeIcon fixedWidth icon={faTimes} size="lg" />
-                </div>
-              </label>
-              <label
-                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-success"
-                // onClick={onAccept}
-                for ="acceptModal"
-              >
-                <div className="pt-1.5">
-                <FontAwesomeIcon fixedWidth icon={faCheck} size="lg" />
-                </div>
-              </label>
-            </div>
-          )}
-          {status=="pending" && POV=="tutor" && (
-            <div>
-              <label
-                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
-                // onClick={onDecline}
-                for ="declineModal"
-              >
-                <div className="pt-1.5">
-                <FontAwesomeIcon fixedWidth icon={faTimes} size="lg" />
-                </div>
-              </label>
-              <label
-                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-success"
-                // onClick={onAccept}
-                for ="acceptModal"
-              >
-                <div className="pt-1.5">
-                <FontAwesomeIcon fixedWidth icon={faCheck} size="lg" />
-                </div>
-              </label>
-            </div>
-          )}
-          {status=="pending" && POV=="student" && (
-            <div>
-              <label
-                className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error modal-button"
-                // onClick={onCancel}
-                for ="cancelModal" 
-              >
-                <div className="pt-1.5">
-                  <FontAwesomeIcon fixedWidth icon={faBan} size="lg"/>
-                </div>
-              </label>
-            </div>
-          )}
-        </div>
-      </div>
 
-      <input type="checkbox" id="cancelModal" class="modal-toggle" />
+          {/* R and L Seperation */}
+
+          <div className="-ml-24 inline-flex select-none flex-col items-end justify-between p-2">
+            {(status == 'offering' || status == 'confirmed') && apptDate && (
+              <div className="flex items-center">
+                <div>
+                  <p className="sm:text-md text-center text-xs">
+                    {moment(apptDate).format('MMM YYYY')}
+                  </p>
+                  <p className="text-center text-lg sm:text-xl">
+                    {moment(apptDate).format('D')}
+                  </p>{' '}
+                  <p className="sm:text-md text-center text-xs">
+                    {moment(apptDate).format('hh:mm')}
+                  </p>
+                </div>
+                <span className="mx-1">-</span>
+                <div>
+                  <p className="sm:text-md text-center text-xs">
+                    {moment(apptDate).format('MMM YYYY')}
+                  </p>
+                  <p className="text-center text-lg sm:text-xl">
+                    {moment(apptDate).format('D')}
+                  </p>{' '}
+                  <p className="sm:text-md text-center text-xs">
+                    {moment(apptDate).format('hh:mm')}
+                  </p>
+                </div>
+              </div>
+            )}
+            {createdDate && (
+              <p className="w-28 text-right text-xs text-base-content/50">
+                {moment(createdDate).fromNow()}
+              </p>
+            )}
+            {(status == 'confirmed' ||
+              status == 'negotiating' ||
+              (status == 'offering' && POV == 'tutor')) && (
+              <div>
+                <button
+                  className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-yellow-500"
+                  onClick={onChatClick}
+                >
+                  <FontAwesomeIcon fixedWidth icon={faComment} size="lg" />
+                </button>
+                <label
+                  className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
+                  onClick={onCancel}
+                  for="cancelModal"
+                >
+                  <div className="pt-1.5">
+                    <FontAwesomeIcon fixedWidth icon={faBan} size="lg" />
+                  </div>
+                </label>
+              </div>
+            )}
+            {status == 'offering' && POV == 'student' && (
+              <div>
+                <button
+                  className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-yellow-500"
+                  onClick={onChatClick}
+                >
+                  <FontAwesomeIcon fixedWidth icon={faComment} size="lg" />
+                </button>
+                <label
+                  className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
+                  onClick={onDecline}
+                  for="declineModal"
+                >
+                  <div className="pt-1.5">
+                    <FontAwesomeIcon fixedWidth icon={faTimes} size="lg" />
+                  </div>
+                </label>
+                <label
+                  className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-success"
+                  onClick={onAccept}
+                  for="acceptModal"
+                >
+                  <div className="pt-1.5">
+                    <FontAwesomeIcon fixedWidth icon={faCheck} size="lg" />
+                  </div>
+                </label>
+              </div>
+            )}
+            {status == 'pending' && POV == 'tutor' && (
+              <div>
+                <label
+                  className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
+                  // onClick={onDecline}
+                  for="declineModal"
+                >
+                  <div className="pt-1.5">
+                    <FontAwesomeIcon fixedWidth icon={faTimes} size="lg" />
+                  </div>
+                </label>
+                <label
+                  className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-success"
+                  // onClick={onAccept}
+                  for="acceptModal"
+                >
+                  <div className="pt-1.5">
+                    <FontAwesomeIcon fixedWidth icon={faCheck} size="lg" />
+                  </div>
+                </label>
+              </div>
+            )}
+            {status == 'pending' && POV == 'student' && (
+              <div>
+                <label
+                  className="modal-button btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
+                  // onClick={onCancel}
+                  for="cancelModal"
+                >
+                  <div className="pt-1.5">
+                    <FontAwesomeIcon fixedWidth icon={faBan} size="lg" />
+                  </div>
+                </label>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* <input type="checkbox" id="cancelModal" class="modal-toggle" />
       <div class="modal">
         <div class="modal-box">   
           <h3 class="font-bold text-lg">Warning!</h3>
@@ -291,9 +292,8 @@ function AppointmentCard({
               </label>
             </div>
           </div>
-        </div>
-
-    </Transition>
+        </div> */}
+      </Transition>
     </div>
   );
 }
