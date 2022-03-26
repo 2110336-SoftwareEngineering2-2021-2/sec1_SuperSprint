@@ -9,6 +9,7 @@ import { JwtStrategy } from '../auth/jwt.strategy';
 import { jwtConstants } from '../auth/constants';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Student', schema: StudentSchema }]),

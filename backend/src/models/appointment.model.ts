@@ -3,11 +3,26 @@ import { ApiProperty } from '@nestjs/swagger';
 
 const Schema = mongoose.Schema;
 
-export const ScoreSchema = new mongoose.Schema(
+export const AppointmentSchema = new mongoose.Schema(
   {
     tutorId: {
       type: Schema.Types.ObjectId,
       ref: 'Tutor',
+      required: true,
+    },
+    studentId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Student',
+      required: true,
+    },
+    status: {
+      type: String,
+      required: true,
+      default: 'offering',
+      enum: ['canceled', 'offering', 'confirmed'],
+    },
+    price: {
+      type: Number,
       required: true,
     },
     subjectId: {
@@ -15,44 +30,33 @@ export const ScoreSchema = new mongoose.Schema(
       ref: 'Subject',
       required: true,
     },
-    currentScore: {
-      type: Number,
+    startTime: {
+      type: Date,
       required: true,
     },
-    imageUrl: {
-      type: String,
-    },
-    maxScore: {
-      type: Number,
+    endTime: {
+      type: Date,
       required: true,
-    },
-    year: {
-      type: Number,
-      required: true,
-    },
-    status: {
-      type: String,
-      required: true,
-      enum: ['pending', 'approved', 'rejected'],
     },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
-export class Score {
+
+export class Appointment {
   @ApiProperty()
   _id: string;
   @ApiProperty()
   tutorId: string;
   @ApiProperty()
-  subjectId: string;
-  @ApiProperty()
-  currentScore: number;
-  @ApiProperty()
-  imageUrl: string;
-  @ApiProperty()
-  maxScore: number;
-  @ApiProperty()
-  year: number;
+  studentId: string;
   @ApiProperty()
   status: string;
+  @ApiProperty()
+  price: number;
+  @ApiProperty()
+  subjectId: string;
+  @ApiProperty()
+  startTime: Date;
+  @ApiProperty()
+  endTime: Date;
 }
