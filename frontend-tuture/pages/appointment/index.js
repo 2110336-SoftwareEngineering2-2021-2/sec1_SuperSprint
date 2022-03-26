@@ -3,6 +3,7 @@ import AppointmentCard from '../../components/appointment/AppointmentCard';
 import Layout from '../../components/Layout';
 import { Modal } from '../../components/Modal';
 import { useSession, getSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 const APPO_STATUS = {
   offering: {
@@ -21,15 +22,16 @@ const names = [
 ];
 
 export default function StudentAppointment({ appts }) {
-  // destringify date item
-  if (appts) {
-    appts = appts.map((e) => {
-      const temp = { ...e };
-      temp.createdDate = new Date(temp.createdDate);
-      temp.apptDate = new Date(temp.apptDate);
-      return temp;
-    });
-  }
+  console.log(appts);
+  // // destringify date item
+  // if (appts) {
+  //   appts = appts.map((e) => {
+  //     const temp = { ...e };
+  //     temp.createdDate = new Date(temp.createdDate);
+  //     temp.apptDate = new Date(temp.apptDate);
+  //     return temp;
+  //   });
+  // }
 
   const { data: session } = useSession();
   const [selectedStatus, setSelectedStatus] = useState('offering');
@@ -39,6 +41,8 @@ export default function StudentAppointment({ appts }) {
   const [isAccepting, setIsAccepting] = useState(false);
   const [apptId, setApptId] = useState('');
 
+  const router = useRouter();
+
   function changeTab(event) {
     const selected = event.target.getAttribute('tabStatus');
     setSelectedStatus(selected);
@@ -47,6 +51,7 @@ export default function StudentAppointment({ appts }) {
   function goToChat(apptId) {
     console.log(`Chat: Chat button clicked`);
     //go to chat room
+    router.push('/chat');
   }
 
   function onAccept(apptId) {
@@ -96,7 +101,7 @@ export default function StudentAppointment({ appts }) {
     //.....HERE
     console.log('Student accepts appointment');
     closeModal();
-    return;
+    router.push('/chat');
   }
 
   function cancelAppointment(apptId) {
@@ -104,7 +109,7 @@ export default function StudentAppointment({ appts }) {
     //.....HERE
     console.log('Whoever cancels appointment');
     closeModal();
-    return;
+    router.push('/chat');
   }
 
   function openModal() {
@@ -155,8 +160,10 @@ export default function StudentAppointment({ appts }) {
             .filter((appt) => appt.status === selectedStatus)
             .map((appt) => (
               <AppointmentCard
-                key={appt.id}
+                key={appt._id}
                 {...appt}
+                firstName="test"
+                lastName="test"
                 onCardClick={() => console.log(`Card click`)}
                 onChooseClick={() => console.log(`Choose button click`)}
                 onAccept={() => onAccept(appt.id)}
@@ -185,6 +192,31 @@ export default function StudentAppointment({ appts }) {
   );
 }
 
+async function getAppointments(session) {
+  try {
+    const res = await fetch(
+      // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
+      `${process.env.NEXT_PUBLIC_API_URL}/appointment/${session.user.role}/${session.user._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      }
+    );
+    if (!res.ok) {
+      const test = await res.json();
+      console.log(test);
+      throw new Error('Fetch error');
+    }
+    const data = await res.json();
+
+    return data.appointments;
+  } catch (error) {
+    console.log(error.stack);
+    return [];
+  }
+}
+
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
@@ -207,13 +239,32 @@ export async function getServerSideProps(context) {
     };
   });
 
+  const rawAppts = await getAppointments(session);
+
+  const appts = rawAppts.map((appt) => {
+    const temp = { ...appt };
+    temp.userData = temp.studentId;
+    temp.firstName = temp.userData.firstName;
+    temp.lastName = temp.userData.lastName;
+    temp.subjects = temp.userData.preferSubject;
+    temp.studentId = temp.studentId._id;
+    // console.log(temp);
+    return {
+      _id: temp._id,
+      firstName: temp.firstName,
+      lastName: temp.lastName,
+      subjects: temp.subjects,
+      studentId: temp.studentId,
+      tutorId: temp.tutorId,
+      startTime: temp.startTime,
+      endTime: temp.endTime,
+      status: temp.status,
+    };
+  });
+
+  console.log('hello', appts);
+
   return {
-    props: { session, appts: mock },
+    props: { session, appts: appts },
   };
 }
-
-// {createdDate && (
-//     <p className="w-28 text-right text-xs text-base-content/50">
-//       {moment(createdDate).fromNow()}
-//     </p>
-//   )}

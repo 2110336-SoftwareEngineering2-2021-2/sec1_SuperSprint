@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Tutor } from '../models/tutor.model';
 import { Score } from '../models/score.model';
+import { Subject } from '../models/subject.model';
 import { S3Service } from '@src/services/S3Sevices.service';
 
 @Injectable()
@@ -14,6 +15,7 @@ export class ScoreService {
   constructor(
     @InjectModel('Score') private readonly scoreModel: Model<Score>,
     @InjectModel('Tutor') private readonly tutorModel: Model<Tutor>,
+    @InjectModel('Subject') private readonly subjectModel: Model<Subject>,
     private readonly s3Service: S3Service,
   ) {}
 
@@ -112,5 +114,46 @@ export class ScoreService {
 
     await score.save();
     return { scoreId: score._id };
+  }
+
+  async getAllScore(tutorId: string) {
+    const score = await this.scoreModel
+      .find({ tutorId: tutorId })
+      .populate('subjectId');
+
+    return score;
+  }
+
+  async getTutorSubjectsScore(tutorId: string) {
+    const tutor = await this.tutorModel.findById(tutorId).lean();
+    const teachSubject = tutor.teachSubject;
+    const res = [];
+    console.log(123);
+    teachSubject.forEach(async (subjectId) => {
+      const subject = await this.subjectModel.findById(subjectId).lean();
+      // console.log(subject);
+      const score = await this.scoreModel
+        .findOne({ tutorId, subjectId })
+        .lean(); // score , null {pat  : null , pat2: score}
+      // {subject1 : score1, subject2: score2 }
+      if (score) {
+        res.push({
+          subjectName: subject.title,
+          level: subject.level,
+          currentScore: score.currentScore,
+          maxScore: score.maxScore,
+          url: score.imageUrl,
+        });
+      } else {
+        res.push({
+          subjectName: subject.title,
+          level: subject.level,
+          currentScore: null,
+          maxScore: null,
+          url: null,
+        });
+      }
+    });
+    return res;
   }
 }

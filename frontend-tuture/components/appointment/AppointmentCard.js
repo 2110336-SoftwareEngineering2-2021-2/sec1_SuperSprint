@@ -21,7 +21,8 @@ function AppointmentCard({
   subjects,
   levels,
   createdDate,
-  apptDate,
+  startApptDate,
+  endApptDate,
   status = 'pending',
   onCardClick,
   onAccept,
@@ -89,29 +90,29 @@ function AppointmentCard({
           {/* R and L Seperation */}
 
           <div className="-ml-24 inline-flex select-none flex-col items-end justify-between p-2">
-            {(status == 'offering' || status == 'confirmed') && apptDate && (
+            {(status == 'offering' || status == 'confirmed') && startApptDate && endApptDate && (
               <div className="flex items-center">
                 <div>
                   <p className="sm:text-md text-center text-xs">
-                    {moment(apptDate).format('MMM YYYY')}
+                    {moment(startApptDate).format('MMM YYYY')}
                   </p>
                   <p className="text-center text-lg sm:text-xl">
-                    {moment(apptDate).format('D')}
+                    {moment(startApptDate).format('D')}
                   </p>{' '}
                   <p className="sm:text-md text-center text-xs">
-                    {moment(apptDate).format('hh:mm')}
+                    {moment(startApptDate).format('hh:mm')}
                   </p>
                 </div>
                 <span className="mx-1">-</span>
                 <div>
                   <p className="sm:text-md text-center text-xs">
-                    {moment(apptDate).format('MMM YYYY')}
+                    {moment(endApptDate).format('MMM YYYY')}
                   </p>
                   <p className="text-center text-lg sm:text-xl">
-                    {moment(apptDate).format('D')}
+                    {moment(endApptDate).format('D')}
                   </p>{' '}
                   <p className="sm:text-md text-center text-xs">
-                    {moment(apptDate).format('hh:mm')}
+                    {moment(endApptDate).format('hh:mm')}
                   </p>
                 </div>
               </div>

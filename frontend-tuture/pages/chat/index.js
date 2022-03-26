@@ -56,18 +56,18 @@ export default function Chat({ chats, subjectList }) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  const chatTest = Array.from({ length: 16 }, () => {
-    return {
-      firstName: (Math.random() + 1)
-        .toString(36)
-        .substring(Math.floor(Math.random() * 6 + 2)),
-      lastName: (Math.random() + 1)
-        .toString(36)
-        .substring(Math.floor(Math.random() * 6 + 2)),
-      chatId: Math.random(),
-      accepted: Math.random() > 0.5,
-    };
-  });
+  // const chatTest = Array.from({ length: 16 }, () => {
+  //   return {
+  //     firstName: (Math.random() + 1)
+  //       .toString(36)
+  //       .substring(Math.floor(Math.random() * 6 + 2)),
+  //     lastName: (Math.random() + 1)
+  //       .toString(36)
+  //       .substring(Math.floor(Math.random() * 6 + 2)),
+  //     chatId: Math.random(),
+  //     accepted: Math.random() > 0.5,
+  //   };
+  // });
 
   var subjectList;
   try {
@@ -105,7 +105,58 @@ export async function getServerSideProps(context) {
     };
   }
 
+  // Test jaaaa
+  // tutorId=621c818daefa29db6f3e806f
+  // studentId=621c8c3d363377298c2bf8b2
+
+  const chat = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/chat?tutorId=621c818daefa29db6f3e806f&studentId=621c8c3d363377298c2bf8b2`,
+    {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    }
+  );
+  if (!res.ok) {
+    throw new Error('Fetch error');
+  }
+
+  const chatData = await res.json();
+
+  // Get student list
+
+  const tutorChatList = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/chat/getChatsStudent?studentId=621c8c3d363377298c2bf8b2`,
+    {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    }
+  );
+  if (!res.ok) {
+    throw new Error('Fetch error');
+  }
+
+  const studentList = await res.json();
+
+  // Get tutor list
+
+  const studentChatList = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/chat/getChatsTutor?tutorId=621c818daefa29db6f3e806f`,
+    {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    }
+  );
+  if (!res.ok) {
+    throw new Error('Fetch error');
+  }
+
+  const tutorList = await res.json();
+
+  
   return {
-    props: { session, subjectList, chats: chatTest },
+    props: { session, subjectList, chats: chatData },
   };
 }

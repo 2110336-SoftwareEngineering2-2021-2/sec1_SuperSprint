@@ -34,6 +34,8 @@ function EditScore({ scores }) {
     setFocus,
     watch,
     trigger,
+    getFieldState,
+    formState: { isDirty },
     reset,
   } = useForm({
     defaultValues: formatFormDefaultValue(scores),
@@ -47,7 +49,12 @@ function EditScore({ scores }) {
   async function submitScore(data) {
     console.log(data);
     const formData = new FormData();
+    for (const [key, value] of Object.entries(data)) {
+      if(getFieldState(key).isDirty) console.log(key, value);
+    }
     try {
+      setLoading(false);
+      router.push('/profile/tutor')
     } catch (error) {}
     setLoading(false);
   }

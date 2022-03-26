@@ -23,6 +23,32 @@ import { AuthGuard } from '@nestjs/passport';
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
+  @ApiOkResponse({ type: Tutor })
+  @ApiBody({
+    schema: {
+      example: {
+        id: '00001',
+        firstName: 'Poom',
+        lastName: 'Suchao',
+        email: 'poom@suchao.com',
+        phone: '0987654321',
+        username: 'poom.suchao',
+        gender: 'm',
+        image: '',
+        avgRating: 4.8,
+        successMatch: 10,
+        teachSubject: [],
+        priceMin: 100,
+        priceMax: 1000,
+        dutyTime: [
+          {
+            start: '2022-02-16T08:00:00.000+00:00',
+            end: '2022-02-16T09:30:00.000+00:00',
+          },
+        ],
+      },
+    },
+  })
   @Post('')
   async createAppointment(
     @Body('tutorId') tutorId: string,
@@ -56,6 +82,16 @@ export class AppointmentController {
       id,
       status,
     );
+  }
+
+  // @UseGuards(AuthGuard('jwt'))
+  @Get('/:userType/:id')
+  @ApiOkResponse({ type: [Appointment] })
+  async getAppointments(
+    @Param('userType') userType: string,
+    @Param('id') id: string,
+  ) {
+    return await this.appointmentService.getAppointments(userType, id);
   }
 
   // @UseGuards(AuthGuard('jwt'))

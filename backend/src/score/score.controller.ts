@@ -94,4 +94,13 @@ export class ScoreController {
       scoreImage: score.imageUrl,
     };
   }
+
+  // @UseGuards(AuthGuard('jwt'))
+  @Get('scores/:tutorId')
+  async getAllScore(@Param('tutorId') tutorId: string) {
+    const scores = await this.scoreService.getAllScore(tutorId);
+    return {
+      scores: scores,
+    };
+  }
 }

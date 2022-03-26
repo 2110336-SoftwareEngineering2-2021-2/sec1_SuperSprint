@@ -27,14 +27,16 @@ export class AppointmentService {
           studentId: id,
           status: status,
         })
-        .populate('subjectId');
+        .populate('subjectId')
+        .populate('studentId');
     } else if (userType === 'tutor') {
       appointments = await this.appointmentModel
         .find({
           tutorId: id,
           status: status,
         })
-        .populate('subjectId');
+        .populate('subjectId')
+        .populate('studentId');
     } else {
       throw new NotFoundException('user type not found');
     }
@@ -45,13 +47,54 @@ export class AppointmentService {
     };
   }
 
+  async getAppointments(userType: string, id: string) {
+    let appointments;
+    if (userType === 'student') {
+      appointments = await this.appointmentModel
+        .find({
+          studentId: id,
+        })
+        .populate('subjectId')
+        .populate({
+          path: 'tutorId',
+          select: { password: 0 },
+          populate: {
+            path: 'subjectId',
+            model: 'Subject',
+          },
+        });
+    } else if (userType === 'tutor') {
+      appointments = await this.appointmentModel
+        .find({
+          tutorId: id,
+        })
+        .populate('subjectId')
+        .populate({
+          path: 'studentId',
+          select: { password: 0 },
+          populate: {
+            path: 'subjectId',
+            model: 'Subject',
+          },
+        });
+    } else {
+      throw new NotFoundException('user type not found');
+    }
+    return {
+      message: 'get appointments successfully',
+      appointments: appointments,
+    };
+  }
+
   async getAppointmentsByChat(tutorId: string, studentId: string) {
     const appointments = await this.appointmentModel
       .find({
         tutorId: tutorId,
         studentId: studentId,
       })
-      .populate('subjectId');
+      .populate('subjectId')
+      .populate('studentId')
+      .populate('tutorId');
     return {
       message: 'get appointments by chat successfully',
       appointments: appointments,
