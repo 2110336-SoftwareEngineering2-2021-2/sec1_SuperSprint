@@ -2,27 +2,17 @@ import StudentProfile from '../../../components/profile/StudentProfile';
 import Link from 'next/link';
 import React from 'react';
 import Layout from '../../../components/Layout';
-import TutorImage from '../../../public/images/President-Putin.png';
 import { getSession } from 'next-auth/react';
-
-function whatGender(smile) {
-  if (smile === 'f') {
-    return 'female';
-  } else if (smile === 'm') {
-    return 'male';
-  } else {
-    return 'Unspecified';
-  }
-}
+import whatGender from '../../../lib/whatGender';
 
 export default function student(props) {
   return (
-    <Layout>
+    <Layout title={`${props.data.firstName}'s Profile | Tuture`}>
       <div className="mb-4">
         <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
           {`${props.data.firstName}'s Profile`}
         </h1>
-        <div className="mx-2 items-center justify-center">
+        <div className="items-center justify-center md:px-20 sm:px-5 px-2">
           <StudentProfile {...props.data} />
         </div>
         <div className="flex w-full justify-center">
@@ -56,7 +46,7 @@ export async function getServerSideProps(context) {
     }
     const data = await res.json();
 
-    console.log(data);
+    // console.log(data);
 
     return {
       props: {
@@ -87,7 +77,7 @@ export async function getServerSideProps(context) {
           // birthDate: '1 Jan 1000',
           phoneNumber: '0123456789',
           preferredSubjects: ['CEM III', 'Algorithm II', 'Physics VII'],
-          imgUrl: TutorImage,
+          imgUrl: 'https://api.lorem.space/image/face?hash=3174',
         },
       },
     };

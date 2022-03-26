@@ -3,36 +3,62 @@ import Link from 'next/link';
 import React from 'react';
 import Layout from '../../../components/Layout';
 import { getSession } from 'next-auth/react';
+import whatGender from '../../../lib/whatGender';
+import TutorScorePanel from '../../../components/profile/TutorScorePanel';
 
-function whatGender(smile) {
-  if (smile === 'f') {
-    return 'female';
-  } else if (smile === 'm') {
-    return 'male';
-  } else {
-    return 'unspecified';
-  }
-}
+const scoresTest = Array.from({ length: 7 }, (_, idx) => {
+  return {
+    subject: 'PAT' + (idx + 1),
+    level: 'PAT',
+    subjectId: idx,
+    year: '2022',
+    score: 300,
+    maxScore: 300,
+    scoreImage: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+  };
+});
 
-export default function tutor(props) {
+export default function TutorProfilePage(props) {
   return (
-    <Layout>
-      <div className="mb-4">
-        <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
+    <Layout title={`${props.data.firstName}'s Profile | Tuture`}>
+      <div className="mx-0 mb-4 flex flex-col lg:mx-8 lg:flex-row min-h-full">
+        <section className="flex-[8]">
+          <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
             {`${props.data.firstName}'s Profile`}
-        </h1>
-        <div className="mx-2 items-center justify-center">
-          <TutorProfile {...props.data} />
-        </div>
-        <div className="flex w-full justify-center">
-          <Link href="/profile/tutor/edit" passHref>
-            <input
-              type="submit"
-              className="btn btn-primary"
-              value="Edit Profile"
-            />
-          </Link>
-        </div>
+          </h1>
+          <div className="px-2 sm:px-5">
+            <TutorProfile {...props.data} />
+          </div>
+          <div className="flex w-full justify-center">
+            <Link href="/profile/tutor/edit" passHref>
+              <input
+                type="submit"
+                className="btn btn-primary"
+                value="Edit Profile"
+              />
+            </Link>
+          </div>
+        </section>
+
+        <div className="divider divider-vertical lg:divider-horizontal"></div>
+
+        <section className="flex-[3]">
+          <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
+            {`${props.data.firstName}'s Score`}
+          </h1>
+          <div className="my-4 px-2 sm:px-5">
+            <TutorScorePanel scores={scoresTest} isOwner />
+          </div>
+          <div className="flex w-full justify-center">
+            <Link href="/profile/tutor/edit-score" passHref>
+              <input
+                type="submit"
+                className="btn btn-primary"
+                value="Edit SCORE"
+              />
+            </Link>
+          </div>
+        </section>
       </div>
     </Layout>
   );
@@ -40,6 +66,7 @@ export default function tutor(props) {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
+  
   try {
     const res = await fetch(
       // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
@@ -50,13 +77,10 @@ export async function getServerSideProps(context) {
         },
       }
     );
-    console.log(res);
     if (!res.ok) {
       throw new Error('Fetch error');
     }
     const data = await res.json();
-
-    console.log(data);
 
     return {
       props: {
@@ -77,6 +101,7 @@ export async function getServerSideProps(context) {
           successMatch: data.successMatch,
           dutyTime: data.dutyTime,
         },
+        session,
       },
     };
   } catch (error) {
@@ -99,6 +124,7 @@ export async function getServerSideProps(context) {
           successMatch: 13598,
           dutyTime: ['-'],
         },
+        session,
       },
     };
   }

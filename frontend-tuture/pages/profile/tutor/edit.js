@@ -122,8 +122,7 @@ function TutorProfileEdit(props) {
         throw new Error(err.message || 'Fetch Error');
       }
       setFetchError(null);
-      const res_data = await res.json();
-      console.log(res_data);
+      const resData = await res.json();
       setLoading(false);
       toast('Profile Edited!', {
         onClose: () => {
@@ -161,7 +160,7 @@ function TutorProfileEdit(props) {
   }
 
   return (
-    <Layout title="Edit Profile | Tuture" signedIn={false}>
+    <Layout title="Edit Profile | Tuture">
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
         Edit Profile
       </h1>
@@ -538,7 +537,7 @@ export async function getServerSideProps(context) {
     }
     const data = await res.json();
 
-    console.log('data----------------', data);
+    // console.log('data----------------', data);
 
     console.log('done fetching');
 

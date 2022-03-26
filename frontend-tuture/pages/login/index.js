@@ -28,7 +28,7 @@ export default function Login({ error }) {
   }
 
   return (
-    <Layout title="Log In | Tuture" signedIn={false}>
+    <Layout title="Log In | Tuture">
       <div className="container m-auto mb-4 flex flex-col items-center">
         <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
           Log In
@@ -170,18 +170,18 @@ export async function getServerSideProps(context) {
 }
 
 const errors = {
-  Signin: 'Try signing with a different account.',
-  OAuthSignin: 'Try signing with a different account.',
-  OAuthCallback: 'Try signing with a different account.',
-  OAuthCreateAccount: 'Try signing with a different account.',
-  EmailCreateAccount: 'Try signing with a different account.',
-  Callback: 'Try signing with a different account.',
+  Signin: 'Try logging in with a different account.',
+  OAuthSignin: 'Try logging in with a different account.',
+  OAuthCallback: 'Try logging in with a different account.',
+  OAuthCreateAccount: 'Try logging in with a different account.',
+  EmailCreateAccount: 'Try logging in with a different account.',
+  Callback: 'Try logging in with a different account.',
   OAuthAccountNotLinked:
-    'To confirm your identity, sign in with the same account you used originally.',
+    'To confirm your identity, log in with the same account you used originally.',
   EmailSignin: 'Check your email address.',
   CredentialsSignin:
-    'Sign in failed. Check the details you provided are correct.',
-  default: 'Unable to sign in.',
+    'Login in failed. Check the details you provided are correct.',
+  default: 'Unable to log in.',
 };
 
 const SignInError = ({ error }) => {

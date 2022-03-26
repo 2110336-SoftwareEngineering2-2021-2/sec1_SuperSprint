@@ -117,7 +117,7 @@ function StudentProfileEdit(props) {
   }
 
   return (
-    <Layout title="Edit Profile | Tuture" signedIn={false}>
+    <Layout title="Edit Profile | Tuture">
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
         Edit Profile
       </h1>
@@ -380,7 +380,6 @@ function StudentProfileEdit(props) {
 }
 
 export async function getServerSideProps(context) {
-  console.log('here');
   const session = await getSession(context);
   if (!session) {
     return {
@@ -390,8 +389,6 @@ export async function getServerSideProps(context) {
       },
     };
   }
-
-  console.log(session);
 
   var subjects;
   try {
@@ -437,7 +434,7 @@ export async function getServerSideProps(context) {
     }
     const data = await res.json();
 
-    console.log(data);
+    // console.log(data);
 
     console.log('done fetching');
 

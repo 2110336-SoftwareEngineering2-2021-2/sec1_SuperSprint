@@ -110,7 +110,7 @@ function StudentRegister({ subjects }) {
   }
 
   return (
-    <Layout title="Sign Up Student | Tuture" signedIn={false}>
+    <Layout title="Sign Up Student | Tuture">
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
         Create Student Account
       </h1>
@@ -190,7 +190,6 @@ function StudentRegister({ subjects }) {
               </label>
               <AvatarUpload
                 hookFormControl={control}
-                hookFormSetValue={setValue}
                 hookFormWatch={watch}
               />
               <p className="text-center text-xs">

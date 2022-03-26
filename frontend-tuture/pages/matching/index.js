@@ -163,13 +163,13 @@ function Matching({ subjects, levels }) {
     if (!(await validateForm(event))) {
       return;
     }
-    console.log({
-      study_subject: event.target.study_subject.value,
-      levels: event.target.edu_level.value,
-      price_min: event.target.price_min.value,
-      price_max: event.target.price_max.value,
-      availability: availFormVals,
-    });
+    // console.log({
+    //   study_subject: event.target.study_subject.value,
+    //   levels: event.target.edu_level.value,
+    //   price_min: event.target.price_min.value,
+    //   price_max: event.target.price_max.value,
+    //   availability: availFormVals,
+    // });
     router.push(
       {
         pathname: '/matching/result/[result]',

@@ -8,7 +8,6 @@ import { useSession } from 'next-auth/react';
 
 const Navbar = (props) => {
   const { data: session } = useSession();
-  console.log(session);
   const router = useRouter();
 
   function submitSearch(event) {
@@ -20,11 +19,11 @@ const Navbar = (props) => {
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
 
       <div className="drawer-content mx-auto h-full w-screen">
-        <div className="navbar sticky top-0 z-50 w-full bg-primary text-neutral-content shadow-lg">
+        <div className="navbar sticky top-0 z-50 h-[8vh] w-full bg-primary text-neutral-content shadow-lg">
           <div className="navbar-start">
             <label
               htmlFor="my-drawer"
-              className="btn btn-ghost drawer-button btn-square btn-sm sm:btn-md"
+              className="btn btn-ghost btn-square drawer-button btn-sm sm:btn-md"
             >
               <FontAwesomeIcon
                 fixedWidth
@@ -41,26 +40,28 @@ const Navbar = (props) => {
           </div>
           {/* sa wad dee krub taan sa ma chik chom lom kon chob frontend */}
           <div className="navbar-center">
-            <div className="form-control">
-              <form onSubmit={(e) => submitSearch(e)} className="relative">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="input-bordered input-primary input input-sm w-52 border border-secondary text-base-content xs:w-48 sm:input-md sm:w-72 md:w-96"
-                  id="search_term"
-                />
-                <button
-                  type="submit"
-                  className="btn btn-primary btn-square btn-sm absolute top-0 right-0 rounded-l-none border border-secondary text-xs sm:btn-md sm:text-base"
-                >
-                  <FontAwesomeIcon
-                    fixedWidth
-                    icon={faSearch}
-                    className="text-primary-content"
+            {session.user.role !== 'tutor' && (
+              <div className="form-control">
+                <form onSubmit={(e) => submitSearch(e)} className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="input input-bordered input-primary input-sm w-52 border border-secondary text-base-content xs:w-48 sm:input-md sm:w-72 md:w-96"
+                    id="search_term"
                   />
-                </button>
-              </form>
-            </div>
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-square btn-sm absolute top-0 right-0 rounded-l-none border border-secondary text-xs sm:btn-md sm:text-base"
+                  >
+                    <FontAwesomeIcon
+                      fixedWidth
+                      icon={faSearch}
+                      className="text-primary-content"
+                    />
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
 
           <div className="navbar-end flex items-center">
@@ -69,37 +70,36 @@ const Navbar = (props) => {
                 Match
               </a>
             </Link>
-            <button className="btn btn-ghost btn-square btn-sm sm:btn-md">
+            {/* <button className="btn btn-ghost btn-square btn-sm sm:btn-md">
               <FontAwesomeIcon
                 fixedWidth
                 icon={faBell}
                 className="text-primary-content"
               />
-            </button>
+            </button> */}
             <ProfileDropdown
               name={`${session.user.firstName} ${session.user.lastName}`}
               profileImg={session.user.profileUrl}
             />
           </div>
         </div>
-        <main className="relative pt-8">{props.children}</main>
+
+        <main className="relative h-[92vh] pt-8 ">{props.children}</main>
       </div>
 
       <div className="drawer-side">
         <label htmlFor="my-drawer" className="drawer-overlay" />
         <ul className="menu w-80 overflow-y-auto bg-base-100 p-4">
-          {sidebarData.map((item, index) => {
-            return (
-              <li key={index}>
-                <Link href={item.link}>
-                  <a className="justify-start space-x-5">
-                    <FontAwesomeIcon icon={item.icon} size="sm" fixedWidth />
-                    <h1>{item.name}</h1>
-                  </a>
-                </Link>
-              </li>
-            );
-          })}
+          {sidebarData.map((item, index) => (
+            <li key={index}>
+              <Link href={item.link}>
+                <a className="justify-start space-x-5">
+                  <FontAwesomeIcon icon={item.icon} size="sm" fixedWidth />
+                  <h1>{item.name}</h1>
+                </a>
+              </Link>
+            </li>
+          ))}
         </ul>
       </div>
     </div>
