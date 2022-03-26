@@ -13,7 +13,29 @@ export default function Home({ tutors }) {
         </h1>
         <div className="divider" />
         {/* <h2>your recommendation</h2> */}
-        <TutorList tutors={tutors} sortOption={false} />
+        {session.user.role === 'student' && (
+          <TutorList tutors={tutors} sortOption={false} />
+        )}
+        {session.user.role === 'tutor' && (
+          <div className="flex flex-wrap justify-center gap-4">
+            <div className="card w-96 bg-base-100 shadow-xl">
+              <div className="card-body">
+                <h2 className="card-title">Your Appointment</h2>
+                <div className="card-actions justify-end">
+                  <button className="btn btn-primary">Buy Now</button>
+                </div>
+              </div>
+            </div>
+            <div className="card w-96 bg-base-100 shadow-xl">
+              <div className="card-body">
+                <h2 className="card-title">Card title!</h2>
+                <div className="card-actions justify-end">
+                  <button className="btn btn-primary">Buy Now</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

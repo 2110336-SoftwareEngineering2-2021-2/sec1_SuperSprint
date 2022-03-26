@@ -23,7 +23,7 @@ const Navbar = (props) => {
           <div className="navbar-start">
             <label
               htmlFor="my-drawer"
-              className="btn btn-ghost btn-square btn-sm drawer-button sm:btn-md"
+              className="btn btn-ghost btn-square drawer-button btn-sm sm:btn-md"
             >
               <FontAwesomeIcon
                 fixedWidth
@@ -85,24 +85,21 @@ const Navbar = (props) => {
         </div>
 
         <main className="relative h-[92vh] pt-8 ">{props.children}</main>
-        
       </div>
 
       <div className="drawer-side">
         <label htmlFor="my-drawer" className="drawer-overlay" />
         <ul className="menu w-80 overflow-y-auto bg-base-100 p-4">
-          {sidebarData.map((item, index) => {
-            return (
-              <li key={index}>
-                <Link href={item.link}>
-                  <a className="justify-start space-x-5">
-                    <FontAwesomeIcon icon={item.icon} size="sm" fixedWidth />
-                    <h1>{item.name}</h1>
-                  </a>
-                </Link>
-              </li>
-            );
-          })}
+          {sidebarData.map((item, index) => (
+            <li key={index}>
+              <Link href={item.link}>
+                <a className="justify-start space-x-5">
+                  <FontAwesomeIcon icon={item.icon} size="sm" fixedWidth />
+                  <h1>{item.name}</h1>
+                </a>
+              </Link>
+            </li>
+          ))}
         </ul>
       </div>
     </div>

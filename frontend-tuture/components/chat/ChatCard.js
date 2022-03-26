@@ -5,6 +5,7 @@ function ChatCard({
   firstName,
   lastName,
   accepted,
+  canAccept = true,
   selected,
   onClick,
   onAccept,
@@ -12,7 +13,7 @@ function ChatCard({
 }) {
   return (
     <div
-      className={`flex w-24 cursor-pointer items-center xs:gap-2 gap-0 rounded-md p-2 transition-colors hover:bg-base-300 xs:w-56 md:w-80 ${
+      className={`flex w-24 cursor-pointer items-center gap-0 rounded-md p-2 transition-colors hover:bg-base-300 xs:w-56 xs:gap-2 md:w-80 ${
         selected && 'bg-base-200'
       }`}
       onClick={onClick}
@@ -35,7 +36,7 @@ function ChatCard({
             accepted ? 'w-36 md:w-56' : 'w-28 md:w-40'
           } hidden overflow-hidden text-ellipsis whitespace-nowrap text-sm text-base-content/80 xs:block`}
         >
-          {accepted ? '' : 'Pending request'}
+          {accepted ? '' : 'Pending chat request'}
         </p>
       </div>
       {!accepted && (
@@ -49,15 +50,17 @@ function ChatCard({
           >
             <FontAwesomeIcon fixedWidth icon={faTimes} />
           </button>
-          <button
-            className="btn btn-ghost btn-circle btn-xs inline-block rounded-full text-success md:btn-sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              onAccept();
-            }}
-          >
-            <FontAwesomeIcon fixedWidth icon={faCheck} />
-          </button>
+          {canAccept && (
+            <button
+              className="btn btn-ghost btn-circle btn-xs inline-block rounded-full text-success md:btn-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAccept();
+              }}
+            >
+              <FontAwesomeIcon fixedWidth icon={faCheck} />
+            </button>
+          )}
         </div>
       )}
     </div>

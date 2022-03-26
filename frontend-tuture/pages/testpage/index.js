@@ -28,8 +28,12 @@ export default function Testpage() {
         }
         subjects={['Physics', 'Chemistry']}
         levels={['High school', 'Middle school']}
-        createdDate={new Date(Date.now() - Math.random()*2*24*60*60*1000)}
-        apptDate={new Date(Date.now() - Math.random()*2*24*60*60*1000)}
+        createdDate={
+          new Date(Date.now() - Math.random() * 2 * 24 * 60 * 60 * 1000)
+        }
+        apptDate={
+          new Date(Date.now() - Math.random() * 2 * 24 * 60 * 60 * 1000)
+        }
         accepted
         onCardClick={() => console.log(`Card click ${names[i][0]}`)}
         onChooseClick={() => console.log(`Choose button click ${names[i][0]}`)}
