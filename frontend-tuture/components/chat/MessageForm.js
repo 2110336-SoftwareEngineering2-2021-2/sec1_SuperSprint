@@ -33,7 +33,7 @@ const schema = yup.object().shape({
   level: yup.string().min(1, 'Level is a required field'),
 });
 
-export default function MessageForm({ subjectList }) {
+export default function MessageForm({ subjectList, chatId }) {
   const {
     register,
     handleSubmit,
@@ -62,19 +62,45 @@ export default function MessageForm({ subjectList }) {
     setModalOpen(false);
   }
 
-  function submitAppointment(data) {
+  function dateTimeCompile(date, time) {
+    const [HH, MM] = time.split(':');
+    return moment(date).add(HH, 'h').add(MM, 'm').toDate();
+  }
+
+  async function submitAppointment(data) {
+    const payload = {
+      chatId: chatId,
+      subjectId: data.level,
+      price: data.price,
+      startTime: dateTimeCompile(data.date, data.timeFrom),
+      endTime: dateTimeCompile(data.date, data.timeTo),
+    };
+    // console.log(payload);
+    
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointment`, {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'same-origin',
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      throw new Error('Fetch error');
+    }
     closeModal();
-    console.log(data);
   }
 
   return (
     <>
       <div className="mx-auto flex w-fit justify-items-center space-x-3 pb-2 pt-2">
         <div className="flex items-center">
-          <div className="dropdown-top dropdown">
+          <div className="dropdown dropdown-top">
             <button
               tabIndex="0"
-              className="btn btn-circle btn-ghost border-transparent"
+              className="btn btn-ghost btn-circle border-transparent"
             >
               <FontAwesomeIcon
                 icon={faPlusCircle}
@@ -84,7 +110,7 @@ export default function MessageForm({ subjectList }) {
               />
             </button>
             <ul
-              tabindex="0"
+              tabIndex="0"
               className="w-500 dropdown-content menu rounded-box mb-3 bg-base-100 p-4 shadow-lg"
             >
               <li className="flex w-max">
@@ -126,7 +152,7 @@ export default function MessageForm({ subjectList }) {
           />
           <button
             tabIndex="0"
-            className="btn btn-circle btn-ghost btn-sm absolute right-3 border-transparent bg-base-100"
+            className="btn btn-ghost btn-circle btn-sm absolute right-3 border-transparent bg-base-100"
           >
             <FontAwesomeIcon
               icon={faSmile}

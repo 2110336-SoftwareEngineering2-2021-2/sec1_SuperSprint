@@ -165,7 +165,7 @@ export class TutorController {
   //@UseGuards(AuthGuard('jwt'))
   @Get('score')
   async getTutorScore(@Query('id') id: string) {
-    console.log(id);
+    // console.log(id);
     return await this.scoreService.getTutorSubjectsScore(id);
   }
 }

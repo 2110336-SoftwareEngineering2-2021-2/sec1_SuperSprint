@@ -43,7 +43,7 @@ export default function ScoreEditCard({
       >
         <div className="inline-flex w-full flex-col justify-between p-4 sm:w-full">
           <h3 className="text-lg w-40 max-w-fit overflow-hidden overflow-ellipsis whitespace-nowrap font-bold text-base-content transition-colors hover:cursor-pointer hover:text-primary-focus xs:w-52 sm:w-80 sm:text-xl">
-            {scoreData.subject} ({scoreData.level})
+            {scoreData.subjectName} ({scoreData.level})
           </h3>
           <div className="divider"></div>
           <div>
@@ -51,7 +51,7 @@ export default function ScoreEditCard({
               <span className="w-20">Score</span>
               <input
                 className="input input-bordered input-primary input-sm w-24 xs:w-32"
-                {...hookFormRegister(`${scoreData.subjectId}.score`)}
+                {...hookFormRegister(`${scoreData.subjectId}.currentScore`)}
                 id="score"
                 type="number"
                 placeholder="0"
@@ -76,7 +76,7 @@ export default function ScoreEditCard({
           <ScoreImageUpload
             subjectId={scoreData.subjectId}
             hookFormControl={hookFormControl}
-            defaultValue={scoreData.scoreImage.preview}
+            defaultValue={scoreData.scoreImage}
           />
           <button
             className="btn btn-circle btn-ghost btn-sm"

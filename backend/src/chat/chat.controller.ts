@@ -68,22 +68,17 @@ export class ChatController {
   }
 
   // @UseGuards(AuthGuard('jwt'))
-  @Post('tutorAcceptedChat')
-  async tutorAcceptedChat(
-    @Body('tutorId') tutorId: string,
-    @Body('studentId') studentId: string,
-  ) {
-    const chat = await this.chatService.tutorAcceptedChat(tutorId, studentId);
+  @Post('tutorAcceptChat/:chatId')
+  async tutorAcceptChat(@Param('chatId') chatId: string) {
+    const chat = await this.chatService.tutorAcceptChat(chatId);
     return { chat: chat };
   }
 
   // @UseGuards(AuthGuard('jwt'))
-  @Delete('tutorDeclinedChat')
-  async tutorDeclinedChat(
-    @Body('tutorId') tutorId: string,
-    @Body('studentId') studentId: string,
-  ) {
-    const chatId = await this.chatService.tutorDeclineChat(tutorId, studentId);
+  @Post('declineChat/:chatId')
+  async declineChat(@Param('chatId') chatId: string) {
+    console.log('test', chatId);
+    await this.chatService.declineChat(chatId);
     return { chatId: chatId };
   }
 }

@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 function ChatCard({
   firstName,
   lastName,
+  profileImg,
   accepted,
   canAccept = true,
   selected,
@@ -16,11 +17,13 @@ function ChatCard({
       className={`flex w-24 cursor-pointer items-center gap-0 rounded-md p-2 transition-colors hover:bg-base-300 xs:w-56 xs:gap-2 md:w-80 ${
         selected && 'bg-base-200'
       }`}
-      onClick={onClick}
+      onClick={() => {
+        if (accepted) onClick();
+      }}
     >
       <div className="avatar">
         <div className="w-12 rounded-full md:w-14">
-          <img src="https://api.lorem.space/image/face?hash=3174" />
+          <img src={profileImg} />
         </div>
       </div>
       <div className="h-fit">

@@ -5,31 +5,70 @@ import Layout from '../../components/Layout';
 import { useRouter } from 'next/router';
 import { getSession, useSession } from 'next-auth/react';
 
-export default function Chat({ chats, subjectList }) {
+export default function Chat({ chatData, subjectList }) {
   const { data: session } = useSession();
   const router = useRouter();
+  const [chats, setChats] = useState(chatData);
   const currentChatId = router.query.chatId || '';
 
-  function onAccept(chatId) {
-    console.log('Accept', chatId);
+  async function onAccept(chatId) {
+    if (session.user.role === 'tutor') {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/chat/tutorAcceptChat/${chatId}`,
+        {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'same-origin',
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+            contentType: 'application/json'
+          },
+          body: JSON.stringify({
+            chatId: chatId,
+          }),
+        }
+      );
+      if (!res.ok) {
+        throw new Error('Fetch error');
+      }
+      const chats = await getChats(session);
+      setChats(chats);
+      return;
+    }
+    // console.log('Accept', chatId);
   }
 
-  function onDecline(chatId) {
-    console.log('Decline', chatId);
+  async function onDecline(chatId) {
+    if (session.user.role === 'tutor') {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/chat/declineChat/${chatId}`,
+        {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'same-origin',
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+            contentType: 'application/json'
+          },
+          body: JSON.stringify({
+            chatId: chatId,
+          }),
+        }
+      );
+      if (!res.ok) {
+        const test = await res.json();
+        console.error(test);
+        throw new Error('Fetch error');
+      }
+      const chats = await getChats(session);
+      setChats(chats);
+      return;
+    }
+    // console.log('Decline', chatId);
   }
 
   return (
-    // <Layout title="Chat Page">
-    //   <div className="flex h-screen flex-row divide-x-4 pb-3 pl-3 pr-3">
-    //     <div className="flex-2 p-5">
-    //       <ChatList chats={chats} setChatId={setChatId} onAccept={onAccept} onDecline={onDecline} currentChatId={chatId}/>
-    //     </div>
-    //     <div className="flex-1">
-    //       <ChatFeed />
-    //     </div>
-    //   </div>
-    // </Layout>
-    <Layout>
+    <Layout title="Chat | Tuture">
       <div className=" -my-8 flex h-[calc(100%+2rem)] w-full">
         <div className="flex w-fit overflow-auto">
           <ChatList
@@ -45,7 +84,7 @@ export default function Chat({ chats, subjectList }) {
         </div>
         {currentChatId !== '' && (
           <div className="flex flex-1 overflow-auto">
-            <ChatFeed subjectList={subjectList} chatId={chatId} />
+            <ChatFeed subjectList={subjectList} chatId={currentChatId} />
           </div>
         )}
       </div>
@@ -53,21 +92,70 @@ export default function Chat({ chats, subjectList }) {
   );
 }
 
+async function getChats(session) {
+  var route = 'getChatsStudent';
+  if (session.user.role === 'student') route = 'getChatsStudent?studentId=';
+  else if (session.user.role === 'tutor') route = 'getChatsTutor?tutorId=';
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/chat/${route}${session.user._id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    }
+  );
+  if (!res.ok) {
+    throw new Error('Fetch error');
+  }
+
+  const data = await res.json();
+  if (session.user.role === 'student') {
+    const formatted = data.map((e) => {
+      return {
+        chatId: e._id,
+        studentId: e.studentId._id,
+        tutorId: e.tutorId._id,
+        firstName: e.tutorId.firstName,
+        lastName: e.tutorId.lastName,
+        profileImg: e.tutorId.profileUrl,
+        accepted: e.accepted,
+      };
+    });
+    return formatted;
+  } else if (session.user.role === 'tutor') {
+    const formatted = data.map((e) => {
+      return {
+        chatId: e._id,
+        studentId: e.studentId._id,
+        tutorId: e.tutorId._id,
+        firstName: e.studentId.firstName,
+        lastName: e.studentId.lastName,
+        profileImg: e.studentId.profileUrl,
+        accepted: e.accepted,
+      };
+    });
+    return formatted;
+  }
+  // console.log(session.user._id, 'chat', data);
+  return data;
+}
+
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  // const chatTest = Array.from({ length: 16 }, () => {
-  //   return {
-  //     firstName: (Math.random() + 1)
-  //       .toString(36)
-  //       .substring(Math.floor(Math.random() * 6 + 2)),
-  //     lastName: (Math.random() + 1)
-  //       .toString(36)
-  //       .substring(Math.floor(Math.random() * 6 + 2)),
-  //     chatId: Math.random(),
-  //     accepted: Math.random() > 0.5,
-  //   };
-  // });
+  const chatTest = Array.from({ length: 16 }, () => {
+    return {
+      firstName: (Math.random() + 1)
+        .toString(36)
+        .substring(Math.floor(Math.random() * 6 + 2)),
+      lastName: (Math.random() + 1)
+        .toString(36)
+        .substring(Math.floor(Math.random() * 6 + 2)),
+      chatId: Math.random(),
+      accepted: Math.random() > 0.5,
+    };
+  });
 
   var subjectList;
   try {
@@ -105,58 +193,58 @@ export async function getServerSideProps(context) {
     };
   }
 
-  // Test jaaaa
-  // tutorId=621c818daefa29db6f3e806f
-  // studentId=621c8c3d363377298c2bf8b2
+  const chatData = await getChats(session);
+  // // Test jaaaa
+  // // tutorId=621c818daefa29db6f3e806f
+  // // studentId=621c8c3d363377298c2bf8b2
 
-  const chat = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/chat?tutorId=621c818daefa29db6f3e806f&studentId=621c8c3d363377298c2bf8b2`,
-    {
-      headers: {
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-    }
-  );
-  if (!res.ok) {
-    throw new Error('Fetch error');
-  }
+  // const res = await fetch(
+  //   `${process.env.NEXT_PUBLIC_API_URL}/chat?tutorId=621c818daefa29db6f3e806f&studentId=621c8c3d363377298c2bf8b2`,
+  //   {
+  //     headers: {
+  //       Authorization: `Bearer ${session.accessToken}`,
+  //     },
+  //   }
+  // );
+  // if (!res.ok) {
+  //   throw new Error('Fetch error');
+  // }
 
-  const chatData = await res.json();
+  // const chatData = await res.json();
 
-  // Get student list
+  // // Get student list
 
-  const tutorChatList = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/chat/getChatsStudent?studentId=621c8c3d363377298c2bf8b2`,
-    {
-      headers: {
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-    }
-  );
-  if (!res.ok) {
-    throw new Error('Fetch error');
-  }
+  // const studentChatList = await fetch(
+  //   `${process.env.NEXT_PUBLIC_API_URL}/chat/getChatsStudent?studentId=621c8c3d363377298c2bf8b2`,
+  //   {
+  //     headers: {
+  //       Authorization: `Bearer ${session.accessToken}`,
+  //     },
+  //   }
+  // );
+  // if (!res.ok) {
+  //   throw new Error('Fetch error');
+  // }
 
-  const studentList = await res.json();
+  // const studentList = await studentChatList.json();
 
-  // Get tutor list
+  // // Get tutor list
 
-  const studentChatList = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/chat/getChatsTutor?tutorId=621c818daefa29db6f3e806f`,
-    {
-      headers: {
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-    }
-  );
-  if (!res.ok) {
-    throw new Error('Fetch error');
-  }
+  // const tutorChatList = await fetch(
+  //   `${process.env.NEXT_PUBLIC_API_URL}/chat/getChatsTutor?tutorId=621c818daefa29db6f3e806f`,
+  //   {
+  //     headers: {
+  //       Authorization: `Bearer ${session.accessToken}`,
+  //     },
+  //   }
+  // );
+  // if (!res.ok) {
+  //   throw new Error('Fetch error');
+  // }
 
-  const tutorList = await res.json();
+  // const tutorList = await tutorChatList.json();
 
-  
   return {
-    props: { session, subjectList, chats: chatData },
+    props: { session, subjectList, chatData },
   };
 }

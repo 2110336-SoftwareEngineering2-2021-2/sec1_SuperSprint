@@ -9,8 +9,10 @@ import {
   UseInterceptors,
   Query,
   UseGuards,
+  Req,
   Delete,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { AppointmentService } from './appointment.service';
 import { ApiBody, ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import { Appointment } from '@src/models/appointment.model';
@@ -51,16 +53,18 @@ export class AppointmentController {
   })
   @Post('')
   async createAppointment(
-    @Body('tutorId') tutorId: string,
-    @Body('studentId') studentId: string,
+    @Body('chatId') chatId: string,
+    // @Body('studentId') studentId: string,
     @Body('subjectId') subjectId: string,
     @Body('price') price: number,
     @Body('startTime') startTime: string,
     @Body('endTime') endTime: string,
+    // @Req() req: Request,
   ) {
+    // console.log(req);
     return await this.appointmentService.createAppointment(
-      tutorId,
-      studentId,
+      chatId,
+      // studentId,
       subjectId,
       price,
       startTime,

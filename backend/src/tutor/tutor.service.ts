@@ -9,12 +9,14 @@ import { Model, Mongoose } from 'mongoose';
 import { Tutor } from '../models/tutor.model';
 import { ScoreService } from '../score/score.service';
 import { S3Service } from '@src/services/S3Sevices.service';
+import { Subject } from '../models/subject.model';
 @Injectable()
 export class TutorService {
   private tutors: Tutor[] = [];
 
   constructor(
     @InjectModel('Tutor') private readonly tutorModel: Model<Tutor>,
+    @InjectModel('Subject') private readonly subjectModel: Model<Subject>,
     private readonly scoreSevice: ScoreService,
     private readonly subjectService: SubjectService,
     private readonly s3Service: S3Service,
@@ -295,9 +297,28 @@ export class TutorService {
     tutor.firstName = firstName || tutor.firstName;
     tutor.lastName = lastName || tutor.lastName;
     tutor.gender = gender || tutor.gender;
-    tutor.teachSubject = teachSubject || tutor.teachSubject;
+
     tutor.priceMin = priceMin || tutor.priceMin;
     tutor.priceMax = priceMax || tutor.priceMax;
+    if (teachSubject) {
+      tutor.teachSubject = teachSubject || tutor.teachSubject;
+      await Promise.all(
+        teachSubject.map(async (subjectId) => {
+          const subject = await this.subjectModel.findById(subjectId).lean();
+          const score = this.scoreSevice.getScore(id, subjectId);
+          if (!score) {
+            this.scoreSevice.insertScore(
+              id,
+              subjectId,
+              0,
+              subject.maxScore,
+              null,
+              null,
+            );
+          }
+        }),
+      );
+    }
     if (dutyTime) {
       dutyTime.forEach((element) => {
         this.addDutyTimeDateTime(tutor._id, element.start, element.end);
@@ -338,8 +359,10 @@ export class TutorService {
 
     if (startFound !== -1 && endFound !== -1) {
       // ชิดซ้ายขวา
-      dutyTime[endFound].end = dutyTime[startFound].end;
-      dutyTime.splice(startFound, 1);
+      dutyTime[startFound].end = dutyTime[endFound].end;
+      dutyTime.splice(endFound, 1);
+      // dutyTime[endFound].end = dutyTime[startFound].end;
+      // dutyTime.splice(startFound, 1);
     } else if (startFound !== -1 && endFound === -1) {
       // ตัวแทรกไปชิดซ้ายตัวที่มีอยู่ -> แก้ end ของตัวที่มีอยู่
       dutyTime[startFound].end = datetimeEnd;
@@ -377,8 +400,10 @@ export class TutorService {
 
     if (startFound !== -1 && endFound !== -1) {
       // ชิดซ้ายขวา
-      dutyTime[endFound].end = dutyTime[startFound].end;
-      dutyTime.splice(startFound, 1);
+      dutyTime[startFound].end = dutyTime[endFound].end;
+      dutyTime.splice(endFound, 1);
+      // dutyTime[endFound].end = dutyTime[startFound].end;
+      // dutyTime.splice(startFound, 1);
     } else if (startFound !== -1 && endFound === -1) {
       // ตัวแทรกไปชิดซ้ายตัวที่มีอยู่ -> แก้ end ของตัวที่มีอยู่
       dutyTime[startFound].end = datetimeEnd;

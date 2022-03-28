@@ -8,7 +8,7 @@ import { Model } from 'mongoose';
 import { Appointment } from '@src/models/appointment.model';
 import { Tutor } from '@src/models/tutor.model';
 import { TutorService } from '../tutor/tutor.service';
-
+import { Chat } from '@src/models/chat.model';
 @Injectable()
 export class AppointmentService {
   constructor(
@@ -16,6 +16,8 @@ export class AppointmentService {
     private readonly appointmentModel: Model<Appointment>,
     @InjectModel('Tutor')
     private readonly tutorModel: Model<Tutor>,
+    @InjectModel('Chat')
+    private readonly chatModel: Model<Chat>,
     private readonly tutorService: TutorService,
   ) {}
 
@@ -59,7 +61,7 @@ export class AppointmentService {
           path: 'tutorId',
           select: { password: 0 },
           populate: {
-            path: 'subjectId',
+            path: 'teachSubject',
             model: 'Subject',
           },
         });
@@ -73,7 +75,7 @@ export class AppointmentService {
           path: 'studentId',
           select: { password: 0 },
           populate: {
-            path: 'subjectId',
+            path: 'preferSubject',
             model: 'Subject',
           },
         });
@@ -102,18 +104,19 @@ export class AppointmentService {
   }
 
   async createAppointment(
-    tutorId: string,
-    studentId: string,
+    chatId: string,
+    // studentId: string,
     subjectId: string,
     price: number,
     startTime: string,
     endTime: string,
   ) {
     // check tutor's availability
-    console.log(tutorId);
-    const tutor = await this.tutorModel.findOne({
-      _id: tutorId,
-    });
+    // console.log(tutorId);
+    const chat = await this.chatModel.findById(chatId);
+    const tutorId = chat.tutorId;
+    const studentId = chat.studentId;
+    const tutor = await this.tutorModel.findById(tutorId);
 
     const availability = tutor.dutyTime.find(
       (dutyTime) =>

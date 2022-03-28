@@ -90,7 +90,7 @@ export default function ChatFeed({ subjectList, chatId }) {
         <ChatAppointmentCard canAccept={session.user.role === 'student'} />
       </div>
       <div className="sticky bottom-0 mx-auto h-max w-full bg-base-200">
-        <MessageForm subjectList={subjectList} />
+        <MessageForm subjectList={subjectList} chatId={chatId} />
       </div>
     </div>
   );

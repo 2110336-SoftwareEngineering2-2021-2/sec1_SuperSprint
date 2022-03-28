@@ -29,31 +29,35 @@ export class ChatService {
   }
   async getChatStudent(studentId: string) {
     console.log(studentId);
-    const chat = await this.chatModel.find({ studentId });
+    const chat = await this.chatModel
+      .find({ studentId })
+      .populate('tutorId')
+      .populate('studentId');
     return chat;
   }
 
   async getChatTutor(tutorId: string) {
-    const chats = await this.chatModel.find({ tutorId: tutorId });
+    const chats = await this.chatModel
+      .find({ tutorId: tutorId })
+      .populate('tutorId')
+      .populate('studentId');
     return chats;
   }
-  async tutorAcceptedChat(tutorId: string, studentId: string) {
+  async tutorAcceptChat(chatId: string) {
     // const filter = { tutorId,studentId };
     // const update = { accepted: true };
-    const chat = await this.chatModel.findOne({
-      tutorId: tutorId,
-      studentId: studentId,
-    });
+    const chat = await this.chatModel.findById(chatId);
     chat.accepted = true;
     await chat.save();
     return chat;
   }
-  async tutorDeclineChat(tutorId: string, studentId: string) {
-    const chat = await this.chatModel.findOne({
-      tutorId: tutorId,
-      studentId: studentId,
-    });
-    await this.chatModel.deleteOne({ tutorId: tutorId, studentId: studentId });
+  async declineChat(chatId: string) {
+    // console.log(chatId);
+    const chat = await this.chatModel.findById(chatId);
+    console.log(chatId, chat);
+    await this.chatModel.deleteOne({ _id: chatId });
+    // chat.accepted = false;
+    // await chat.save();
     return chat._id;
   }
   async insertChat(tutorId: string, studentId: string): Promise<any> {

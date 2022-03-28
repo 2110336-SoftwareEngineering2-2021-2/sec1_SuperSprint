@@ -30,12 +30,8 @@ export default function TutorProfilePage({ tutorProfile, scores }) {
             <TutorProfile {...tutorProfile} />
           </div>
           <div className="flex w-full justify-center">
-            <Link href="/profile/tutor/edit" passHref>
-              <input
-                type="submit"
-                className="btn btn-primary"
-                value="Edit Profile"
-              />
+            <Link href="/profile/tutor/edit">
+              <a className="btn btn-primary">Edit Profile</a>
             </Link>
           </div>
         </section>
@@ -50,12 +46,8 @@ export default function TutorProfilePage({ tutorProfile, scores }) {
             <TutorScorePanel scores={scores} isOwner />
           </div>
           <div className="flex w-full justify-center">
-            <Link href="/profile/tutor/edit-score" passHref>
-              <input
-                type="submit"
-                className="btn btn-primary"
-                value="Edit SCORE"
-              />
+            <Link href="/profile/tutor/edit-score">
+              <a className="btn btn-primary">Edit Score</a>
             </Link>
           </div>
         </section>
@@ -64,11 +56,11 @@ export default function TutorProfilePage({ tutorProfile, scores }) {
   );
 }
 
-async function getTutorProfile(session, tutorId) {
+async function getTutorProfile(session) {
   try {
     const res = await fetch(
       // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
-      `${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${tutorId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${session.user._id}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
@@ -118,11 +110,11 @@ async function getTutorProfile(session, tutorId) {
   }
 }
 
-async function getTutorScores(session, tutorId) {
+async function getTutorScores(session) {
   try {
     const res = await fetch(
       // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
-      `${process.env.NEXT_PUBLIC_API_URL}/score/scores/${tutorId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/tutor/score?id=${session.user._id}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
@@ -134,27 +126,25 @@ async function getTutorScores(session, tutorId) {
     }
     const data = await res.json();
 
-    return {data
-    };
+    return data;
   } catch (error) {
     console.log(error.stack);
-    return {
-    };
+    return [];
   }
 }
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  const tutorProfile = await getTutorProfile(session, session.user._id);
-  const tutorScores = await getTutorScores(session, session.user._id);
-  console.log(tutorScores);
+  const tutorProfile = await getTutorProfile(session);
+  const tutorScores = await getTutorScores(session);
+  console.log('test', tutorScores);
 
   return {
     props: {
       session,
       tutorProfile,
-      scores: scoresTest,
+      scores: tutorScores,
     },
   };
 }

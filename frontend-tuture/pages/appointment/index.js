@@ -96,17 +96,40 @@ export default function StudentAppointment({ appts }) {
     else acceptAppointment(apptId);
   }
 
-  function acceptAppointment(apptId) {
+  async function acceptAppointment(apptId) {
     //accept appointment
-    //.....HERE
+    const body=JSON.stringify({
+      status:'confirmed'
+    })
+    const result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointment/student/accept/${apptId}}`, {
+      method:'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.accessToken}`,
+      },
+      body:body
+    })
+
     console.log('Student accepts appointment');
+    console.log(result);
     closeModal();
     router.push('/chat');
   }
 
   function cancelAppointment(apptId) {
     //cancel appointment
-    //.....HERE
+    const body=JSON.stringify({
+      status:'canceled'
+    })
+    const result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointment/student/accept/${apptId}}`, {
+      method:'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.accessToken}`,
+      },
+      body:body
+    })
+
     console.log('Whoever cancels appointment');
     closeModal();
     router.push('/chat');
@@ -246,14 +269,21 @@ export async function getServerSideProps(context) {
     temp.userData = temp.studentId;
     temp.firstName = temp.userData.firstName;
     temp.lastName = temp.userData.lastName;
-    temp.subjects = temp.userData.preferSubject;
     temp.studentId = temp.studentId._id;
-    // console.log(temp);
+    temp.subjects = [];
+    temp.levels = [];
+    temp.userData.preferSubject.forEach((subject) => {
+      temp.subjects.push(subject.title);
+      temp.levels.push(subject.level);
+    });
+    temp.subjects = [...new Set(temp.subjects)];
+    temp.levels = [...new Set(temp.levels)];
     return {
       _id: temp._id,
       firstName: temp.firstName,
       lastName: temp.lastName,
       subjects: temp.subjects,
+      levels: temp.levels,
       studentId: temp.studentId,
       tutorId: temp.tutorId,
       startTime: temp.startTime,
