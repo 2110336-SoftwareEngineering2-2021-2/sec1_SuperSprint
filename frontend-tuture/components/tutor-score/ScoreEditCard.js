@@ -10,6 +10,7 @@ export default function ScoreEditCard({
   scoreData,
   hookFormRegister,
   hookFormControl,
+  hookFormError,
   onDeleteClick,
 }) {
   const [showCard, setShowCard] = useState(false);
@@ -42,8 +43,8 @@ export default function ScoreEditCard({
         tabIndex={0}
       >
         <div className="inline-flex w-full flex-col justify-between p-4 sm:w-full">
-          <h3 className="text-lg w-40 max-w-fit overflow-hidden overflow-ellipsis whitespace-nowrap font-bold text-base-content transition-colors hover:cursor-pointer hover:text-primary-focus xs:w-52 sm:w-80 sm:text-xl">
-            {scoreData.subject} ({scoreData.level})
+          <h3 className="w-40 max-w-fit overflow-hidden overflow-ellipsis whitespace-nowrap text-lg font-bold text-base-content transition-colors hover:cursor-pointer hover:text-primary-focus xs:w-52 sm:w-80 sm:text-xl">
+            {scoreData.subjectName} ({scoreData.level})
           </h3>
           <div className="divider"></div>
           <div>
@@ -51,7 +52,16 @@ export default function ScoreEditCard({
               <span className="w-20">Score</span>
               <input
                 className="input input-bordered input-primary input-sm w-24 xs:w-32"
-                {...hookFormRegister(`${scoreData.subjectId}.score`)}
+                {...hookFormRegister(`${scoreData.subjectId}.currentScore`, {
+                  max: {
+                    value: scoreData.maxScore,
+                    message: 'Score can not be exceeded max score',
+                  },
+                  min: {
+                    value: 0,
+     s        s        message: 'Score can not be negative number',
+                  },
+                })}
                 id="score"
                 type="number"
                 placeholder="0"
@@ -59,6 +69,13 @@ export default function ScoreEditCard({
               />
               <span>/ {scoreData.maxScore}</span>
             </label>
+            {hookFormError[scoreData.subjectId]?.currentScore && (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {hookFormError[scoreData.subjectId].currentScore.message}
+                </span>
+              </label>
+            )}
             <label className="input-group input-group-sm">
               <span className="w-20">Year</span>
               <input
@@ -72,14 +89,14 @@ export default function ScoreEditCard({
             </label>
           </div>
         </div>
-        <div className="flex flex-col justify-center items-center sm:flex-row gap-1 p-2">
+        <div className="flex flex-col items-center justify-center gap-1 p-2 sm:flex-row">
           <ScoreImageUpload
             subjectId={scoreData.subjectId}
             hookFormControl={hookFormControl}
-            defaultValue={scoreData.scoreImage.preview}
+            defaultValue={scoreData.scoreImage}
           />
           <button
-            className="btn btn-circle btn-ghost btn-sm"
+            className="btn btn-ghost btn-circle btn-sm"
             onClick={onDelete}
           >
             <FontAwesomeIcon icon={faTrash} fixedWidth />

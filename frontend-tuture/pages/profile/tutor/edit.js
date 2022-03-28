@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useSession, getSession, signOut } from 'next-auth/react';
+import { useSession, getSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -19,6 +19,7 @@ import PriceRangeForm from '../../../components/signup-pages/PriceRangeForm';
 import fetchWithTimeout from '../../../lib/fetchWithTimeout';
 import { tutorEditSchema } from '../../../components/profile/TutorSchema';
 import { PasswordField } from '../../../components/signup-pages/PasswordField';
+import { NavbarProfileContext } from '../../../context/NavbarProfileContext';
 
 function TutorProfileEdit(props) {
   // destringify date item
@@ -70,6 +71,7 @@ function TutorProfileEdit(props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
+  const profileContext = useContext(NavbarProfileContext);
 
   async function submitRegister(data) {
     const formData = new FormData();
@@ -122,14 +124,14 @@ function TutorProfileEdit(props) {
         throw new Error(err.message || 'Fetch Error');
       }
       setFetchError(null);
-      const resData = await res.json();
       setLoading(false);
       toast('Profile Edited!', {
         onClose: () => {
-          signOut();
+          router.push('/profile/tutor');
         },
       });
-      // router.push('/login');
+      await profileContext.refreshProfile(true);
+      // router.push('/signin');
       // router.push('/profile/tutor');
     } catch (error) {
       switch (error.message) {
@@ -244,7 +246,7 @@ function TutorProfileEdit(props) {
                 hookFormSetValue={setValue}
                 hookFormWatch={watch}
                 defaultValue={props.profileData.profileImg}
-                //avatarSeed={avatarSeed}
+                userId={session.user._id}
               />
               <p className="text-xs">Click or drop here to upload</p>
             </div>
@@ -481,7 +483,7 @@ export async function getServerSideProps(context) {
   /*  if (!session) {
     return {
       redirect: {
-        destination: '/login',
+        destination: '/signin',
         permanent: false,
       },
     };

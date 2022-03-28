@@ -3,6 +3,8 @@ import AppointmentCard from '../../components/appointment/AppointmentCard';
 import Layout from '../../components/Layout';
 import { Modal } from '../../components/Modal';
 import { useSession, getSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 
 const APPO_STATUS = {
   offering: {
@@ -20,33 +22,48 @@ const names = [
   ['Donald', 'Clarkson'],
 ];
 
-export default function StudentAppointment({ appts }) {
-  // destringify date item
-  if (appts) {
-    appts = appts.map((e) => {
-      const temp = { ...e };
-      temp.createdDate = new Date(temp.createdDate);
-      temp.apptDate = new Date(temp.apptDate);
-      return temp;
-    });
-  }
-
+export default function StudentAppointment({ fetchedAppts }) {
+  const [appts, setAppts] = useState(fetchedAppts || []);
   const { data: session } = useSession();
   const [selectedStatus, setSelectedStatus] = useState('offering');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  // const [modalOnAccept, setModalOnAccept] = useState(() => {});
   const [isAccepting, setIsAccepting] = useState(false);
   const [apptId, setApptId] = useState('');
+
+  const router = useRouter();
 
   function changeTab(event) {
     const selected = event.target.getAttribute('tabStatus');
     setSelectedStatus(selected);
   }
 
-  function goToChat(apptId) {
-    console.log(`Chat: Chat button clicked`);
-    //go to chat room
+  async function onChatClick(studentId, tutorId) {
+    toast.promise(
+      async () => {
+        try {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/chat?tutorId=${tutorId}&studentId=${studentId}`
+          );
+          if (!res.ok) {
+            const test = await res.json();
+            console.log(test);
+            throw new Error('Fetch Error');
+          }
+          const data = await res.json();
+          console.log(data);
+          //go to chat room
+          router.push(`/chat?chatId=${data._id}`);
+        } catch (error) {
+          console.error(error);
+        }
+      },
+      {
+        pending: 'Redirecting to chat...',
+        success: 'Redirect to chat...',
+        error: 'Error! Please try again later.',
+      }
+    );
   }
 
   function onAccept(apptId) {
@@ -91,20 +108,44 @@ export default function StudentAppointment({ appts }) {
     else acceptAppointment(apptId);
   }
 
-  function acceptAppointment(apptId) {
+  async function acceptAppointment(apptId) {
     //accept appointment
-    //.....HERE
+    const result = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/appointment/student/accept/${apptId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      }
+    );
+
     console.log('Student accepts appointment');
+    await reloadAppts();
     closeModal();
-    return;
+    // router.push('/chat');
   }
 
-  function cancelAppointment(apptId) {
+  async function reloadAppts() {
+    const newAppts = await getAppointments(session);
+    setAppts(newAppts);
+  }
+
+  async function cancelAppointment(apptId) {
     //cancel appointment
-    //.....HERE
-    console.log('Whoever cancels appointment');
+    const result = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/appointment/${apptId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          // 'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      }
+    );
+    await reloadAppts();
     closeModal();
-    return;
   }
 
   function openModal() {
@@ -121,7 +162,7 @@ export default function StudentAppointment({ appts }) {
   }
 
   return (
-    <Layout>
+    <Layout title="Appointment | Tuture">
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
         {session.user.firstName}'s Appointment
       </h1>
@@ -155,14 +196,14 @@ export default function StudentAppointment({ appts }) {
             .filter((appt) => appt.status === selectedStatus)
             .map((appt) => (
               <AppointmentCard
-                key={appt.id}
+                key={appt.apptId}
                 {...appt}
                 onCardClick={() => console.log(`Card click`)}
                 onChooseClick={() => console.log(`Choose button click`)}
-                onAccept={() => onAccept(appt.id)}
-                onDecline={() => onDecline(appt.id)}
-                onCancel={() => onCancel(appt.id)}
-                onChatClick={() => goToChat(appt.id)}
+                onAccept={() => onAccept(appt.apptId)}
+                onDecline={() => onDecline(appt.apptId)}
+                onCancel={() => onCancel(appt.apptId)}
+                onChatClick={() => onChatClick(appt.studentId, appt.tutorId)}
                 POV={session.user.role}
               />
             ))}
@@ -183,6 +224,87 @@ export default function StudentAppointment({ appts }) {
       </Modal>
     </Layout>
   );
+}
+
+async function getAppointments(session) {
+  try {
+    const res = await fetch(
+      // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
+      `${process.env.NEXT_PUBLIC_API_URL}/appointment/${session.user.role}/${session.user._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      }
+    );
+    if (!res.ok) {
+      const test = await res.json();
+      console.log(test);
+      throw new Error('Fetch error');
+    }
+    const data = await res.json();
+
+    return data.appointments.map((appt) => {
+      if (session.user.role === 'tutor') {
+        const temp = { ...appt };
+        console.log(temp);
+        temp.userData = temp.studentId;
+        temp.firstName = temp.userData.firstName;
+        temp.lastName = temp.userData.lastName;
+        temp.studentId = temp.studentId._id;
+        temp.subjects = [];
+        temp.levels = [];
+        temp.subjects.push(temp.subjectId.title);
+        temp.levels.push(temp.subjectId.level);
+        temp.subjects = [...new Set(temp.subjects)];
+        temp.levels = [...new Set(temp.levels)];
+        return {
+          apptId: temp._id,
+          firstName: temp.firstName,
+          lastName: temp.lastName,
+          subjects: temp.subjects,
+          levels: temp.levels,
+          studentId: temp.studentId,
+          tutorId: temp.tutorId,
+          startApptDate: temp.startTime,
+          endApptDate: temp.endTime,
+          status: temp.status,
+          profileImg: temp.userData.profileUrl,
+          createdDate: temp.updated_at,
+        };
+      } else if (session.user.role === 'student') {
+        const temp = { ...appt };
+        console.log(temp);
+        temp.userData = temp.tutorId;
+        temp.firstName = temp.userData.firstName;
+        temp.lastName = temp.userData.lastName;
+        temp.tutorId = temp.tutorId._id;
+        temp.subjects = [];
+        temp.levels = [];
+        temp.subjects.push(temp.subjectId.title);
+        temp.levels.push(temp.subjectId.level);
+        temp.subjects = [...new Set(temp.subjects)];
+        temp.levels = [...new Set(temp.levels)];
+        return {
+          apptId: temp._id,
+          firstName: temp.firstName,
+          lastName: temp.lastName,
+          subjects: temp.subjects,
+          levels: temp.levels,
+          studentId: temp.studentId,
+          tutorId: temp.tutorId,
+          startApptDate: temp.startTime,
+          endApptDate: temp.endTime,
+          status: temp.status,
+          profileImg: temp.userData.profileUrl,
+          createdDate: temp.updated_at,
+        };
+      }
+    });
+  } catch (error) {
+    console.log(error.stack);
+    return [];
+  }
 }
 
 export async function getServerSideProps(context) {
@@ -207,13 +329,11 @@ export async function getServerSideProps(context) {
     };
   });
 
+  const appts = await getAppointments(session);
+
+  // console.log('hello', appts);
+
   return {
-    props: { session, appts: mock },
+    props: { session, fetchedAppts: appts },
   };
 }
-
-// {createdDate && (
-//     <p className="w-28 text-right text-xs text-base-content/50">
-//       {moment(createdDate).fromNow()}
-//     </p>
-//   )}

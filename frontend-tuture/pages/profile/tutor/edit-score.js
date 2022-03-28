@@ -5,26 +5,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useForm } from 'react-hook-form';
 import ScoreEditCard from '../../../components/tutor-score/ScoreEditCard';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { getSession } from 'next-auth/react';
+import { getSession, useSession } from 'next-auth/react';
 import { Modal } from '../../../components/Modal';
 
 function EditScore({ scores }) {
-  function formatFormDefaultValue(scores) {
-    const obj = {};
-    scores.forEach((score) => {
-      obj[score.subjectId] = {
-        score: score.score,
-        year: score.year,
-        scoreImage: {
-          preview: score.scoreImage,
-          name: '',
-          file: '',
-        },
-      };
-    });
-    return obj;
-  }
-
   const {
     register,
     handleSubmit,
@@ -34,6 +18,8 @@ function EditScore({ scores }) {
     setFocus,
     watch,
     trigger,
+    getFieldState,
+    formState: { isDirty },
     reset,
   } = useForm({
     defaultValues: formatFormDefaultValue(scores),
@@ -43,13 +29,41 @@ function EditScore({ scores }) {
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [fetchError, setFetchError] = useState(null);
+  const { data: session } = useSession();
 
   async function submitScore(data) {
     console.log(data);
-    const formData = new FormData();
-    try {
-    } catch (error) {}
     setLoading(false);
+    for (const [key, value] of Object.entries(data)) {
+      if (getFieldState(key).isDirty) {
+        const formData = new FormData();
+        formData.append(`tutorId`, session.user._id);
+        formData.append(`subjectId`, key);
+        formData.append(`score`, value.currentScore);
+        formData.append(`year`, value.year);
+        formData.append(`scoreImage`, value.scoreImage.file || '');
+        console.log(key, formData);
+        try {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/score/edit`,
+            {
+              method: 'PATCH',
+              mode: 'cors',
+              credentials: 'same-origin',
+              headers: {
+                Authorization: `Bearer ${session.accessToken}`,
+              },
+              body: formData,
+            }
+          );
+          if (!res.ok) throw new Error('Fetch Error');
+        } catch (error) {
+          console.error(error.stack);
+        }
+      }
+    }
+    setLoading(false);
+    router.push('/profile/tutor');
   }
 
   function openModal() {
@@ -59,6 +73,8 @@ function EditScore({ scores }) {
   function closeModal() {
     setModalOpen(false);
   }
+
+  console.log(errors);
 
   return (
     <Layout title="Edit Score | Tuture">
@@ -77,6 +93,7 @@ function EditScore({ scores }) {
               scoreData={score}
               hookFormRegister={register}
               hookFormControl={control}
+              hookFormError={errors}
               onDeleteClick={() => console.log(score.subject)}
             />
           ))}
@@ -128,32 +145,55 @@ function EditScore({ scores }) {
   );
 }
 
-export async function getServerSideProps(context) {
-  const session = await getSession(context);
+async function getTutorScores(session) {
+  try {
+    const res = await fetch(
+      // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
+      `${process.env.NEXT_PUBLIC_API_URL}/tutor/score?id=${session.user._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      }
+    );
+    if (!res.ok) {
+      throw new Error('Fetch error');
+    }
+    const data = await res.json();
 
-  const scoresTest = Array.from({ length: 7 }, (_, idx) => {
-    return {
-      subject: 'PAT' + (idx + 1),
-      level: 'PAT',
-      subjectId: idx,
-      year: '2022',
-      score: 250,
-      maxScore: 300,
+    return data;
+  } catch (error) {
+    console.log(error.stack);
+    return {};
+  }
+}
+
+function formatFormDefaultValue(scores) {
+  const obj = {};
+  scores.forEach((score) => {
+    obj[score.subjectId] = {
+      currentScore: score.currentScore || 0,
+      year: score.year || '2022',
       scoreImage: {
-        preview:
-          Math.random() > 0.5
-            ? 'https://api.lorem.space/image/shoes?w=320&h=320'
-            : '',
+        preview: score.scoreImage,
         name: '',
         file: '',
       },
     };
   });
+  return obj;
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  const tutorScores = await getTutorScores(session);
+  console.log('test', tutorScores);
 
   return {
     props: {
       session,
-      scores: scoresTest,
+      scores: tutorScores,
     },
   };
 }

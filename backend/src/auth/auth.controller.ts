@@ -17,7 +17,7 @@ import { AuthGuard } from '@nestjs/passport'; //! install passport too
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register/student')
+  @Post('signup/student')
   @UseInterceptors(FileInterceptor('image'))
   addStudent(
     @UploadedFile() image: Express.Multer.File,
@@ -43,7 +43,7 @@ export class AuthController {
     );
   }
 
-  @Post('register/tutor')
+  @Post('signup/tutor')
   @UseInterceptors(FileInterceptor('image'))
   addTutor(
     @UploadedFile() image: Express.Multer.File,
@@ -77,11 +77,11 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard('local'))
-  @Post('login')
-  async login(@Request() req) {
+  @Post('signin')
+  async signin(@Request() req) {
     console.log('test');
     console.log(req.body);
-    return this.authService.login(req.body);
+    return this.authService.signin(req.body);
   }
 
   @UseGuards(AuthGuard('jwt'))

@@ -15,6 +15,10 @@ export const AppointmentSchema = new mongoose.Schema(
       ref: 'Student',
       required: true,
     },
+    // chatId: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'Chat',
+    // },
     status: {
       type: String,
       required: true,

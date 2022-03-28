@@ -9,8 +9,10 @@ import {
   UseInterceptors,
   Query,
   UseGuards,
+  Req,
   Delete,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { AppointmentService } from './appointment.service';
 import { ApiBody, ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import { Appointment } from '@src/models/appointment.model';
@@ -23,18 +25,46 @@ import { AuthGuard } from '@nestjs/passport';
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
+  @ApiOkResponse({ type: Tutor })
+  @ApiBody({
+    schema: {
+      example: {
+        id: '00001',
+        firstName: 'Poom',
+        lastName: 'Suchao',
+        email: 'poom@suchao.com',
+        phone: '0987654321',
+        username: 'poom.suchao',
+        gender: 'm',
+        image: '',
+        avgRating: 4.8,
+        successMatch: 10,
+        teachSubject: [],
+        priceMin: 100,
+        priceMax: 1000,
+        dutyTime: [
+          {
+            start: '2022-02-16T08:00:00.000+00:00',
+            end: '2022-02-16T09:30:00.000+00:00',
+          },
+        ],
+      },
+    },
+  })
   @Post('')
   async createAppointment(
-    @Body('tutorId') tutorId: string,
-    @Body('studentId') studentId: string,
+    @Body('chatId') chatId: string,
+    // @Body('studentId') studentId: string,
     @Body('subjectId') subjectId: string,
     @Body('price') price: number,
     @Body('startTime') startTime: string,
     @Body('endTime') endTime: string,
+    // @Req() req: Request,
   ) {
+    // console.log(req);
     return await this.appointmentService.createAppointment(
-      tutorId,
-      studentId,
+      chatId,
+      // studentId,
       subjectId,
       price,
       startTime,
@@ -59,16 +89,20 @@ export class AppointmentController {
   }
 
   // @UseGuards(AuthGuard('jwt'))
-  @Get('/chat')
+  @Get('/chat/:chatId')
   @ApiOkResponse({ type: [Appointment] })
-  async getAppointmentsByChat(
-    @Query('tutorId') tutorId: string,
-    @Query('studentId') studentId: string,
+  async getAppointmentsByChat(@Param('chatId') chatId: string) {
+    return await this.appointmentService.getAppointmentsByChat(chatId);
+  }
+
+  // @UseGuards(AuthGuard('jwt'))
+  @Get('/:userType/:id')
+  @ApiOkResponse({ type: [Appointment] })
+  async getAppointments(
+    @Param('userType') userType: string,
+    @Param('id') id: string,
   ) {
-    return await this.appointmentService.getAppointmentsByChat(
-      tutorId,
-      studentId,
-    );
+    return await this.appointmentService.getAppointments(userType, id);
   }
 
   // @UseGuards(AuthGuard('jwt'))

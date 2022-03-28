@@ -32,14 +32,14 @@ const AnonNavbar = ({ children }) => {
           </label>
           <div className="divider divider-horizontal"></div>
           <a
-            href="/login"
+            href="/signin"
             onClick={(e) => {
               e.preventDefault();
               signIn();
             }}
             className="w-20 min-w-fit cursor-pointer text-center text-sm normal-case text-base-content transition-colors hover:text-primary-focus sm:w-24 sm:text-base"
           >
-            Log In
+            Sign In
           </a>
           <Link href="/signup">
             <a className="btn btn-primary btn-sm w-20 text-sm normal-case text-primary-content sm:btn-md sm:w-24 sm:text-base">

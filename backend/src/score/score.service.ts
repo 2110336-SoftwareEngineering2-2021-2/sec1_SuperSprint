@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Tutor } from '../models/tutor.model';
 import { Score } from '../models/score.model';
+import { Subject } from '../models/subject.model';
 import { S3Service } from '@src/services/S3Sevices.service';
 
 @Injectable()
@@ -14,6 +15,7 @@ export class ScoreService {
   constructor(
     @InjectModel('Score') private readonly scoreModel: Model<Score>,
     @InjectModel('Tutor') private readonly tutorModel: Model<Tutor>,
+    @InjectModel('Subject') private readonly subjectModel: Model<Subject>,
     private readonly s3Service: S3Service,
   ) {}
 
@@ -92,10 +94,8 @@ export class ScoreService {
     year: number,
     image,
   ) {
-    const score = await this.scoreModel.findOne({
-      tutorId: tutorId,
-      subjectId: subjectId,
-    });
+    const score = await this.scoreModel.findOne({ tutorId, subjectId });
+
     if (image) {
       await this.s3Service.deleteFile(score.imageUrl);
       score.imageUrl = await this.s3Service.uploadFile(
@@ -103,6 +103,7 @@ export class ScoreService {
         image,
       );
     }
+    
 
     score.tutorId = tutorId || score.tutorId;
     score.subjectId = subjectId || score.subjectId;
@@ -112,5 +113,55 @@ export class ScoreService {
 
     await score.save();
     return { scoreId: score._id };
+  }
+
+  async getAllScore(tutorId: string) {
+    const scores = await this.scoreModel
+      .find({ tutorId: tutorId })
+      .populate('subjectId');
+
+    return scores;
+  }
+
+  async getTutorSubjectsScore(tutorId: string) {
+    const tutor = await this.tutorModel.findById(tutorId).lean();
+    const teachSubject = tutor.teachSubject;
+    const res = [];
+    // console.log(123);
+    await Promise.all(
+      teachSubject.map(async (subjectId) => {
+        const subject = await this.subjectModel.findById(subjectId).lean();
+        // console.log(subject.title);
+        const score = await this.scoreModel
+          .findOne({ tutorId, subjectId })
+          .lean(); // score , null {pat  : null , pat2: score}
+        // {subject1 : score1, subject2: score2 }
+        // console.log(score);
+        if (score && score.status === 'approved') {
+          // console.log(0);
+          res.push({
+            subjectId: subject._id,
+            subjectName: subject.title,
+            level: subject.level,
+            currentScore: score.currentScore,
+            maxScore: score.maxScore,
+            scoreImage: score.imageUrl,
+          });
+        } else {
+          // console.log(1);
+          res.push({
+            subjectId: subject._id,
+            subjectName: subject.title,
+            level: subject.level,
+            currentScore: null,
+            maxScore: subject.maxScore,
+            scoreImage: null,
+          });
+          // console.log(res);
+        }
+      }),
+    );
+    // console.log(res);
+    return res;
   }
 }

@@ -12,6 +12,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PassportStrategy } from '@nestjs/passport';
+
+import { ScoreService } from '../score/score.service';
 import { TutorService } from './tutor.service';
 import { ApiTags, ApiOkResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { get } from 'http';
@@ -21,7 +23,10 @@ import { Tutor } from '../models/tutor.model';
 @ApiTags('tutor')
 @Controller('tutor')
 export class TutorController {
-  constructor(private readonly tutorService: TutorService) {}
+  constructor(
+    private readonly tutorService: TutorService,
+    private readonly scoreService: ScoreService,
+  ) {}
   @UseGuards(AuthGuard('jwt'))
   @Post('search')
   @ApiBody({
@@ -155,5 +160,12 @@ export class TutorController {
   getTutor(@Body('id') id: string) {
     console.log(id);
     return this.tutorService.getTutorById(id);
+  }
+
+  //@UseGuards(AuthGuard('jwt'))
+  @Get('score')
+  async getTutorScore(@Query('id') id: string) {
+    // console.log(id);
+    return await this.scoreService.getTutorSubjectsScore(id);
   }
 }

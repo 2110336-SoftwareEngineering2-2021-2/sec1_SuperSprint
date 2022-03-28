@@ -1,4 +1,5 @@
 import { getSession, useSession } from 'next-auth/react';
+import Link from 'next/link';
 import Layout from '../components/Layout';
 import TutorList from '../components/TutorList';
 
@@ -22,7 +23,9 @@ export default function Home({ tutors }) {
               <div className="card-body">
                 <h2 className="card-title">Your Appointment</h2>
                 <div className="card-actions justify-end">
-                  <button className="btn btn-primary">Buy Now</button>
+                  <Link href="/appointment" passHref>
+                    <a className="btn btn-primary">Buy Now</a>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -34,7 +34,7 @@ function ScoreImageUpload({ subjectId, hookFormControl, defaultValue = '' }) {
             <div className="relative flex h-32 w-32 overflow-hidden rounded-xl sm:h-40 sm:w-40">
               <div className="absolute h-full w-full" {...getRootProps()}>
                 <input id="scoreImage" {...getInputProps()} />
-                <div className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-zinc-300 text-black opacity-80 transition-all hover:border-primary hover:text-primary hover:opacity-100">
+                <div className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-zinc-300 text-neutral-content opacity-80 transition-all hover:border-primary hover:text-primary hover:opacity-100">
                   <FontAwesomeIcon fixedWidth icon={faFileUpload} size="2x" />
                   {value.file && (
                     <span className="w-full overflow-hidden text-ellipsis whitespace-nowrap px-2 text-center text-xs">
