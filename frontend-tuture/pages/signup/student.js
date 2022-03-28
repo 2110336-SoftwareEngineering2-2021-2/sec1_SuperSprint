@@ -78,7 +78,7 @@ function StudentRegister({ subjects }) {
       setLoading(false);
       toast('Sign Up Success!', {
         onClose: () => {
-          router.push('/login');
+          router.push('/signin');
         },
       });
     } catch (error) {

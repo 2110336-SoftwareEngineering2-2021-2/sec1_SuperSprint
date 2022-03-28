@@ -57,6 +57,7 @@ export class AppointmentService {
           studentId: id,
         })
         .populate('subjectId')
+        // .populate('chatId')
         .populate({
           path: 'tutorId',
           select: { password: 0 },
@@ -71,6 +72,7 @@ export class AppointmentService {
           tutorId: id,
         })
         .populate('subjectId')
+        // .populate('chatId')
         .populate({
           path: 'studentId',
           select: { password: 0 },
@@ -88,11 +90,13 @@ export class AppointmentService {
     };
   }
 
-  async getAppointmentsByChat(tutorId: string, studentId: string) {
+  async getAppointmentsByChat(chatId: string) {
+    const chat = await this.chatModel.findById(chatId);
     const appointments = await this.appointmentModel
       .find({
-        tutorId: tutorId,
-        studentId: studentId,
+        tutorId: chat.tutorId,
+        studentId: chat.studentId,
+        status: 'offering',
       })
       .populate('subjectId')
       .populate('studentId')
@@ -184,44 +188,51 @@ export class AppointmentService {
     );
 
     if (availabilityTimeIndex === -1) {
+      console.log(id);
       this.cancelAppointment(id);
       throw new ForbiddenException('tutor is not available');
     }
     const availabilityTime = tutor.dutyTime[availabilityTimeIndex];
     tutor.dutyTime.splice(availabilityTimeIndex, 1);
+    await tutor.save();
 
     if (
-      new Date(availabilityTime.start) == appointmentStartTime &&
-      new Date(availabilityTime.end) == appointmentEndTime
+      new Date(availabilityTime.start).toString() ===
+        appointmentStartTime.toString() &&
+      new Date(availabilityTime.end).toString() == appointmentEndTime.toString()
     ) {
       // do nothing
-    } else if (new Date(availabilityTime.start) == appointmentStartTime) {
+    } else if (
+      new Date(availabilityTime.start).toString() ===
+      appointmentStartTime.toString()
+    ) {
       // tutorId:string,addDate:string,addStartTime:string,addEndTime:string
-      this.tutorService.addDutyTimeDateTime(
+      await this.tutorService.addDutyTimeDateTime(
         tutor.id,
         appointmentEndTime.toString(),
         new Date(availabilityTime.end).toString(),
       );
-    } else if (new Date(availabilityTime.end) == appointmentEndTime) {
-      this.tutorService.addDutyTimeDateTime(
+    } else if (
+      new Date(availabilityTime.end).toString() ===
+      appointmentEndTime.toString()
+    ) {
+      await this.tutorService.addDutyTimeDateTime(
         tutor.id,
         new Date(availabilityTime.start).toString(),
         appointmentStartTime.toString(),
       );
     } else {
-      this.tutorService.addDutyTimeDateTime(
+      await this.tutorService.addDutyTimeDateTime(
         tutor.id,
         new Date(availabilityTime.start).toString(),
         appointmentStartTime.toString(),
       );
-      this.tutorService.addDutyTimeDateTime(
+      await this.tutorService.addDutyTimeDateTime(
         tutor.id,
         appointmentEndTime.toString(),
         new Date(availabilityTime.end).toString(),
       );
     }
-
-    await tutor.save();
 
     appointment.status = 'confirmed';
     await appointment.save();

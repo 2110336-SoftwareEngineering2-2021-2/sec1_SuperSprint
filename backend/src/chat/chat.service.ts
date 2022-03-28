@@ -82,11 +82,13 @@ export class ChatService {
 
   // PRIVATE -----------------------------------
   private async findChat(tId: string, sId: string): Promise<Chat> {
+    console.log('testid', tId, sId);
     let chat;
     try {
       chat = await this.chatModel
         .findOne({ tutorId: tId, studentId: sId })
         .lean();
+      console.log('test', chat);
       if (!chat) {
         return null;
         // return 0;

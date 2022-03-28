@@ -10,6 +10,11 @@ export default function Chat({ chatData, subjectList }) {
   const router = useRouter();
   const [chats, setChats] = useState(chatData);
   const currentChatId = router.query.chatId || '';
+  const [chatFeed,setChatFeed] = useState([]);
+
+  const passDataFeed = (data) => {
+    setChatFeed(data);
+  };
 
   async function onAccept(chatId) {
     if (session.user.role === 'tutor') {
@@ -80,11 +85,12 @@ export default function Chat({ chatData, subjectList }) {
             canAccept={session.user.role === 'tutor'}
             onAccept={onAccept}
             onDecline={onDecline}
+            passDataFeed = {passDataFeed}
           />
         </div>
         {currentChatId !== '' && (
           <div className="flex flex-1 overflow-auto">
-            <ChatFeed subjectList={subjectList} chatId={currentChatId} />
+            <ChatFeed subjectList={subjectList} chatId={currentChatId} chatFeed={chatFeed} />
           </div>
         )}
       </div>
@@ -194,6 +200,7 @@ export async function getServerSideProps(context) {
   }
 
   const chatData = await getChats(session);
+  console.log(chatData);
   // // Test jaaaa
   // // tutorId=621c818daefa29db6f3e806f
   // // studentId=621c8c3d363377298c2bf8b2

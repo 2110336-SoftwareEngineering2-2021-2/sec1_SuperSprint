@@ -89,6 +89,13 @@ export class AppointmentController {
   }
 
   // @UseGuards(AuthGuard('jwt'))
+  @Get('/chat/:chatId')
+  @ApiOkResponse({ type: [Appointment] })
+  async getAppointmentsByChat(@Param('chatId') chatId: string) {
+    return await this.appointmentService.getAppointmentsByChat(chatId);
+  }
+
+  // @UseGuards(AuthGuard('jwt'))
   @Get('/:userType/:id')
   @ApiOkResponse({ type: [Appointment] })
   async getAppointments(
@@ -96,19 +103,6 @@ export class AppointmentController {
     @Param('id') id: string,
   ) {
     return await this.appointmentService.getAppointments(userType, id);
-  }
-
-  // @UseGuards(AuthGuard('jwt'))
-  @Get('/chat')
-  @ApiOkResponse({ type: [Appointment] })
-  async getAppointmentsByChat(
-    @Query('tutorId') tutorId: string,
-    @Query('studentId') studentId: string,
-  ) {
-    return await this.appointmentService.getAppointmentsByChat(
-      tutorId,
-      studentId,
-    );
   }
 
   // @UseGuards(AuthGuard('jwt'))

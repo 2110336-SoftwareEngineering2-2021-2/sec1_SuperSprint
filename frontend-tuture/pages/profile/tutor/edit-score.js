@@ -74,6 +74,8 @@ function EditScore({ scores }) {
     setModalOpen(false);
   }
 
+  console.log(errors);
+
   return (
     <Layout title="Edit Score | Tuture">
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
@@ -91,6 +93,7 @@ function EditScore({ scores }) {
               scoreData={score}
               hookFormRegister={register}
               hookFormControl={control}
+              hookFormError={errors}
               onDeleteClick={() => console.log(score.subject)}
             />
           ))}

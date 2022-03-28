@@ -10,6 +10,7 @@ export default function avatarUrl(url, seed = 'skdfjh3usadlkfj') {
     ? url
     : createAvatar(style, {
         seed: seed,
+        backgroundColor: 'white',
         dataUri: true,
       });
 }

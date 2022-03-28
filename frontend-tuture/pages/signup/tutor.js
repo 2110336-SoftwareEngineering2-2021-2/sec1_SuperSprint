@@ -115,7 +115,7 @@ function TutorRegister({ subjects }) {
       setLoading(false);
       toast('Sign Up Success!', {
         onClose: () => {
-          router.push('/login');
+          router.push('/signin');
         },
       });
     } catch (error) {
@@ -229,7 +229,6 @@ function TutorRegister({ subjects }) {
               </label>
               <AvatarUpload
                 hookFormControl={control}
-                hookFormSetValue={setValue}
                 hookFormWatch={watch}
               />
               <p className="text-xs">Click or drop here to upload</p>

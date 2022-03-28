@@ -9,9 +9,10 @@ import { Tutor } from '../models/tutor.model';
 import { Student } from '../models/student.model';
 import * as bcrypt from 'bcrypt';
 import { S3Service } from '@src/services/S3Sevices.service';
+import { ScoreService } from '../score/score.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigurationServicePlaceholders } from 'aws-sdk/lib/config_service_placeholders';
-
+import { Subject } from '../models/subject.model';
 @Injectable()
 export class AuthService {
   private tutors: Tutor[] = [];
@@ -19,7 +20,9 @@ export class AuthService {
   constructor(
     @InjectModel('Tutor') private readonly tutorModel: Model<Tutor>,
     @InjectModel('Student') private readonly studentModel: Model<Student>,
+    @InjectModel('Subject') private readonly subjectModel: Model<Subject>,
     private readonly s3Service: S3Service,
+    private readonly scoreService: ScoreService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -130,6 +133,7 @@ export class AuthService {
     if (foundEmail) {
       throw new ForbiddenException('duplicate email');
     }
+
     const pass = password;
     try {
       let imageUrl;
@@ -157,6 +161,33 @@ export class AuthService {
         priceMax: priceMax,
         dutyTime: dutyTime.sort((a, b) => +a.start - +b.start),
       });
+      if (teachSubject) {
+        if (typeof teachSubject === 'string') {
+          teachSubject = [teachSubject];
+        }
+
+        newTutor.teachSubject = teachSubject;
+        console.log('teachSubject', teachSubject);
+        await Promise.all(
+          teachSubject.map(async (subjectId) => {
+            const subject = await this.subjectModel.findById(subjectId).lean();
+            const score = await this.scoreService.getScore(
+              newTutor._id,
+              subjectId,
+            );
+            if (!score) {
+              await this.scoreService.insertScore(
+                newTutor._id,
+                subjectId,
+                0,
+                subject.maxScore,
+                null,
+                null,
+              );
+            }
+          }),
+        );
+      }
 
       const newT = await newTutor.save();
       const { password, ...result } = newT.toObject();
@@ -194,7 +225,7 @@ export class AuthService {
     // console.log(pass);
   }
 
-  async login(body: any) {
+  async signin(body: any) {
     let user;
     let role;
     switch (body.username.split(' ')[0]) {

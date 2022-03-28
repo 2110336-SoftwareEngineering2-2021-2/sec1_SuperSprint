@@ -126,7 +126,9 @@ async function getTutorScores(session) {
     }
     const data = await res.json();
 
-    return data;
+    return data.map((e) => {
+      return { subjectId: e._id, ...e };
+    });
   } catch (error) {
     console.log(error.stack);
     return [];
@@ -138,7 +140,9 @@ export async function getServerSideProps(context) {
 
   const tutorProfile = await getTutorProfile(session);
   const tutorScores = await getTutorScores(session);
-  console.log('test', tutorScores);
+  // console.log('test hello', tutorScores);
+
+  console.log('sus', session);
 
   return {
     props: {

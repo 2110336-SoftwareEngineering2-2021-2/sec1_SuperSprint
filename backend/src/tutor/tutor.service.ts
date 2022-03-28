@@ -305,9 +305,9 @@ export class TutorService {
       await Promise.all(
         teachSubject.map(async (subjectId) => {
           const subject = await this.subjectModel.findById(subjectId).lean();
-          const score = this.scoreSevice.getScore(id, subjectId);
+          const score = await this.scoreSevice.getScore(id, subjectId);
           if (!score) {
-            this.scoreSevice.insertScore(
+            await this.scoreSevice.insertScore(
               id,
               subjectId,
               0,
@@ -319,15 +319,34 @@ export class TutorService {
         }),
       );
     }
-    if (dutyTime) {
-      dutyTime.forEach((element) => {
-        this.addDutyTimeDateTime(tutor._id, element.start, element.end);
-      });
-      // tutor.dutyTime = dutyTime;
-    }
+
     tutor.phone = phone || tutor.phone;
     tutor.username = username || tutor.username;
     tutor.email = email || tutor.email;
+    tutor.dutyTime = [];
+
+    await tutor.save();
+
+    if (dutyTime) {
+      // console.log('dutyTime', dutyTime);
+      for (const element of dutyTime) {
+        await this.addDutyTimeDateTime(tutor._id, element.start, element.end);
+      }
+      // await Promise.all(
+      //   dutyTime.map(async (element) => {
+      //     console.log(element);
+      //     return await this.addDutyTimeDateTime(
+      //       tutor._id,
+      //       element.start,
+      //       element.end,
+      //     );
+      //   }),
+      // );
+      console.log('hello');
+      // tutor.dutyTime = dutyTime;
+    }
+
+    console.log(dutyTime);
 
     const { password, ...updatedTutor } = await tutor.save();
 
@@ -350,11 +369,11 @@ export class TutorService {
     const dutyTime = tutor.dutyTime;
 
     const startFound = dutyTime.findIndex(
-      (element) => element.end === datetimeStart,
+      (element) => element.end.toString() === datetimeStart.toString(),
     );
 
     const endFound = dutyTime.findIndex(
-      (element) => element.start === datetimeEnd,
+      (element) => element.start.toString() === datetimeEnd.toString(),
     );
 
     if (startFound !== -1 && endFound !== -1) {
@@ -384,39 +403,45 @@ export class TutorService {
     addEndDate: string,
   ) {
     const datetimeStart = new Date(addStartDate);
-
     const datetimeEnd = new Date(addEndDate);
 
     const tutor = await this.tutorModel.findById(tutorId);
-    const dutyTime = tutor.dutyTime;
+    const dutyTime = tutor.dutyTime; // []
 
-    const startFound = dutyTime.findIndex(
-      (element) => element.end === datetimeStart,
-    );
-
-    const endFound = dutyTime.findIndex(
-      (element) => element.start === datetimeEnd,
-    );
-
-    if (startFound !== -1 && endFound !== -1) {
-      // ชิดซ้ายขวา
-      dutyTime[startFound].end = dutyTime[endFound].end;
-      dutyTime.splice(endFound, 1);
-      // dutyTime[endFound].end = dutyTime[startFound].end;
-      // dutyTime.splice(startFound, 1);
-    } else if (startFound !== -1 && endFound === -1) {
-      // ตัวแทรกไปชิดซ้ายตัวที่มีอยู่ -> แก้ end ของตัวที่มีอยู่
-      dutyTime[startFound].end = datetimeEnd;
-    } else if (startFound === -1 && endFound !== -1) {
-      // ชิดขวา
-      dutyTime[endFound].start = datetimeStart;
-    } else {
-      // ไม่ชิดเลย
+    console.log('hiiiiiiiiiiiiii');
+    if (dutyTime.length === 0) {
       dutyTime.push({ start: datetimeStart, end: datetimeEnd });
-      dutyTime.sort((a, b) => +a.start - +b.start);
-    }
-    this.tutorModel.findByIdAndUpdate(tutorId, { dutyTime });
+    } else {
+      const startFound = dutyTime.findIndex(
+        (element) => element.end.toString() === datetimeStart.toString(),
+      );
 
+      const endFound = dutyTime.findIndex(
+        (element) => element.start.toString() === datetimeEnd.toString(),
+      );
+
+      if (startFound !== -1 && endFound !== -1) {
+        // ชิดซ้ายขวา
+        dutyTime[startFound].end = dutyTime[endFound].end;
+        dutyTime.splice(endFound, 1);
+        // dutyTime[endFound].end = dutyTime[startFound].end;
+        // dutyTime.splice(startFound, 1);
+      } else if (startFound !== -1 && endFound === -1) {
+        // ตัวแทรกไปชิดซ้ายตัวที่มีอยู่ -> แก้ end ของตัวที่มีอยู่
+
+        dutyTime[startFound].end = datetimeEnd;
+      } else if (startFound === -1 && endFound !== -1) {
+        // ชิดขวา
+        dutyTime[endFound].start = datetimeStart;
+      } else {
+        // ไม่ชิดเลย
+        dutyTime.push({ start: datetimeStart, end: datetimeEnd });
+        dutyTime.sort((a, b) => +a.start - +b.start);
+      }
+    }
+
+    await this.tutorModel.findByIdAndUpdate(tutorId, { dutyTime });
+    console.log('dutyTime of tutor', tutor.dutyTime);
     return { message: 'successfully add duty time', dutyTime: tutor.dutyTime };
   }
 

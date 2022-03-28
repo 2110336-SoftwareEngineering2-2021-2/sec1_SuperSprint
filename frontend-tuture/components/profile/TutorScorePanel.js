@@ -20,7 +20,7 @@ function TutorScorePanel({ scores, isOwner }) {
               <div className="stat-value text-center">
                 {score.currentScore}/{score.maxScore}
               </div>
-              <div class="stat-desc text-right">{score.year}</div>
+              <div className="stat-desc text-right">{score.year}</div>
               {isOwner && score.scoreImage && (
                 <div className="stat-actions ">
                   <Link href={score.scoreImage}>

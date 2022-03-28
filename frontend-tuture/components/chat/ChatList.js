@@ -1,5 +1,6 @@
 import SimpleBarReact from 'simplebar-react';
 import ChatCard from './ChatCard';
+import { useState , useEffect } from 'react';
 
 function ChatList({
   chats,
@@ -8,7 +9,16 @@ function ChatList({
   currentChatId,
   onAccept,
   onDecline,
+  passDataFeed
 }) {
+
+  const [chatFeed,setChatFeed] = useState([]);
+
+  useEffect(() => {
+      passDataFeed(chatFeed);
+  },[chatFeed])
+  
+
   return (
     <div className="overflow-x-clip shadow-xl">
       <div className="h-[6%] pt-6 pb-2 shadow-lg shadow-secondary/20 sm:h-[8%]">
@@ -29,6 +39,7 @@ function ChatList({
             onAccept={() => onAccept(chat.chatId)}
             onDecline={() => onDecline(chat.chatId)}
             selected={currentChatId === chat.chatId}
+            setChatFeed = {setChatFeed}
           />
         ))}
       </SimpleBarReact>

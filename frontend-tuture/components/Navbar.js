@@ -5,15 +5,20 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import ProfileDropdown from './ProfileDropdown';
 import { useSession } from 'next-auth/react';
+import { useContext, useEffect, useState } from 'react';
+import { NavbarProfileContext } from '../context/NavbarProfileContext';
 
 const Navbar = (props) => {
   const { data: session } = useSession();
+  const profileContext = useContext(NavbarProfileContext);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   function submitSearch(event) {
     event.preventDefault();
     router.push(`/search?result=${event.target.search_term.value}`);
   }
+
   return (
     <div className="drawer h-screen w-full">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
@@ -33,9 +38,9 @@ const Navbar = (props) => {
               />
             </label>
             <Link href="/" passHref>
-              <button className="btn btn-ghost hidden  text-lg font-bold normal-case text-primary-content xs:block sm:text-xl">
+              <a className="btn btn-ghost w-0 text-lg font-bold normal-case text-primary-content xs:w-auto sm:text-xl">
                 Tuture
-              </button>
+              </a>
             </Link>
           </div>
           {/* sa wad dee krub taan sa ma chik chom lom kon chob frontend */}
@@ -51,7 +56,7 @@ const Navbar = (props) => {
                   />
                   <button
                     type="submit"
-                    className="btn btn-primary btn-square btn-sm absolute top-0 right-0 rounded-l-none border border-secondary text-xs sm:btn-md sm:text-base"
+                    className="btn btn-square btn-primary btn-sm absolute top-0 right-0 rounded-l-none border border-secondary text-xs sm:btn-md sm:text-base"
                   >
                     <FontAwesomeIcon
                       fixedWidth
@@ -78,8 +83,11 @@ const Navbar = (props) => {
               />
             </button> */}
             <ProfileDropdown
-              name={`${session.user.firstName} ${session.user.lastName}`}
-              profileImg={session.user.profileUrl}
+              firstName={profileContext.userData.firstName}
+              lastName={profileContext.userData.lastName}
+              userId={session.user._id}
+              profileImg={profileContext.userData.profileImg}
+              onSignOut={() => profileContext.removeProfile()}
             />
           </div>
         </div>

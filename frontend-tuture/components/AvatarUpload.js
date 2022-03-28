@@ -5,8 +5,9 @@ import Dropzone from 'react-dropzone';
 import { Controller } from 'react-hook-form';
 import { createAvatar } from '@dicebear/avatars';
 import * as style from '@dicebear/avatars-identicon-sprites';
+import avatarUrl from '../lib/avatarUrl';
 
-function AvatarUpload({ hookFormControl, hookFormWatch, defaultValue = '' }) {
+function AvatarUpload({ hookFormControl, hookFormWatch, defaultValue = 'https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg', userId = '' }) {
   const [uploaded, setUploaded] = useState(false);
 
   function onAvatarDrop(value, acceptedFiles, onChange) {
@@ -48,17 +49,7 @@ function AvatarUpload({ hookFormControl, hookFormWatch, defaultValue = '' }) {
                   {uploaded ? (
                     <img src={value.preview} alt={value.name} />
                   ) : (
-                    <img
-                      src={
-                        defaultValue === ''
-                          ? createAvatar(style, {
-                              seed: (hookFormWatch('first_name') + hookFormWatch('last_name')),
-                              dataUri: true,
-                            })
-                          : defaultValue
-                      }
-                      alt="Avatar"
-                    />
+                    <img src={avatarUrl(defaultValue, (hookFormWatch('first_name') + hookFormWatch('last_name')) + userId)} alt="Avatar" />
                   )}
                 </div>
               </div>

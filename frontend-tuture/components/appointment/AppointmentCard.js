@@ -90,41 +90,42 @@ function AppointmentCard({
           {/* R and L Seperation */}
 
           <div className="-ml-24 inline-flex select-none flex-col items-end justify-between p-2">
-            {(status == 'offering' || status == 'confirmed') && startApptDate && endApptDate && (
-              <div className="flex items-center">
-                <div>
-                  <p className="sm:text-md text-center text-xs">
-                    {moment(startApptDate).format('MMM YYYY')}
-                  </p>
-                  <p className="text-center text-lg sm:text-xl">
-                    {moment(startApptDate).format('D')}
-                  </p>{' '}
-                  <p className="sm:text-md text-center text-xs">
-                    {moment(startApptDate).format('hh:mm')}
-                  </p>
+            {(status == 'offering' || status == 'confirmed') &&
+              startApptDate &&
+              endApptDate && (
+                <div className="flex items-center">
+                  <div>
+                    <p className="sm:text-md text-center text-xs">
+                      {moment(startApptDate).format('MMM YYYY')}
+                    </p>
+                    <p className="text-center text-lg sm:text-xl">
+                      {moment(startApptDate).format('D')}
+                    </p>{' '}
+                    <p className="sm:text-md text-center text-xs">
+                      {moment(startApptDate).format('hh:mm')}
+                    </p>
+                  </div>
+                  <span className="mx-1">-</span>
+                  <div>
+                    <p className="sm:text-md text-center text-xs">
+                      {moment(endApptDate).format('MMM YYYY')}
+                    </p>
+                    <p className="text-center text-lg sm:text-xl">
+                      {moment(endApptDate).format('D')}
+                    </p>{' '}
+                    <p className="sm:text-md text-center text-xs">
+                      {moment(endApptDate).format('hh:mm')}
+                    </p>
+                  </div>
                 </div>
-                <span className="mx-1">-</span>
-                <div>
-                  <p className="sm:text-md text-center text-xs">
-                    {moment(endApptDate).format('MMM YYYY')}
-                  </p>
-                  <p className="text-center text-lg sm:text-xl">
-                    {moment(endApptDate).format('D')}
-                  </p>{' '}
-                  <p className="sm:text-md text-center text-xs">
-                    {moment(endApptDate).format('hh:mm')}
-                  </p>
-                </div>
-              </div>
-            )}
+              )}
             {createdDate && (
               <p className="w-28 text-right text-xs text-base-content/50">
                 {moment(createdDate).fromNow()}
               </p>
             )}
-            {(status == 'confirmed' ||
-              status == 'negotiating' ||
-              (status == 'offering' && POV == 'tutor')) && (
+            {(status === 'confirmed' ||
+              (status === 'offering' && POV === 'tutor')) && (
               <div>
                 <button
                   className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-yellow-500"
@@ -132,18 +133,20 @@ function AppointmentCard({
                 >
                   <FontAwesomeIcon fixedWidth icon={faComment} size="lg" />
                 </button>
-                <label
-                  className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
-                  onClick={onCancel}
-                  for="cancelModal"
-                >
-                  <div className="pt-1.5">
-                    <FontAwesomeIcon fixedWidth icon={faBan} size="lg" />
-                  </div>
-                </label>
+                {status !== 'confirmed' && (
+                  <label
+                    className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
+                    onClick={onCancel}
+                    for="cancelModal"
+                  >
+                    <div className="pt-1.5">
+                      <FontAwesomeIcon fixedWidth icon={faBan} size="lg" />
+                    </div>
+                  </label>
+                )}
               </div>
             )}
-            {status == 'offering' && POV == 'student' && (
+            {status === 'offering' && POV === 'student' && (
               <div>
                 <button
                   className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-yellow-500"
@@ -171,7 +174,7 @@ function AppointmentCard({
                 </label>
               </div>
             )}
-            {status == 'pending' && POV == 'tutor' && (
+            {status === 'pending' && POV === 'tutor' && (
               <div>
                 <label
                   className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
@@ -193,7 +196,7 @@ function AppointmentCard({
                 </label>
               </div>
             )}
-            {status == 'pending' && POV == 'student' && (
+            {status === 'pending' && POV === 'student' && (
               <div>
                 <label
                   className="modal-button btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
