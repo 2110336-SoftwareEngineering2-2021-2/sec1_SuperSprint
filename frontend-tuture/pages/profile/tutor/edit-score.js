@@ -7,6 +7,7 @@ import ScoreEditCard from '../../../components/tutor-score/ScoreEditCard';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { getSession, useSession } from 'next-auth/react';
 import { Modal } from '../../../components/Modal';
+import { toast } from 'react-toastify';
 
 function EditScore({ scores }) {
   const {
@@ -37,11 +38,11 @@ function EditScore({ scores }) {
     for (const [key, value] of Object.entries(data)) {
       if (getFieldState(key).isDirty) {
         const formData = new FormData();
-        formData.append(`tutorId`, session.user._id);
-        formData.append(`subjectId`, key);
-        formData.append(`score`, value.currentScore);
-        formData.append(`year`, value.year);
-        formData.append(`scoreImage`, value.scoreImage.file || '');
+        formData.append('tutorId', session.user._id);
+        formData.append('subjectId', key);
+        formData.append('score', value.currentScore);
+        formData.append('year', value.year);
+        formData.append('scoreImage', value.scoreImage.file || '');
         console.log(key, formData);
         try {
           const res = await fetch(
@@ -74,6 +75,41 @@ function EditScore({ scores }) {
     setModalOpen(false);
   }
 
+  async function onDelete(subjectId) {
+    console.log('del', subjectId);
+    toast.promise(
+      async () => {
+        try {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/score/delete`,
+            {
+              method: 'DELETE',
+              mode: 'cors',
+              credentials: 'same-origin',
+              headers: {
+                Authorization: `Bearer ${session.accessToken}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                tutorId: session.user._id,
+                subjectId: subjectId,
+              }),
+            }
+          );
+          if (!res.ok) throw new Error('Fetch Error');
+          router.reload();
+        } catch (error) {
+          console.error(error.stack);
+        }
+      },
+      {
+        pending: 'Deleting score...',
+        success: 'Deleted score.',
+        error: 'Error! Please try again later.',
+      }
+    );
+  }
+
   console.log(errors);
 
   return (
@@ -87,14 +123,14 @@ function EditScore({ scores }) {
           id="scoreEditForm"
           onSubmit={handleSubmit(submitScore)}
         >
-          {scores.map((score, idx) => (
+          {scores.map((score) => (
             <ScoreEditCard
               key={score.subjectId}
               scoreData={score}
               hookFormRegister={register}
               hookFormControl={control}
               hookFormError={errors}
-              onDeleteClick={() => console.log(score.subject)}
+              onDeleteClick={async () => await onDelete(score.subjectId)}
             />
           ))}
 

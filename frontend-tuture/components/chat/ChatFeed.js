@@ -5,6 +5,8 @@ import OtherMessage from './OtherMessage';
 import SelfMessage from './SelfMessage';
 import { useSession } from 'next-auth/react';
 import ChatAppointmentCard from './ChatAppointmentCard';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const selfData = {
   name: 'Batman',
@@ -134,16 +136,17 @@ async function getAppointments(session, chatId) {
 
 export default function ChatFeed({ subjectList, chatId, chatFeed }) {
   const { data: session } = useSession();
+  const [loading, setLoading] = useState(false);
 
   console.log(chatFeed[0]);
 
   //chatFeed.length === 0
 
-  let nameFeed = chatFeed.length === 0 ? 'Batman' : chatFeed[0];
+  let nameFeed = chatFeed.length === 0 ? 'Batman' : `${chatFeed.firstName} ${chatFeed.lastName}`;
   let profileFeed =
     chatFeed.length === 0
       ? 'https://www.koimoi.com/wp-content/new-galleries/2021/05/robert-pattinson-wants-the-batman-to-have-his-multiple-love-interests-001.jpg'
-      : chatFeed[1];
+      : chatFeed.profileImg;
 
   const titleData = {
     name: nameFeed,
@@ -174,6 +177,7 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
   }, [chatId]);
 
   async function onAccept(apptId) {
+    setLoading(true);
     const result = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/appointment/student/accept/${apptId}`,
       {
@@ -185,9 +189,11 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
       }
     );
     await reloadAppts();
+    setLoading(false);
   }
 
   async function onDecline(apptId) {
+    setLoading(true);
     const result = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/appointment/${apptId}`,
       {
@@ -199,6 +205,7 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
       }
     );
     await reloadAppts();
+    setLoading(false);
   }
 
   return (
@@ -215,14 +222,20 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
         <OtherMessage {...otherData1} />
         <SelfMessage {...selfData} />
         <OtherMessage {...otherData2} />
-        {appts.map((appt) => (
-          <ChatAppointmentCard
-            {...appt}
-            canAccept={session.user.role === 'student'}
-            onAccept={onAccept}
-            onDecline={onDecline}
-          />
-        ))}
+        {!loading ? (
+          appts.map((appt) => (
+            <ChatAppointmentCard
+              {...appt}
+              canAccept={session.user.role === 'student'}
+              onAccept={onAccept}
+              onDecline={onDecline}
+            />
+          ))
+        ) : (
+          <p>
+            <FontAwesomeIcon fixedWidth icon={faSpinner} spin />
+          </p>
+        )}
       </div>
       <div className="sticky bottom-0 mx-auto h-max w-full bg-base-200">
         <MessageForm subjectList={subjectList} chatId={chatId} />

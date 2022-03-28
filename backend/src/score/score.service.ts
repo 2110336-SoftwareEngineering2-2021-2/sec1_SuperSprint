@@ -95,24 +95,35 @@ export class ScoreService {
     image,
   ) {
     const score = await this.scoreModel.findOne({ tutorId, subjectId });
+    const subject = await this.subjectModel.findById(subjectId);
+    if (score) {
+      if (image) {
+        await this.s3Service.deleteFile(score.imageUrl);
+        score.imageUrl = await this.s3Service.uploadFile(
+          score.tutorId + score.subjectId,
+          image,
+        );
+      }
 
-    if (image) {
-      await this.s3Service.deleteFile(score.imageUrl);
-      score.imageUrl = await this.s3Service.uploadFile(
-        score.tutorId + score.subjectId,
+      score.tutorId = tutorId || score.tutorId;
+      score.subjectId = subjectId || score.subjectId;
+      score.currentScore = currentScore || score.currentScore;
+      score.maxScore = maxScore || subject.maxScore;
+      score.year = year || score.year;
+
+      await score.save();
+      return { scoreId: score._id };
+    } else {
+      const scoreId = await this.insertScore(
+        tutorId,
+        subjectId,
+        currentScore,
+        subject.maxScore,
+        year,
         image,
       );
+      return { scoreId: scoreId };
     }
-    
-
-    score.tutorId = tutorId || score.tutorId;
-    score.subjectId = subjectId || score.subjectId;
-    score.currentScore = currentScore || score.currentScore;
-    score.maxScore = maxScore || score.maxScore;
-    score.year = year || score.year;
-
-    await score.save();
-    return { scoreId: score._id };
   }
 
   async getAllScore(tutorId: string) {

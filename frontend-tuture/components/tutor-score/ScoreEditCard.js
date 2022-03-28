@@ -22,7 +22,7 @@ export default function ScoreEditCard({
 
   function onDelete(event) {
     event.preventDefault();
-    if (typeof onChooseClick == 'function') {
+    if (typeof onDeleteClick == 'function') {
       onDeleteClick();
     }
   }
@@ -59,7 +59,7 @@ export default function ScoreEditCard({
                   },
                   min: {
                     value: 0,
-     s        s        message: 'Score can not be negative number',
+                    message: 'Score can not be negative number',
                   },
                 })}
                 id="score"

@@ -5,16 +5,23 @@ import Layout from '../../components/Layout';
 import { useRouter } from 'next/router';
 import { getSession, useSession } from 'next-auth/react';
 
+function getChatterInfo(chats, chatId) {
+  const chat = chats.find((chat) => chat.chatId === chatId);
+  return {
+    firstName: chat.firstName,
+    lastName: chat.lastName,
+    profileImg: chat.profileImg
+  };
+}
+
 export default function Chat({ chatData, subjectList }) {
   const { data: session } = useSession();
   const router = useRouter();
-  const [chats, setChats] = useState(chatData);
   const currentChatId = router.query.chatId || '';
-  const [chatFeed,setChatFeed] = useState([]);
-
-  const passDataFeed = (data) => {
-    setChatFeed(data);
-  };
+  const [chats, setChats] = useState(chatData);
+  const [chatFeed, setChatFeed] = useState(
+    currentChatId === '' ? {} : getChatterInfo(chatData, currentChatId)
+  );
 
   async function onAccept(chatId) {
     if (session.user.role === 'tutor') {
@@ -26,7 +33,7 @@ export default function Chat({ chatData, subjectList }) {
           credentials: 'same-origin',
           headers: {
             Authorization: `Bearer ${session.accessToken}`,
-            contentType: 'application/json'
+            contentType: 'application/json',
           },
           body: JSON.stringify({
             chatId: chatId,
@@ -53,7 +60,7 @@ export default function Chat({ chatData, subjectList }) {
           credentials: 'same-origin',
           headers: {
             Authorization: `Bearer ${session.accessToken}`,
-            contentType: 'application/json'
+            contentType: 'application/json',
           },
           body: JSON.stringify({
             chatId: chatId,
@@ -85,12 +92,15 @@ export default function Chat({ chatData, subjectList }) {
             canAccept={session.user.role === 'tutor'}
             onAccept={onAccept}
             onDecline={onDecline}
-            passDataFeed = {passDataFeed}
           />
         </div>
         {currentChatId !== '' && (
           <div className="flex flex-1 overflow-auto">
-            <ChatFeed subjectList={subjectList} chatId={currentChatId} chatFeed={chatFeed} />
+            <ChatFeed
+              subjectList={subjectList}
+              chatId={currentChatId}
+              chatFeed={chatFeed}
+            />
           </div>
         )}
       </div>
@@ -200,56 +210,6 @@ export async function getServerSideProps(context) {
   }
 
   const chatData = await getChats(session);
-  console.log(chatData);
-  // // Test jaaaa
-  // // tutorId=621c818daefa29db6f3e806f
-  // // studentId=621c8c3d363377298c2bf8b2
-
-  // const res = await fetch(
-  //   `${process.env.NEXT_PUBLIC_API_URL}/chat?tutorId=621c818daefa29db6f3e806f&studentId=621c8c3d363377298c2bf8b2`,
-  //   {
-  //     headers: {
-  //       Authorization: `Bearer ${session.accessToken}`,
-  //     },
-  //   }
-  // );
-  // if (!res.ok) {
-  //   throw new Error('Fetch error');
-  // }
-
-  // const chatData = await res.json();
-
-  // // Get student list
-
-  // const studentChatList = await fetch(
-  //   `${process.env.NEXT_PUBLIC_API_URL}/chat/getChatsStudent?studentId=621c8c3d363377298c2bf8b2`,
-  //   {
-  //     headers: {
-  //       Authorization: `Bearer ${session.accessToken}`,
-  //     },
-  //   }
-  // );
-  // if (!res.ok) {
-  //   throw new Error('Fetch error');
-  // }
-
-  // const studentList = await studentChatList.json();
-
-  // // Get tutor list
-
-  // const tutorChatList = await fetch(
-  //   `${process.env.NEXT_PUBLIC_API_URL}/chat/getChatsTutor?tutorId=621c818daefa29db6f3e806f`,
-  //   {
-  //     headers: {
-  //       Authorization: `Bearer ${session.accessToken}`,
-  //     },
-  //   }
-  // );
-  // if (!res.ok) {
-  //   throw new Error('Fetch error');
-  // }
-
-  // const tutorList = await tutorChatList.json();
 
   return {
     props: { session, subjectList, chatData },
