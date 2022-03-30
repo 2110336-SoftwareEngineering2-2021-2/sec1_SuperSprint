@@ -103,8 +103,8 @@ function EditScore({ scores }) {
         }
       },
       {
-        pending: 'Deleting score...',
-        success: 'Deleted score.',
+        pending: 'Resetting score...',
+        success: 'The score is reset.',
         error: 'Error! Please try again later.',
       }
     );

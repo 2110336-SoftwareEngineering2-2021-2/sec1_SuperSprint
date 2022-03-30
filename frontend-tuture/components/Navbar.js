@@ -28,7 +28,7 @@ const Navbar = (props) => {
           <div className="navbar-start">
             <label
               htmlFor="my-drawer"
-              className="btn btn-ghost btn-square drawer-button btn-sm sm:btn-md"
+              className="btn btn-ghost btn-square btn-sm drawer-button sm:btn-md"
             >
               <FontAwesomeIcon
                 fixedWidth
@@ -45,7 +45,7 @@ const Navbar = (props) => {
           </div>
           {/* sa wad dee krub taan sa ma chik chom lom kon chob frontend */}
           <div className="navbar-center">
-            {session.user.role !== 'tutor' && (
+            {session.user.role === 'student' && (
               <div className="form-control">
                 <form onSubmit={(e) => submitSearch(e)} className="relative">
                   <input
@@ -56,7 +56,7 @@ const Navbar = (props) => {
                   />
                   <button
                     type="submit"
-                    className="btn btn-square btn-primary btn-sm absolute top-0 right-0 rounded-l-none border border-secondary text-xs sm:btn-md sm:text-base"
+                    className="btn btn-primary btn-square btn-sm absolute top-0 right-0 rounded-l-none border border-secondary text-xs sm:btn-md sm:text-base"
                   >
                     <FontAwesomeIcon
                       fixedWidth
@@ -70,11 +70,20 @@ const Navbar = (props) => {
           </div>
 
           <div className="navbar-end flex items-center">
-            <Link href="/matching">
-              <a className="btn btn-ghost btn-sm text-primary-content sm:btn-md">
-                Match
-              </a>
-            </Link>
+            {session.user.role === 'student' && (
+              <Link href="/matching">
+                <a className="btn btn-ghost btn-sm text-primary-content sm:btn-md">
+                  Match
+                </a>
+              </Link>
+            )}
+            {session.user.role === 'tutor' && (
+              <Link href="/appointment">
+                <a className="btn btn-ghost btn-sm text-primary-content sm:btn-md">
+                  Appointment
+                </a>
+              </Link>
+            )}
             {/* <button className="btn btn-ghost btn-square btn-sm sm:btn-md">
               <FontAwesomeIcon
                 fixedWidth

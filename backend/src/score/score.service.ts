@@ -81,8 +81,14 @@ export class ScoreService {
     });
     // console.log(tutorId);
     const imageUrl = score.imageUrl;
-    await this.scoreModel.deleteOne({ tutorId: tutorId, subjectId: subjectId });
+    // await this.scoreModel.deleteOne({ tutorId: tutorId, subjectId: subjectId });
+    score.currentScore = 0;
+    // score.imageUrl = null;
+    score.imageUrl =
+      'https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg';
+    await score.save();
     await this.s3Service.deleteFile(imageUrl);
+
     return score._id;
   }
 

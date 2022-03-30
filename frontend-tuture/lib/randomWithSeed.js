@@ -4,8 +4,8 @@ function randomWithSeed(seed = Date.now().toString()) {
     var char = seed.charCodeAt(i);
     hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32bit integer
-  };
-  return hash;
+  }
+  return hash >= 0 ? hash : -hash;
 }
 
 export default randomWithSeed;

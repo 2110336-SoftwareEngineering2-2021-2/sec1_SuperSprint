@@ -122,7 +122,8 @@ async function getTutorScores(session) {
       }
     );
     if (!res.ok) {
-      throw new Error('Fetch error');
+      const data = await res.json();
+      throw new Error(data.message);
     }
     const data = await res.json();
 
@@ -141,8 +142,7 @@ export async function getServerSideProps(context) {
   const tutorProfile = await getTutorProfile(session);
   const tutorScores = await getTutorScores(session);
   // console.log('test hello', tutorScores);
-
-  console.log('sus', session);
+  console.log('hey', tutorProfile);
 
   return {
     props: {

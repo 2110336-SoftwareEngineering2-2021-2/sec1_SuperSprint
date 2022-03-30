@@ -138,11 +138,14 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
 
-  console.log(chatFeed[0]);
+  // console.log(chatFeed[0]);
 
   //chatFeed.length === 0
 
-  let nameFeed = chatFeed.length === 0 ? 'Batman' : `${chatFeed.firstName} ${chatFeed.lastName}`;
+  let nameFeed =
+    chatFeed.length === 0
+      ? 'Batman'
+      : `${chatFeed.firstName} ${chatFeed.lastName}`;
   let profileFeed =
     chatFeed.length === 0
       ? 'https://www.koimoi.com/wp-content/new-galleries/2021/05/robert-pattinson-wants-the-batman-to-have-his-multiple-love-interests-001.jpg'

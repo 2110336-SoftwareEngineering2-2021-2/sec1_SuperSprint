@@ -24,16 +24,18 @@ export default function Home({ tutors }) {
                 <h2 className="card-title">Your Appointment</h2>
                 <div className="card-actions justify-end">
                   <Link href="/appointment" passHref>
-                    <a className="btn btn-primary">Buy Now</a>
+                    <a className="btn btn-primary">Go</a>
                   </Link>
                 </div>
               </div>
             </div>
             <div className="card w-96 bg-base-100 shadow-xl">
               <div className="card-body">
-                <h2 className="card-title">Card title!</h2>
+                <h2 className="card-title">Your Chat</h2>
                 <div className="card-actions justify-end">
-                  <button className="btn btn-primary">Buy Now</button>
+                  <Link href="/chat" passHref>
+                    <a className="btn btn-primary">Go</a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -74,7 +76,7 @@ export async function getServerSideProps(context) {
     );
     const data = await res.json();
 
-    const tutors = data.tutorList.map((item, idx) => {
+    const tutors = data.tutorList.map((item) => {
       return {
         firstName: item.firstName,
         lastName: item.lastName,
@@ -90,6 +92,7 @@ export async function getServerSideProps(context) {
         credit: item.score,
       };
     });
+    console.log(tutors);
     // console.log('done fetching');
 
     return {

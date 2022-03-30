@@ -16,7 +16,6 @@ import {
 import SubjectListForm from '../../../components/signup-pages/SubjectListForm';
 import AvailabilityListForm from '../../../components/signup-pages/AvailabilityListForm';
 import PriceRangeForm from '../../../components/signup-pages/PriceRangeForm';
-import fetchWithTimeout from '../../../lib/fetchWithTimeout';
 import { tutorEditSchema } from '../../../components/profile/TutorSchema';
 import { PasswordField } from '../../../components/signup-pages/PasswordField';
 import { NavbarProfileContext } from '../../../context/NavbarProfileContext';
@@ -491,19 +490,24 @@ export async function getServerSideProps(context) {
 
   var subjects;
   try {
-    const subjectsRes = await fetchWithTimeout(
+    const subjectsRes = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`,
       {
-        timeout: 2000,
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
       }
     );
     if (!subjectsRes.ok) {
-      throw new Error('Fetch error');
+      const temp = await subjectsRes.json();
+      throw new Error(temp.message);
     }
     const subjectsData = await subjectsRes.json();
 
     subjects = subjectsData;
   } catch (error) {
+    console.log(error);
+
     subjects = {
       Mathmetic: [
         { level: 'Middle School', id: '293817589231576' },

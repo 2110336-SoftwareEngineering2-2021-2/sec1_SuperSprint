@@ -3,7 +3,7 @@ import { Transition } from '@headlessui/react';
 import { useEffect, useState } from 'react';
 import avatarUrl from '../../lib/avatarUrl';
 import { useForm } from 'react-hook-form';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faRedo } from '@fortawesome/free-solid-svg-icons';
 import ScoreImageUpload from './ScoreImageUpload';
 
 export default function ScoreEditCard({
@@ -96,10 +96,10 @@ export default function ScoreEditCard({
             defaultValue={scoreData.scoreImage}
           />
           <button
-            className="btn btn-ghost btn-circle btn-sm"
+            className="btn btn-circle btn-ghost btn-sm"
             onClick={onDelete}
           >
-            <FontAwesomeIcon icon={faTrash} fixedWidth />
+            <FontAwesomeIcon icon={faRedo} fixedWidth />
           </button>
         </div>
       </div>

@@ -13,7 +13,7 @@ import { studentEditSchema } from '../../../components/profile/StudentSchema';
 import AvatarUpload from '../../../components/AvatarUpload';
 import { MAX_SUBJECT } from '../../../components/signup-pages/Constants';
 import SubjectListForm from '../../../components/signup-pages/SubjectListForm';
-import { NavbarProfileContext } from '../../../components/NavbarProfileProvider';
+import { NavbarProfileContext } from '../../../context/NavbarProfileContext';
 
 function StudentProfileEdit(props) {
   const {
@@ -401,13 +401,14 @@ export async function getServerSideProps(context) {
       `${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`
     );
     if (!subjectsRes.ok) {
-      throw new Error('Fetch error');
+      const temp = await subjectsRes.json();
+      throw new Error(temp.message);
     }
     const subjectsData = await subjectsRes.json();
 
     subjects = subjectsData;
   } catch (error) {
-    console.log(error.stack);
+    console.log(error);
     subjects = {
       Mathmetic: [
         { level: 'Middle School', id: '293817589231576' },
@@ -435,6 +436,8 @@ export async function getServerSideProps(context) {
       { headers: { Authorization: `Bearer ${session.accessToken}` } }
     );
     if (!res.ok) {
+      const test = await res.json();
+      console.log(test);
       throw new Error('Fetch error');
     }
     const data = await res.json();

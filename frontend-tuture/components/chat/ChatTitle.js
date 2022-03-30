@@ -5,8 +5,8 @@ export default function ChatTitle({ name, profileImg }) {
     <div>
       <div className="flex h-20 w-full items-center justify-between rounded-b-lg bg-base-200">
         <div className="ml-3 flex items-center justify-center">
-          <div class="avatar online h-fit w-fit">
-            <div class="w-14 rounded-full">
+          <div className="avatar online h-fit w-fit">
+            <div className="w-14 rounded-full">
               <img src={profileImg} alt="Profile Image" />
             </div>
           </div>

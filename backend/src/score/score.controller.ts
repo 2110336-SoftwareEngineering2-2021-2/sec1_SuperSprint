@@ -23,7 +23,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class ScoreController {
   constructor(private readonly scoreService: ScoreService) {}
 
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   @Post('create')
   @UseInterceptors(FileInterceptor('image'))
   @ApiBody({ type: Score })
@@ -60,7 +60,7 @@ export class ScoreController {
   @UseInterceptors(FileInterceptor('scoreImage'))
   @Patch('edit')
   @ApiBody({ type: Score })
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   async editScore(
     @Body('tutorId') tutorId: string,
     @Body('subjectId') subjectId: string,
@@ -95,7 +95,7 @@ export class ScoreController {
     };
   }
 
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   @Get('scores/:tutorId')
   async getAllScore(@Param('tutorId') tutorId: string) {
     const scores = await this.scoreService.getTutorSubjectsScore(tutorId);

@@ -46,7 +46,7 @@ function AppointmentCard({
   }
 
   return (
-    // <input type="checkbox" id="my-modal" class="modal-toggle" >
+    // <input type="checkbox" id="my-modal" className="modal-toggle" >
     <div>
       <Transition
         appear={true}
@@ -212,17 +212,17 @@ function AppointmentCard({
           </div>
         </div>
 
-        {/* <input type="checkbox" id="cancelModal" class="modal-toggle" />
-      <div class="modal">
-        <div class="modal-box">   
-          <h3 class="font-bold text-lg">Warning!</h3>
-          <p class="py-4">{(status == "pending" && POV=="student" && "Are you sure you want to cancel this tutor?") || 
+        {/* <input type="checkbox" id="cancelModal" className="modal-toggle" />
+      <div className="modal">
+        <div className="modal-box">   
+          <h3 className="font-bold text-lg">Warning!</h3>
+          <p className="py-4">{(status == "pending" && POV=="student" && "Are you sure you want to cancel this tutor?") || 
                             (status == "negotiating" && POV=="student" && "Are you sure you want to cancel this negotiation?") ||
                             (status == "confirmed" && POV=="student" && "Are you sure you want to cancel this appointment?") ||
                             (status == "negotiating" && POV=="tutor" && "Are you sure you want to cancel this negotiation?") ||
                             (status == "offering" && POV=="tutor" && "Are you sure you want to cancel this offering?")||
                             (status == "confirmed" && POV=="tutor" && "Are you sure you want to cancel this appointment?")}</p>
-        <div class="modal-action">
+        <div className="modal-action">
               <label
                 className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
                 for ="cancelModal"
@@ -244,12 +244,12 @@ function AppointmentCard({
           </div>
         </div>
 
-        <input type="checkbox" id="acceptModal" class="modal-toggle" />
-      <div class="modal">
-        <div class="modal-box">   
-          <h3 class="font-bold text-lg">Warning!</h3>
-          <p class="py-4">{(POV == "student" && "Are you sure you want to accept this deal?") || (POV == "tutor" && "Are you sure you to accept this student?")}</p>
-        <div class="modal-action">
+        <input type="checkbox" id="acceptModal" className="modal-toggle" />
+      <div className="modal">
+        <div className="modal-box">   
+          <h3 className="font-bold text-lg">Warning!</h3>
+          <p className="py-4">{(POV == "student" && "Are you sure you want to accept this deal?") || (POV == "tutor" && "Are you sure you to accept this student?")}</p>
+        <div className="modal-action">
               <label
                 className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
                 for ="acceptModal"
@@ -271,12 +271,12 @@ function AppointmentCard({
           </div>
         </div>
 
-        <input type="checkbox" id="declineModal" class="modal-toggle" />
-      <div class="modal">
-        <div class="modal-box">   
-          <h3 class="font-bold text-lg">Warning!</h3>
-          <p class="py-4">{(POV == "student" && "Are you sure you want to decline this deal?") || (POV == "tutor" && "Are you sure you to decline this student?")}</p>
-        <div class="modal-action">
+        <input type="checkbox" id="declineModal" className="modal-toggle" />
+      <div className="modal">
+        <div className="modal-box">   
+          <h3 className="font-bold text-lg">Warning!</h3>
+          <p className="py-4">{(POV == "student" && "Are you sure you want to decline this deal?") || (POV == "tutor" && "Are you sure you to decline this student?")}</p>
+        <div className="modal-action">
               <label
                 className="btn btn-ghost btn-circle btn-sm inline-block rounded-full text-error"
                 for ="declineModal"

@@ -25,6 +25,7 @@ import { AuthGuard } from '@nestjs/passport';
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({ type: Tutor })
   @ApiBody({
     schema: {
@@ -73,7 +74,7 @@ export class AppointmentController {
   }
 
   // offering
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   @Get('/:userType/:id/:status')
   @ApiOkResponse({ type: [Appointment] })
   async getAppointmentsByType(
@@ -88,14 +89,14 @@ export class AppointmentController {
     );
   }
 
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   @Get('/chat/:chatId')
   @ApiOkResponse({ type: [Appointment] })
   async getAppointmentsByChat(@Param('chatId') chatId: string) {
     return await this.appointmentService.getAppointmentsByChat(chatId);
   }
 
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   @Get('/:userType/:id')
   @ApiOkResponse({ type: [Appointment] })
   async getAppointments(
@@ -105,14 +106,14 @@ export class AppointmentController {
     return await this.appointmentService.getAppointments(userType, id);
   }
 
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   @Delete('/:appointmentId')
   @ApiOkResponse({ type: [Appointment] })
   async cancelAppointment(@Param('appointmentId') appointmentId: string) {
     return await this.appointmentService.cancelAppointment(appointmentId);
   }
 
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   @Patch('student/accept/:appointmentId')
   async studentAcceptAppointment(
     @Param('appointmentId') appointmentId: string,

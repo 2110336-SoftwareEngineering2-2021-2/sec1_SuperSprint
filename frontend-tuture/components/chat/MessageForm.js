@@ -16,6 +16,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import moment from 'moment';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 
 const MIN_PRICE = 0;
 const MAX_PRICE = 240000;
@@ -77,31 +78,40 @@ export default function MessageForm({ subjectList, chatId }) {
       endTime: dateTimeCompile(data.date, data.timeTo),
     };
     // console.log(payload);
-    
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointment`, {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'same-origin',
-      headers: {
-        Authorization: `Bearer ${session.accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      throw new Error('Fetch error');
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/appointment`,
+        {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'same-origin',
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message);
+      }
+      closeModal();
+    } catch (error) {
+      console.log('error');
+      toast.error(error.message);
     }
-    closeModal();
   }
 
   return (
     <>
       <div className="mx-auto flex w-fit justify-items-center space-x-3 pb-2 pt-2">
         <div className="flex items-center">
-          <div className="dropdown dropdown-top">
+          <div className="dropdown-top dropdown">
             <button
               tabIndex="0"
-              className="btn btn-ghost btn-circle border-transparent"
+              className="btn btn-circle btn-ghost border-transparent"
             >
               <FontAwesomeIcon
                 icon={faPlusCircle}
@@ -153,7 +163,7 @@ export default function MessageForm({ subjectList, chatId }) {
           />
           <button
             tabIndex="0"
-            className="btn btn-ghost btn-circle btn-sm absolute right-3 border-transparent bg-base-100"
+            className="btn btn-circle btn-ghost btn-sm absolute right-3 border-transparent bg-base-100"
           >
             <FontAwesomeIcon
               icon={faSmile}
@@ -194,8 +204,8 @@ export default function MessageForm({ subjectList, chatId }) {
           className="form-control"
           onSubmit={handleSubmit(submitAppointment)}
         >
-          <label class="label">
-            <span class="label-text">Date</span>
+          <label className="label">
+            <span className="label-text">Date</span>
           </label>
           <input
             type="date"
@@ -211,8 +221,8 @@ export default function MessageForm({ subjectList, chatId }) {
             </label>
           )}
 
-          <label class="label">
-            <span class="label-text">Time</span>
+          <label className="label">
+            <span className="label-text">Time</span>
           </label>
           <div className="m-auto flex w-full items-center sm:m-auto sm:block">
             <div className="grid grid-cols-11 items-center justify-center gap-2 sm:inline-flex sm:flex-nowrap">
@@ -244,8 +254,8 @@ export default function MessageForm({ subjectList, chatId }) {
             </label>
           )}
 
-          <label class="label">
-            <span class="label-text">Price</span>
+          <label className="label">
+            <span className="label-text">Price</span>
           </label>
           <label className="input-group">
             <input
@@ -264,8 +274,8 @@ export default function MessageForm({ subjectList, chatId }) {
             </label>
           )}
 
-          <label class="label">
-            <span class="label-text">Subject</span>
+          <label className="label">
+            <span className="label-text">Subject</span>
           </label>
           <select
             type="text"
@@ -289,8 +299,8 @@ export default function MessageForm({ subjectList, chatId }) {
             </label>
           )}
 
-          <label class="label">
-            <span class="label-text">Level</span>
+          <label className="label">
+            <span className="label-text">Level</span>
           </label>
           <select
             type="text"

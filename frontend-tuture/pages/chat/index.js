@@ -7,10 +7,11 @@ import { getSession, useSession } from 'next-auth/react';
 
 function getChatterInfo(chats, chatId) {
   const chat = chats.find((chat) => chat.chatId === chatId);
+  console.log('hey', chat);
   return {
     firstName: chat.firstName,
     lastName: chat.lastName,
-    profileImg: chat.profileImg
+    profileImg: chat.profileImg,
   };
 }
 
@@ -51,31 +52,28 @@ export default function Chat({ chatData, subjectList }) {
   }
 
   async function onDecline(chatId) {
-    if (session.user.role === 'tutor') {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/chat/declineChat/${chatId}`,
-        {
-          method: 'POST',
-          mode: 'cors',
-          credentials: 'same-origin',
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-            contentType: 'application/json',
-          },
-          body: JSON.stringify({
-            chatId: chatId,
-          }),
-        }
-      );
-      if (!res.ok) {
-        const test = await res.json();
-        console.error(test);
-        throw new Error('Fetch error');
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/chat/declineChat/${chatId}`,
+      {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'same-origin',
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+          contentType: 'application/json',
+        },
+        body: JSON.stringify({
+          chatId: chatId,
+        }),
       }
-      const chats = await getChats(session);
-      setChats(chats);
-      return;
+    );
+    if (!res.ok) {
+      const test = await res.json();
+      console.error(test);
+      throw new Error('Fetch error');
     }
+    const chats = await getChats(session);
+    setChats(chats);
     // console.log('Decline', chatId);
   }
 
@@ -86,9 +84,10 @@ export default function Chat({ chatData, subjectList }) {
           <ChatList
             chats={chats}
             currentChatId={currentChatId}
-            setChatId={(chatId) =>
-              router.replace(`/chat?chatId=${chatId}`, null, { shallow: true })
-            }
+            setChatId={(chatId) => {
+              router.replace(`/chat?chatId=${chatId}`, null, { shallow: true });
+              setChatFeed(getChatterInfo(chats, chatId));
+            }}
             canAccept={session.user.role === 'tutor'}
             onAccept={onAccept}
             onDecline={onDecline}

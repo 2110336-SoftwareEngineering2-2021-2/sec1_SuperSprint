@@ -41,5 +41,9 @@ const bgColors = [
 ];
 
 export default function getPastelBgClass(seed) {
+  console.log(
+    randomWithSeed(seed.toString()) % bgColors.length,
+    bgColors.length
+  );
   return bgColors[randomWithSeed(seed.toString()) % bgColors.length];
 }

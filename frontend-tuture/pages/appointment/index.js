@@ -34,7 +34,7 @@ export default function StudentAppointment({ fetchedAppts }) {
   const router = useRouter();
 
   function changeTab(event) {
-    const selected = event.target.getAttribute('tabStatus');
+    const selected = event.target.getAttribute('tabstatus');
     setSelectedStatus(selected);
   }
 
@@ -176,7 +176,7 @@ export default function StudentAppointment({ fetchedAppts }) {
               className={`tab tab-bordered tab-lg w-1/4 ${
                 selectedStatus === 'offering' ? 'tab-active' : ''
               }`}
-              tabStatus="offering"
+              tabstatus="offering"
             >
               Offering
             </a>
@@ -185,7 +185,7 @@ export default function StudentAppointment({ fetchedAppts }) {
               className={`tab tab-bordered tab-lg w-1/4 ${
                 selectedStatus === 'confirmed' ? 'tab-active' : ''
               }`}
-              tabStatus="confirmed"
+              tabstatus="confirmed"
             >
               Confirmed
             </a>

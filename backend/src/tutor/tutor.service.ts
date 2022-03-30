@@ -10,6 +10,7 @@ import { Tutor } from '../models/tutor.model';
 import { ScoreService } from '../score/score.service';
 import { S3Service } from '@src/services/S3Sevices.service';
 import { Subject } from '../models/subject.model';
+import { Score } from '../models/score.model';
 @Injectable()
 export class TutorService {
   private tutors: Tutor[] = [];
@@ -17,6 +18,7 @@ export class TutorService {
   constructor(
     @InjectModel('Tutor') private readonly tutorModel: Model<Tutor>,
     @InjectModel('Subject') private readonly subjectModel: Model<Subject>,
+    @InjectModel('Score') private readonly scoreModel: Model<Score>,
     private readonly scoreSevice: ScoreService,
     private readonly subjectService: SubjectService,
     private readonly s3Service: S3Service,
@@ -302,6 +304,25 @@ export class TutorService {
     tutor.priceMax = priceMax || tutor.priceMax;
     if (teachSubject) {
       tutor.teachSubject = teachSubject || tutor.teachSubject;
+      const existingScore = await this.scoreModel.find({ tutorId: id }).lean();
+      console.log('!!!!!!!!!!!!!', existingScore);
+      await Promise.all(
+        existingScore.map(async (s) => {
+          // console.log('what is s',s);
+          // console.log('what is teachSubject' , teachSubject)
+          if (teachSubject.findIndex((subjectId ) => subjectId == s.subjectId ) === -1) {
+            await this.scoreSevice.deleteScore(id, s.subjectId);
+            // await this.scoreSevice.insertScore(
+            //   id,
+            //   s.subjectId,
+            //   0,
+            //   s.maxScore,
+            //   null,
+            //   null,
+            // );
+          }
+        }),
+      );
       await Promise.all(
         teachSubject.map(async (subjectId) => {
           const subject = await this.subjectModel.findById(subjectId).lean();
@@ -332,16 +353,6 @@ export class TutorService {
       for (const element of dutyTime) {
         await this.addDutyTimeDateTime(tutor._id, element.start, element.end);
       }
-      // await Promise.all(
-      //   dutyTime.map(async (element) => {
-      //     console.log(element);
-      //     return await this.addDutyTimeDateTime(
-      //       tutor._id,
-      //       element.start,
-      //       element.end,
-      //     );
-      //   }),
-      // );
       console.log('hello');
       // tutor.dutyTime = dutyTime;
     }
