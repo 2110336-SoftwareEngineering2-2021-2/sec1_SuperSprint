@@ -75,7 +75,7 @@ function EditScore({ scores }) {
     setModalOpen(false);
   }
 
-  async function onDelete(subjectId) {
+  async function deleteScore(subjectId) {
     console.log('del', subjectId);
     toast.promise(
       async () => {
@@ -130,7 +130,7 @@ function EditScore({ scores }) {
               hookFormRegister={register}
               hookFormControl={control}
               hookFormError={errors}
-              onDeleteClick={async () => await onDelete(score.subjectId)}
+              onDeleteClick={async () => await deleteScore(score.subjectId)}
             />
           ))}
 
