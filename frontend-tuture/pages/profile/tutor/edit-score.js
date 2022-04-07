@@ -8,6 +8,7 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { getSession, useSession } from 'next-auth/react';
 import { Modal } from '../../../components/Modal';
 import { toast } from 'react-toastify';
+import Tutor from '../../../lib/api/Tutor';
 
 function EditScore({ scores }) {
   const {
@@ -181,29 +182,6 @@ function EditScore({ scores }) {
   );
 }
 
-async function getTutorScores(session) {
-  try {
-    const res = await fetch(
-      // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
-      `${process.env.NEXT_PUBLIC_API_URL}/tutor/score?id=${session.user._id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${session.accessToken}`,
-        },
-      }
-    );
-    if (!res.ok) {
-      throw new Error('Fetch error');
-    }
-    const data = await res.json();
-
-    return data;
-  } catch (error) {
-    console.log(error.stack);
-    return {};
-  }
-}
-
 function formatFormDefaultValue(scores) {
   const obj = {};
   scores.forEach((score) => {
@@ -223,7 +201,7 @@ function formatFormDefaultValue(scores) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  const tutorScores = await getTutorScores(session);
+  const tutorScores = await Tutor.getTutorScores(session, session.user._id);
   console.log('test', tutorScores);
 
   return {

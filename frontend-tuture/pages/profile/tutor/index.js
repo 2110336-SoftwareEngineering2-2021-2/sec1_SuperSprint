@@ -5,6 +5,7 @@ import Layout from '../../../components/Layout';
 import { getSession } from 'next-auth/react';
 import whatGender from '../../../lib/whatGender';
 import TutorScorePanel from '../../../components/profile/TutorScorePanel';
+import Tutor from '../../../lib/api/Tutor';
 
 const scoresTest = Array.from({ length: 7 }, (_, idx) => {
   return {
@@ -56,11 +57,11 @@ export default function TutorProfilePage({ tutorProfile, scores }) {
   );
 }
 
-async function getTutorProfile(session) {
+async function getTutorProfile(session, tutorId) {
   try {
     const res = await fetch(
       // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
-      `${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${session.user._id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${tutorId}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
@@ -139,8 +140,12 @@ async function getTutorScores(session) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  const tutorProfile = await getTutorProfile(session);
-  const tutorScores = await getTutorScores(session);
+  const tutorProfile = await Tutor.getTutorProfile(session, session.user._id);
+  const tutorScores = (await Tutor.getTutorScores(session, session.user._id)).map(
+    (e) => {
+      return { subjectId: e._id, ...e };
+    }
+  );
   // console.log('test hello', tutorScores);
   console.log('hey', tutorProfile);
 

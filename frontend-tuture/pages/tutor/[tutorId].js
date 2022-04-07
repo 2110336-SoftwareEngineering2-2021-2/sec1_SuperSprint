@@ -4,6 +4,7 @@ import Layout from '../../components/Layout';
 import { getSession } from 'next-auth/react';
 import whatGender from '../../lib/whatGender';
 import TutorScorePanel from '../../components/profile/TutorScorePanel';
+import Tutor from '../../lib/api/Tutor';
 
 const scoresTest = Array.from({ length: 7 }, (_, idx) => {
   return {
@@ -130,8 +131,12 @@ export async function getServerSideProps(context) {
   const session = await getSession(context);
   const { query } = context;
 
-  const tutorProfile = await getTutorProfile(query.tutorId, session);
-  const tutorScores = await getTutorScores(query.tutorId, session);
+  const tutorProfile = await Tutor.getTutorProfile(session, query.tutorId);
+  const tutorScores = (await Tutor.getTutorScores(session, query.tutorId)).map(
+    (e) => {
+      return { subjectId: e._id, ...e };
+    }
+  );
 
   return {
     props: {

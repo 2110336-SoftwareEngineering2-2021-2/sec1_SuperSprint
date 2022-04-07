@@ -19,6 +19,7 @@ import PriceRangeForm from '../../../components/signup-pages/PriceRangeForm';
 import { tutorEditSchema } from '../../../components/profile/TutorSchema';
 import { PasswordField } from '../../../components/signup-pages/PasswordField';
 import { NavbarProfileContext } from '../../../context/NavbarProfileContext';
+import Tutor from '../../../lib/api/Tutor';
 
 function TutorProfileEdit(props) {
   // destringify date item
