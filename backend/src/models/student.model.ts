@@ -1,5 +1,4 @@
 import * as mongoose from 'mongoose';
-import { UserSchema } from '../models/user.model';
 import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 
 const Schema = mongoose.Schema;

@@ -22,6 +22,22 @@ export class ScoreService {
   async getScore(tutorId: string, sId: string) {
     const res = await this.findScore(tutorId, sId);
     return res;
+  } 
+  async getScoreById(scoreId: string) {
+    const res = await this.findScoreById(scoreId);
+    return res;
+  }
+  private async findScoreById(scoreId: string) {
+    let score;
+    try {
+      score = await this.scoreModel.findById({ _id: scoreId }).lean();
+      if (!score) {
+        return null;
+      }
+    } catch (error) {
+      throw new BadRequestException(`get score from id ${scoreId} failed`);
+    }
+    return score;
   }
 
   private async findScore(tId: string, sId: string): Promise<Score> {

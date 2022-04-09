@@ -13,12 +13,21 @@ import {
   Patch,
 } from '@nestjs/common';
 import { ScoreService } from './score.service';
-import { ApiTags, ApiParam, ApiBody } from '@nestjs/swagger';
 import { Score } from '../models/score.model';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
-
+import {
+  ApiBody,
+  ApiQuery,
+  ApiParam,
+  ApiTags,
+  ApiOkResponse,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiConsumes,
+} from '@nestjs/swagger';
 @ApiTags('score')
+@ApiBearerAuth()
 @Controller('score')
 export class ScoreController {
   constructor(private readonly scoreService: ScoreService) {}
@@ -26,7 +35,35 @@ export class ScoreController {
   @UseGuards(AuthGuard('jwt'))
   @Post('create')
   @UseInterceptors(FileInterceptor('image'))
-  @ApiBody({ type: Score })
+  @ApiOperation({
+    summary: 'create new score',
+  })
+  @ApiBody({
+    schema: {
+      properties: {
+        tutorId: { type: 'string', example: '621c818daefa29db6f3e806f' },
+        subjectId: { type: 'string', example: '62072bfd96edc906154249b1' },
+        score: { type: 'number', example: 300 },
+        maxScore: { type: 'number', example: 300 },
+        year: { type: 'number', example: 2022 },
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'string',
+          example: '6236aba956e2c3c18ccb0eed',
+        },
+      },
+    },
+  })
   async addScore(
     @Body('tutorId') tutorId: string,
     @Body('subjectId') subjectId: string,
@@ -48,7 +85,29 @@ export class ScoreController {
   }
 
   @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: 'Delete score by tutorId and subjectId',
+  })
   @Delete('delete')
+  @ApiBody({
+    schema: {
+      properties: {
+        tutorId: { type: 'string', example: '621c818daefa29db6f3e806f' },
+        subjectId: { type: 'string', example: '62072bfd96edc906154249b1' },
+      },
+    },
+  })
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'string',
+          example: '6236aba956e2c3c18ccb0eed',
+        },
+      },
+    },
+  })
   async deleteScore(
     @Body('tutorId') tutorId: string,
     @Body('subjectId') subjectId: string,
@@ -58,8 +117,22 @@ export class ScoreController {
   }
 
   @UseInterceptors(FileInterceptor('scoreImage'))
+  @ApiOperation({
+    summary: 'Update score',
+  })
   @Patch('edit')
   @ApiBody({ type: Score })
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        scoreId: {
+          type: 'string',
+          example: '6236aba956e2c3c18ccb0eed',
+        },
+      },
+    },
+  })
   @UseGuards(AuthGuard('jwt'))
   async editScore(
     @Body('tutorId') tutorId: string,
@@ -81,6 +154,45 @@ export class ScoreController {
   }
 
   @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: 'Get score by tutorId and subjectId',
+  })
+  @ApiQuery({
+    name: 'tutorId',
+    required: true,
+    type: 'string',
+    example: '621c818daefa29db6f3e806f',
+  })
+  @ApiQuery({
+    name: 'subjectId',
+    required: true,
+    type: 'string',
+    example: '6236aba956e2c3c18ccb0eed',
+  })
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        subject: {
+          type: 'string',
+          example: '123456',
+        },
+        score: {
+          type: 'number',
+          example: 300,
+        },
+        maxScore: {
+          type: 'number',
+          example: 300,
+        },
+        scoreImage: {
+          type: 'string',
+          example:
+            'https://skyandtelescope.org/wp-content/uploads/Earth-from-Mars_m.jpg',
+        },
+      },
+    },
+  })
   @Get('')
   async getScore(
     @Query('tutorId') tutorId: string,
@@ -96,11 +208,35 @@ export class ScoreController {
   }
 
   @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: 'Get all scores by tutorId',
+  })
+  @ApiQuery({
+    name: 'tutorId',
+    required: true,
+    type: 'string',
+    example: '621c818daefa29db6f3e806f',
+  })
+  @ApiOkResponse({ type: Score })
   @Get('scores/:tutorId')
   async getAllScore(@Param('tutorId') tutorId: string) {
     const scores = await this.scoreService.getTutorSubjectsScore(tutorId);
     return {
       scores: scores,
     };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: 'get score by scoreId ',
+  })
+  @ApiParam({ name: 'scoreId', example: '6236aba956e2c3c18ccb0eed' })
+  @ApiOkResponse({
+    type: Score,
+  })
+  @Get('/:scoreId')
+  async getScoreById(@Param('scoreId') scoreId: string) {
+    const score = await this.scoreService.getScoreById(scoreId);
+    return { score: score };
   }
 }

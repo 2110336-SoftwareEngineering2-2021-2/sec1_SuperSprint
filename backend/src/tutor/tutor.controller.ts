@@ -15,12 +15,24 @@ import { PassportStrategy } from '@nestjs/passport';
 
 import { ScoreService } from '../score/score.service';
 import { TutorService } from './tutor.service';
-import { ApiTags, ApiOkResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiQuery,
+  ApiParam,
+  ApiTags,
+  ApiOkResponse,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiConsumes,
+} from '@nestjs/swagger';
 import { get } from 'http';
 import { AuthGuard } from '@nestjs/passport';
-import { Tutor } from '../models/tutor.model';
+import { Tutor } from '@src/models/tutor.model';
+import { Score } from '@src/models/score.model';
+import { object } from 'webidl-conversions';
 
 @ApiTags('tutor')
+@ApiBearerAuth()
 @Controller('tutor')
 export class TutorController {
   constructor(
@@ -29,10 +41,13 @@ export class TutorController {
   ) {}
   @UseGuards(AuthGuard('jwt'))
   @Post('search')
+  @ApiOperation({
+    summary: 'Search tutor by name or subject',
+  })
   @ApiBody({
     schema: {
-      example: {
-        text: 'text to search',
+      properties: {
+        text: { type: 'string', example: 'text to search' },
       },
     },
   })
@@ -42,15 +57,28 @@ export class TutorController {
   }
 
   @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: "Match tutors based on student's matching options",
+  })
   @Post('match')
   @ApiBody({
     schema: {
-      example: {
-        subjectName: 'mathematics',
-        level: 'highschool',
-        priceMin: 100,
-        priceMax: 1000,
-        availabilityStudent: 1,
+      properties: {
+        subjectName: { type: 'string', example: 'mathematics' },
+        level: { type: 'string', example: 'highschool' },
+        priceMin: { type: 'number', example: '100' },
+        priceMax: { type: 'number', example: '200' },
+        availabilityStudent: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              availabilityDate: { type: 'string', example: '2020-01-31' },
+              availabilityTimeFrom: { type: 'string', example: '10:00' },
+              availabilityTimeTo: { type: 'string', example: '12:00' },
+            },
+          },
+        },
       },
     },
   })
@@ -77,31 +105,51 @@ export class TutorController {
   }
 
   @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: "Update tutor's account information",
+  })
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
   @ApiOkResponse({ type: Tutor })
+  @ApiParam({ name: 'id', example: '621c818daefa29db6f3e806f' })
   @ApiBody({
     schema: {
-      example: {
-        id: '00001',
-        firstName: 'Poom',
-        lastName: 'Suchao',
-        email: 'poom@suchao.com',
-        phone: '0987654321',
-        username: 'poom.suchao',
-        gender: 'm',
-        image: '',
-        avgRating: 4.8,
-        successMatch: 10,
-        teachSubject: [],
-        priceMin: 100,
-        priceMax: 1000,
-        dutyTime: [
-          {
-            start: '2022-02-16T08:00:00.000+00:00',
-            end: '2022-02-16T09:30:00.000+00:00',
+      type: 'object',
+      properties: {
+        firstName: { type: 'string', example: 'Poom' },
+        lastName: { type: 'string', example: 'Jong' },
+        email: { type: 'string', example: 'phu@jong.com' },
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+        phone: { type: 'string', example: '0123456789' },
+        username: { type: 'string', example: 'phu.jong' },
+        gender: {
+          type: 'string',
+          example: 'm',
+        },
+        avgRating: { type: 'number', example: '5.0' },
+        successMatch: { type: 'number', example: '10' },
+        teachSubject: {
+          type: 'array',
+          items: { type: 'string', example: '6204f74398648fc94382135f' },
+        },
+        priceMin: { type: 'number', example: '10' },
+        priceMax: { type: 'number', example: '100' },
+        dutyTime: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              start: {
+                type: 'string',
+                example: '2022-02-16T08:00:00.000+00:00',
+              },
+              end: { type: 'string', example: '2022-02-16T09:30:00.000+00:00' },
+            },
           },
-        ],
+        },
       },
     },
   })
@@ -141,29 +189,38 @@ export class TutorController {
     );
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('getAllTutors')
-  @ApiOkResponse({ type: [Tutor] })
-  getAllTutors() {
-    return this.tutorService.getTutors();
-  }
+  // @UseGuards(AuthGuard('jwt'))
+  // @Get('getAllTutors')
+  // @ApiOkResponse({ type: [Tutor] })
+  // getAllTutors() {
+  //   return this.tutorService.getTutors();
+  // }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('getById')
   @ApiOkResponse({ type: Tutor })
+  @ApiQuery({ name: 'id', example: '621c818daefa29db6f3e806f' })
+  @ApiOperation({
+    summary: 'Return a tutor whose id is matched',
+  })
   getTutorById(@Query('id') id: string) {
     return this.tutorService.getTutorById(id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Post('test')
-  getTutor(@Body('id') id: string) {
-    console.log(id);
-    return this.tutorService.getTutorById(id);
-  }
+  // @UseGuards(AuthGuard('jwt'))
+  // @Post('test')
+  // getTutor(@Body('id') id: string) {
+  //   console.log(id);
+  //   return this.tutorService.getTutorById(id);
+  // }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('score')
+  @ApiOperation({
+    summary: 'Return all scores of tutor whose id is matched',
+  })
+  @ApiOkResponse({ type: [Score] })
+  @ApiQuery({ name: 'id', example: '621c818daefa29db6f3e806f' })
   async getTutorScore(@Query('id') id: string) {
     // console.log(id);
     return await this.scoreService.getTutorSubjectsScore(id);
