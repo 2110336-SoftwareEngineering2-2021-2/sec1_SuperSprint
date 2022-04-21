@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -22,9 +23,15 @@ export class ScoreService {
   async getScore(tutorId: string, sId: string) {
     const res = await this.findScore(tutorId, sId);
     return res;
-  } 
+  }
+
   async getScoreById(scoreId: string) {
     const res = await this.findScoreById(scoreId);
+    return res;
+  }
+
+  async getAllPendingScore() {
+    const res = await this.findPendingScore();
     return res;
   }
   private async findScoreById(scoreId: string) {
@@ -57,6 +64,19 @@ export class ScoreService {
 
     return score;
   }
+
+  private async findPendingScore(): Promise<[Score]> {
+    let score;
+    try {
+      score = await this.scoreModel.find({ status: 'Pending' }).lean();
+      if (!score) {
+        return null;
+      }
+    } catch (error) {
+      throw new BadRequestException(`get all pending score failed`);
+    }
+    return score;
+  }
   async insertScore(
     tutorId: string,
     subjectId: string,
@@ -77,7 +97,7 @@ export class ScoreService {
     } catch (err) {
       throw err;
     }
-    const status = 'approved';
+    const status = 'pending';
     const newScore = new this.scoreModel({
       tutorId,
       subjectId,
@@ -90,6 +110,36 @@ export class ScoreService {
     await newScore.save();
     return newScore.id;
   }
+
+  async validateScore(
+    tutorId: string,
+    subjectId: string,
+    status: string,
+    adminId: string,
+  ) {
+    const score = await this.scoreModel.findOne({
+      tutorId: tutorId,
+      subjectId: subjectId,
+    });
+    //const score = await this.findScore(tutorId, subjectId);
+    if (!score) {
+      throw new NotFoundException('score not found');
+    }
+    if (score.status !== 'pending') {
+      throw new ForbiddenException('score already validated');
+    }
+    if (status === 'approve') {
+      score.status = 'approved';
+    } else if (status === 'reject') {
+      score.status = 'rejected';
+    } else {
+      throw new ForbiddenException('status invalid');
+    }
+    score.validator = adminId;
+    await score.save();
+    return score;
+  }
+
   async deleteScore(tutorId: string, subjectId: string) {
     const score = await this.scoreModel.findOne({
       tutorId: tutorId,

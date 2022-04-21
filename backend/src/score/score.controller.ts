@@ -228,7 +228,7 @@ export class ScoreController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
-    summary: 'get score by scoreId ',
+    summary: 'Get score by scoreId ',
   })
   @ApiParam({ name: 'scoreId', example: '6236aba956e2c3c18ccb0eed' })
   @ApiOkResponse({
@@ -237,6 +237,54 @@ export class ScoreController {
   @Get('/:scoreId')
   async getScoreById(@Param('scoreId') scoreId: string) {
     const score = await this.scoreService.getScoreById(scoreId);
+    return { score: score };
+  }
+
+  // @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: 'Get all pending scores',
+  })
+  @ApiOkResponse({ type: [Score] })
+  @Get('/getAllPendingScore')
+  async getAllPendingScore() {
+    const score = await this.scoreService.getAllPendingScore();
+    return { score: score };
+  }
+
+  @ApiOperation({
+    summary: 'Approve score which has tutorId and subjectId',
+  })
+  @ApiOkResponse({ type: Score })
+  @Patch('/:tutorId/:subjectId/approve')
+  async approveScore(
+    @Param('tutorId') tutorId: string,
+    @Param('subjectId') subjectId: string,
+    @Body('adminId') adminId: string,
+  ) {
+    const score = await this.scoreService.validateScore(
+      tutorId,
+      subjectId,
+      'approve',
+      adminId,
+    );
+    return { score: score };
+  }
+  @ApiOperation({
+    summary: 'Approve score which has tutorId and subjectId',
+  })
+  @ApiOkResponse({ type: Score })
+  @Patch('/:tutorId/:subjectId/reject')
+  async rejectScore(
+    @Param('tutorId') tutorId: string,
+    @Param('subjectId') subjectId: string,
+    @Body('adminId') adminId: string,
+  ) {
+    const score = await this.scoreService.validateScore(
+      tutorId,
+      subjectId,
+      'reject',
+      adminId,
+    );
     return { score: score };
   }
 }
