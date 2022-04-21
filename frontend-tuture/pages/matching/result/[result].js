@@ -32,8 +32,8 @@ export async function getServerSideProps(context) {
         };
       }),
     });
-    console.log(body);
-    console.log(session);
+    // console.log(body);
+    // console.log(session);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/tutor/match`,
       {

@@ -8,7 +8,7 @@ import { Model } from 'mongoose';
 import { Appointment } from '@src/models/appointment.model';
 import { Tutor } from '@src/models/tutor.model';
 import { TutorService } from '../tutor/tutor.service';
-
+import { Chat } from '@src/models/chat.model';
 @Injectable()
 export class AppointmentService {
   constructor(
@@ -16,6 +16,8 @@ export class AppointmentService {
     private readonly appointmentModel: Model<Appointment>,
     @InjectModel('Tutor')
     private readonly tutorModel: Model<Tutor>,
+    @InjectModel('Chat')
+    private readonly chatModel: Model<Chat>,
     private readonly tutorService: TutorService,
   ) {}
 
@@ -27,14 +29,16 @@ export class AppointmentService {
           studentId: id,
           status: status,
         })
-        .populate('subjectId');
+        .populate('subjectId')
+        .populate('studentId');
     } else if (userType === 'tutor') {
       appointments = await this.appointmentModel
         .find({
           tutorId: id,
           status: status,
         })
-        .populate('subjectId');
+        .populate('subjectId')
+        .populate('studentId');
     } else {
       throw new NotFoundException('user type not found');
     }
@@ -45,13 +49,58 @@ export class AppointmentService {
     };
   }
 
-  async getAppointmentsByChat(tutorId: string, studentId: string) {
+  async getAppointments(userType: string, id: string) {
+    let appointments;
+    if (userType === 'student') {
+      appointments = await this.appointmentModel
+        .find({
+          studentId: id,
+        })
+        .populate('subjectId')
+        // .populate('chatId')
+        .populate({
+          path: 'tutorId',
+          select: { password: 0 },
+          populate: {
+            path: 'teachSubject',
+            model: 'Subject',
+          },
+        });
+    } else if (userType === 'tutor') {
+      appointments = await this.appointmentModel
+        .find({
+          tutorId: id,
+        })
+        .populate('subjectId')
+        // .populate('chatId')
+        .populate({
+          path: 'studentId',
+          select: { password: 0 },
+          populate: {
+            path: 'preferSubject',
+            model: 'Subject',
+          },
+        });
+    } else {
+      throw new NotFoundException('user type not found');
+    }
+    return {
+      message: 'get appointments successfully',
+      appointments: appointments,
+    };
+  }
+
+  async getAppointmentsByChat(chatId: string) {
+    const chat = await this.chatModel.findById(chatId);
     const appointments = await this.appointmentModel
       .find({
-        tutorId: tutorId,
-        studentId: studentId,
+        tutorId: chat.tutorId,
+        studentId: chat.studentId,
+        status: 'offering',
       })
-      .populate('subjectId');
+      .populate('subjectId')
+      .populate('studentId')
+      .populate('tutorId');
     return {
       message: 'get appointments by chat successfully',
       appointments: appointments,
@@ -59,18 +108,19 @@ export class AppointmentService {
   }
 
   async createAppointment(
-    tutorId: string,
-    studentId: string,
+    chatId: string,
+    // studentId: string,
     subjectId: string,
     price: number,
     startTime: string,
     endTime: string,
   ) {
     // check tutor's availability
-    console.log(tutorId);
-    const tutor = await this.tutorModel.findOne({
-      _id: tutorId,
-    });
+    // console.log(tutorId);
+    const chat = await this.chatModel.findById(chatId);
+    const tutorId = chat.tutorId;
+    const studentId = chat.studentId;
+    const tutor = await this.tutorModel.findById(tutorId);
 
     const availability = tutor.dutyTime.find(
       (dutyTime) =>
@@ -138,44 +188,51 @@ export class AppointmentService {
     );
 
     if (availabilityTimeIndex === -1) {
+      console.log(id);
       this.cancelAppointment(id);
       throw new ForbiddenException('tutor is not available');
     }
     const availabilityTime = tutor.dutyTime[availabilityTimeIndex];
     tutor.dutyTime.splice(availabilityTimeIndex, 1);
+    await tutor.save();
 
     if (
-      new Date(availabilityTime.start) == appointmentStartTime &&
-      new Date(availabilityTime.end) == appointmentEndTime
+      new Date(availabilityTime.start).toString() ===
+        appointmentStartTime.toString() &&
+      new Date(availabilityTime.end).toString() == appointmentEndTime.toString()
     ) {
       // do nothing
-    } else if (new Date(availabilityTime.start) == appointmentStartTime) {
+    } else if (
+      new Date(availabilityTime.start).toString() ===
+      appointmentStartTime.toString()
+    ) {
       // tutorId:string,addDate:string,addStartTime:string,addEndTime:string
-      this.tutorService.addDutyTimeDateTime(
+      await this.tutorService.addDutyTimeDateTime(
         tutor.id,
         appointmentEndTime.toString(),
         new Date(availabilityTime.end).toString(),
       );
-    } else if (new Date(availabilityTime.end) == appointmentEndTime) {
-      this.tutorService.addDutyTimeDateTime(
+    } else if (
+      new Date(availabilityTime.end).toString() ===
+      appointmentEndTime.toString()
+    ) {
+      await this.tutorService.addDutyTimeDateTime(
         tutor.id,
         new Date(availabilityTime.start).toString(),
         appointmentStartTime.toString(),
       );
     } else {
-      this.tutorService.addDutyTimeDateTime(
+      await this.tutorService.addDutyTimeDateTime(
         tutor.id,
         new Date(availabilityTime.start).toString(),
         appointmentStartTime.toString(),
       );
-      this.tutorService.addDutyTimeDateTime(
+      await this.tutorService.addDutyTimeDateTime(
         tutor.id,
         appointmentEndTime.toString(),
         new Date(availabilityTime.end).toString(),
       );
     }
-
-    await tutor.save();
 
     appointment.status = 'confirmed';
     await appointment.save();

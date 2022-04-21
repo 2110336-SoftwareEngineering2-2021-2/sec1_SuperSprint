@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useRouter } from 'next/router';
 import { getSession, useSession, signOut } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
@@ -13,6 +13,7 @@ import { studentEditSchema } from '../../../components/profile/StudentSchema';
 import AvatarUpload from '../../../components/AvatarUpload';
 import { MAX_SUBJECT } from '../../../components/signup-pages/Constants';
 import SubjectListForm from '../../../components/signup-pages/SubjectListForm';
+import { NavbarProfileContext } from '../../../context/NavbarProfileContext';
 
 function StudentProfileEdit(props) {
   const {
@@ -43,6 +44,7 @@ function StudentProfileEdit(props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
+  const profileContext = useContext(NavbarProfileContext);
 
   async function submitRegister(data) {
     const formData = new FormData();
@@ -79,15 +81,17 @@ function StudentProfileEdit(props) {
         const err = await res.json();
         throw new Error(err.message || 'Fetch Error');
       }
+      const data = await res.json();
+      console.log(data);
       setFetchError(null);
       setLoading(false);
-      // router.push('/login');
-      // router.push('/profile/student');
+      // router.push('/signin');
       toast('Profile Edited!', {
         onClose: () => {
-          signOut();
+          router.push('/profile/student');
         },
       });
+      await profileContext.refreshProfile(true);
     } catch (error) {
       switch (error.message) {
         case 'duplicate email':
@@ -117,7 +121,7 @@ function StudentProfileEdit(props) {
   }
 
   return (
-    <Layout title="Edit Profile | Tuture" signedIn={false}>
+    <Layout title="Edit Profile | Tuture">
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
         Edit Profile
       </h1>
@@ -201,6 +205,7 @@ function StudentProfileEdit(props) {
                 hookFormSetValue={setValue}
                 hookFormWatch={watch}
                 defaultValue={props.profileData.profileImg}
+                userId={session.user._id}
               />
               <p className="text-xs">Click or drop here to upload</p>
             </div>
@@ -380,18 +385,15 @@ function StudentProfileEdit(props) {
 }
 
 export async function getServerSideProps(context) {
-  console.log('here');
   const session = await getSession(context);
   if (!session) {
     return {
       redirect: {
-        destination: '/login',
+        destination: '/signin',
         permanent: false,
       },
     };
   }
-
-  console.log(session);
 
   var subjects;
   try {
@@ -399,13 +401,14 @@ export async function getServerSideProps(context) {
       `${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`
     );
     if (!subjectsRes.ok) {
-      throw new Error('Fetch error');
+      const temp = await subjectsRes.json();
+      throw new Error(temp.message);
     }
     const subjectsData = await subjectsRes.json();
 
     subjects = subjectsData;
   } catch (error) {
-    console.log(error.stack);
+    console.log(error);
     subjects = {
       Mathmetic: [
         { level: 'Middle School', id: '293817589231576' },
@@ -433,11 +436,13 @@ export async function getServerSideProps(context) {
       { headers: { Authorization: `Bearer ${session.accessToken}` } }
     );
     if (!res.ok) {
+      const test = await res.json();
+      console.log(test);
       throw new Error('Fetch error');
     }
     const data = await res.json();
 
-    console.log(data);
+    // console.log(data);
 
     console.log('done fetching');
 

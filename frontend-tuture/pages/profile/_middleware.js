@@ -9,7 +9,7 @@ export async function middleware(req, ev) {
 
   if(url.pathname !== '/profile') return NextResponse.next();
 
-  if(!session || !session.user) url.pathname = '/login'
+  if(!session || !session.user) url.pathname = '/signin'
   
   switch (session?.user?.role) {
     case 'student' : {
@@ -21,7 +21,7 @@ export async function middleware(req, ev) {
       break;
     }
     default: {
-      url.pathname = 'login';
+      url.pathname = 'signin';
       break;
     }
   }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import TutorCard from './TutorCard';
 import StudentSortingDropdown from './StudentSortingDropdown';
 import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
 
 const SORT_OPTION = [
   {
@@ -24,28 +25,44 @@ const SORT_OPTION = [
     func: (a, b) => {
       if (a.firstName !== b.firstName)
         return a.firstName < b.firstName ? -1 : 1;
-      if (a.lastName !== b.lastName)
-        return a.lastName < b.lastName ? -1 : 1;
+      if (a.lastName !== b.lastName) return a.lastName < b.lastName ? -1 : 1;
       return 0;
     },
   },
 ];
 
+async function chooseTutor(session, tutorId) {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/request`, {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'same-origin',
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        tutorId: tutorId,
+        studentId: session.user._id,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error('Fetch error');
+    }
+    return true;
+  } catch (error) {
+    console.log(error.stack);
+    return false;
+  }
+}
+
 function TutorList({
   tutors,
   sortOption = true,
   cardClickHandler,
-  chooseTutorHandler = async function (tutorId) {
-    try {
-      const res = await fetch(`/api/test/${tutorId}`);
-      if (!res.ok) throw new Error('Match error');
-      console.log(res);
-      alert('yay');
-    } catch (error) {
-      console.error(error);
-    }
-  },
+  chooseTutorHandler = chooseTutor,
 }) {
+  const { data: session } = useSession();
   const [sortedOption, setSortedOption] = useState({
     option: SORT_OPTION[0],
     asc: false,
@@ -95,7 +112,10 @@ function TutorList({
               rating={item.rating}
               price={item.price}
               onCardClick={() => router.push(`/tutor/${item.tutorId}`)}
-              onChooseClick={() => chooseTutorHandler(item.tutorId)}
+              onChooseClick={() => {
+                const ok = chooseTutorHandler(session, item.tutorId);
+                if (ok) router.push('/chat');
+              }}
             />
           ))
         ) : (

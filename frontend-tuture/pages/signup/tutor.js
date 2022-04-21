@@ -54,7 +54,7 @@ function TutorRegister({ subjects }) {
   async function submitRegister(data) {
     // event.preventDefault();
     console.log('Pass');
-    console.log(data);
+    // console.log(data);
     const formData = new FormData();
 
     console.log(
@@ -111,11 +111,11 @@ function TutorRegister({ subjects }) {
         throw new Error(err.message || 'Fetch Error');
       }
       const res_data = await res.json();
-      console.log(res_data);
+      // console.log(res_data);
       setLoading(false);
       toast('Sign Up Success!', {
         onClose: () => {
-          router.push('/login');
+          router.push('/signin');
         },
       });
     } catch (error) {
@@ -149,7 +149,7 @@ function TutorRegister({ subjects }) {
   console.log(errors);
 
   return (
-    <Layout title="Sign Up Tutor | Tuture" signedIn={false}>
+    <Layout title="Sign Up Tutor | Tuture">
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
         Create Tutor Account
       </h1>
@@ -229,7 +229,6 @@ function TutorRegister({ subjects }) {
               </label>
               <AvatarUpload
                 hookFormControl={control}
-                hookFormSetValue={setValue}
                 hookFormWatch={watch}
               />
               <p className="text-xs">Click or drop here to upload</p>

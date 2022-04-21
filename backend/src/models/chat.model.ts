@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 
 const Schema = mongoose.Schema;
 
@@ -28,10 +29,15 @@ export const ChatSchema = new mongoose.Schema(
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
 
-export interface Chat {
+export class Chat {
+  @ApiProperty()
   _id: string;
+  @ApiProperty()
   tutorId: string;
+  @ApiProperty()
   studentId: string;
+  @ApiProperty()
   messages: Array<string>;
+  @ApiProperty()
   accepted: boolean;
 }

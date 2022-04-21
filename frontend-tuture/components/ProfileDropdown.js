@@ -9,15 +9,25 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
+import avatarUrl from '../lib/avatarUrl';
 
-function ProfileDropdown({ name, profileImg }) {
+function ProfileDropdown({
+  firstName,
+  lastName,
+  userId,
+  profileImg,
+  onSignOut,
+}) {
   const { theme, setTheme } = useTheme();
 
   return (
     <div className="dropdown-end dropdown">
-      <label tabIndex="0" className="btn btn-ghost btn-circle avatar">
+      <label tabIndex="0" className="avatar btn btn-ghost btn-circle">
         <div className="w-10 rounded-full xs:w-12">
-          <img alt="User profile picture" src={profileImg} />
+          <img
+            alt="User profile picture"
+            src={avatarUrl(profileImg, firstName + lastName + userId)}
+          />
         </div>
       </label>
       <ul
@@ -28,11 +38,14 @@ function ProfileDropdown({ name, profileImg }) {
           <div className="mb-2 flex w-full items-center justify-start gap-2">
             <div tabIndex="0" className="flex-0 avatar hidden xs:block">
               <div className="mask mask-squircle w-0 min-w-fit rounded-full xs:h-12 xs:w-12 md:h-14 md:w-14">
-                <img alt="User profile picture" src={profileImg} />
+                <img
+                  alt="User profile picture"
+                  src={avatarUrl(profileImg, firstName + lastName + userId)}
+                />
               </div>
             </div>
             <span className="overflow-hidden text-ellipsis whitespace-nowrap text-base font-semibold text-neutral-content">
-              {name}
+              {`${firstName} ${lastName}`}
             </span>
           </div>
         </li>
@@ -51,7 +64,7 @@ function ProfileDropdown({ name, profileImg }) {
             }
           >
             <label
-              className={`swap swap-rotate ${
+              className={`swap-rotate swap ${
                 theme === 'default' ? 'swap-active' : ''
               }`}
             >
@@ -70,9 +83,14 @@ function ProfileDropdown({ name, profileImg }) {
           </Link>
         </li>
         <li>
-          <a onClick={() => signOut({callbackUrl: "/login"})}>
+          <a
+            onClick={() => {
+              if (onSignOut) onSignOut();
+              signOut({ callbackUrl: '/signin' });
+            }}
+          >
             <FontAwesomeIcon fixedWidth icon={faSignOutAlt} />
-            Log Out
+            Sign Out
           </a>
         </li>
       </ul>

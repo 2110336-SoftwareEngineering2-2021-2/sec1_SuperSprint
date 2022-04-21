@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useSession, getSession, signOut } from 'next-auth/react';
+import { useSession, getSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,9 +16,10 @@ import {
 import SubjectListForm from '../../../components/signup-pages/SubjectListForm';
 import AvailabilityListForm from '../../../components/signup-pages/AvailabilityListForm';
 import PriceRangeForm from '../../../components/signup-pages/PriceRangeForm';
-import fetchWithTimeout from '../../../lib/fetchWithTimeout';
 import { tutorEditSchema } from '../../../components/profile/TutorSchema';
 import { PasswordField } from '../../../components/signup-pages/PasswordField';
+import { NavbarProfileContext } from '../../../context/NavbarProfileContext';
+import Tutor from '../../../lib/api/Tutor';
 
 function TutorProfileEdit(props) {
   // destringify date item
@@ -70,6 +71,7 @@ function TutorProfileEdit(props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
+  const profileContext = useContext(NavbarProfileContext);
 
   async function submitRegister(data) {
     const formData = new FormData();
@@ -122,15 +124,14 @@ function TutorProfileEdit(props) {
         throw new Error(err.message || 'Fetch Error');
       }
       setFetchError(null);
-      const res_data = await res.json();
-      console.log(res_data);
       setLoading(false);
       toast('Profile Edited!', {
         onClose: () => {
-          signOut();
+          router.push('/profile/tutor');
         },
       });
-      // router.push('/login');
+      await profileContext.refreshProfile(true);
+      // router.push('/signin');
       // router.push('/profile/tutor');
     } catch (error) {
       switch (error.message) {
@@ -161,7 +162,7 @@ function TutorProfileEdit(props) {
   }
 
   return (
-    <Layout title="Edit Profile | Tuture" signedIn={false}>
+    <Layout title="Edit Profile | Tuture">
       <h1 className="text-center text-xl font-bold text-primary xl:text-2xl">
         Edit Profile
       </h1>
@@ -245,7 +246,7 @@ function TutorProfileEdit(props) {
                 hookFormSetValue={setValue}
                 hookFormWatch={watch}
                 defaultValue={props.profileData.profileImg}
-                //avatarSeed={avatarSeed}
+                userId={session.user._id}
               />
               <p className="text-xs">Click or drop here to upload</p>
             </div>
@@ -482,7 +483,7 @@ export async function getServerSideProps(context) {
   /*  if (!session) {
     return {
       redirect: {
-        destination: '/login',
+        destination: '/signin',
         permanent: false,
       },
     };
@@ -490,19 +491,24 @@ export async function getServerSideProps(context) {
 
   var subjects;
   try {
-    const subjectsRes = await fetchWithTimeout(
+    const subjectsRes = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`,
       {
-        timeout: 2000,
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
       }
     );
     if (!subjectsRes.ok) {
-      throw new Error('Fetch error');
+      const temp = await subjectsRes.json();
+      throw new Error(temp.message);
     }
     const subjectsData = await subjectsRes.json();
 
     subjects = subjectsData;
   } catch (error) {
+    console.log(error);
+
     subjects = {
       Mathmetic: [
         { level: 'Middle School', id: '293817589231576' },
@@ -538,7 +544,7 @@ export async function getServerSideProps(context) {
     }
     const data = await res.json();
 
-    console.log('data----------------', data);
+    // console.log('data----------------', data);
 
     console.log('done fetching');
 

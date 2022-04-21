@@ -1,6 +1,7 @@
 import {
   faHouseUser,
   faCalendarDay,
+  faComment,
   faHistory,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -9,15 +10,24 @@ export const sidebarData = [
     name: 'Home',
     icon: faHouseUser,
     link: '/',
+    permit: ['student', 'tutor'],
   },
   {
-    name: 'Schedule',
+    name: 'Chat',
+    icon: faComment,
+    link: '/chat',
+    permit: ['student', 'tutor'],
+  },
+  {
+    name: 'Appointment',
     icon: faCalendarDay,
-    link: '/matching/schedule',
+    link: '/appointment',
+    permit: ['student', 'tutor'],
   },
   {
     name: 'Match History',
     icon: faHistory,
     link: '/matching/history',
+    permit: ['student', 'tutor'],
   },
 ];

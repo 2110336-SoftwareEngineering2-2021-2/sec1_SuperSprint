@@ -9,13 +9,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TutorSchema } from '@src/models/tutor.model';
 import { TutorModule } from '@src/tutor/tutor.module';
-
+import { ChatSchema } from '@src/models/chat.model';
 @Module({
   imports: [
     TutorModule,
     MongooseModule.forFeature([
       { name: 'Appointment', schema: AppointmentSchema },
       { name: 'Tutor', schema: TutorSchema },
+      { name: 'Chat', schema: ChatSchema },
     ]),
     JwtModule.register({
       secret: jwtConstants.secret,

@@ -28,12 +28,16 @@ export const ScoreSchema = new mongoose.Schema(
     },
     year: {
       type: Number,
-      required: true,
+      // required: true,
     },
     status: {
       type: String,
       required: true,
       enum: ['pending', 'approved', 'rejected'],
+    },
+    validator: {
+      type: Schema.Types.ObjectId,
+      ref: 'Admin',
     },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
@@ -55,4 +59,6 @@ export class Score {
   year: number;
   @ApiProperty()
   status: string;
+  @ApiProperty()
+  validator: string;
 }

@@ -12,7 +12,16 @@ import {
 } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { TutorService } from '../tutor/tutor.service';
-import { ApiBody, ApiTags, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiQuery,
+  ApiParam,
+  ApiTags,
+  ApiOkResponse,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiConsumes,
+} from '@nestjs/swagger';
 import { Student } from '../models/student.model';
 import { Tutor } from '../models/tutor.model';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -20,6 +29,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('student')
 @Controller('student')
+@ApiBearerAuth()
 export class StudentController {
   constructor(
     private readonly studentService: StudentService,
@@ -28,11 +38,16 @@ export class StudentController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('recommend')
+  @ApiOperation({
+    summary: "Recommend tutors based on student's prefered subjects",
+  })
   @ApiOkResponse({ type: [Tutor] })
+  @ApiBearerAuth()
   @ApiBody({
     schema: {
-      example: {
-        studentId: '00001',
+      type: 'object',
+      properties: {
+        studentId: { type: 'string', example: '621c8c3d363377298c2bf8b2' },
       },
     },
   })
@@ -42,16 +57,22 @@ export class StudentController {
     return { tutorList: result };
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('getAllStudents')
-  @ApiOkResponse({ type: [Student] })
-  getAllStudents() {
-    return this.studentService.getStudents();
-  }
+  // @ApiOperation({
+  //   summary: 'Return all students',
+  // })
+  // @Get('getAllStudents')
+  // @ApiOkResponse({ type: [Student] })
+  // getAllStudents() {
+  //   return this.studentService.getStudents();
+  // }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('getById')
   @ApiOkResponse({ type: Student })
+  @ApiQuery({ name: 'id', example: '621c8c3d363377298c2bf8b2' })
+  @ApiOperation({
+    summary: 'Return a student whose id is matched',
+  })
   getStudentById(@Query('id') id: string) {
     return this.studentService.getStudentById(id);
   }
@@ -59,19 +80,36 @@ export class StudentController {
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({
+    summary: "Update student's account information",
+  })
   @ApiOkResponse({ type: Student })
+  @ApiParam({ name: 'id', example: '621c8c3d363377298c2bf8b2' })
   @ApiBody({
     schema: {
-      example: {
-        id: '00001',
-        firstName: 'Phu',
-        lastName: 'Jong',
-        email: 'phu@jong.com',
-        phone: '0123456789',
-        username: 'phu.jong',
-        gender: 'm',
-        image: '',
-        preferSubject: [],
+      type: 'object',
+      properties: {
+        firstName: { type: 'string', example: 'Phu' },
+        lastName: { type: 'string', example: 'Jong' },
+        email: { type: 'string', example: 'phu@jong.com' },
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+        phone: { type: 'string', example: '0123456789' },
+        username: { type: 'string', example: 'phu.jong' },
+        gender: {
+          type: 'string',
+          example: 'm',
+        },
+        preferSubject: {
+          type: 'array',
+          items: {
+            type: 'string',
+            example: '6204f74398648fc94382135f',
+          },
+        },
       },
     },
   })
