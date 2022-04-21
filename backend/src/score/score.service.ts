@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -10,6 +11,7 @@ import { Tutor } from '../models/tutor.model';
 import { Score } from '../models/score.model';
 import { Subject } from '../models/subject.model';
 import { S3Service } from '@src/services/S3Sevices.service';
+import { Admin } from '@src/models/admin.model';
 
 @Injectable()
 export class ScoreService {
@@ -17,6 +19,7 @@ export class ScoreService {
     @InjectModel('Score') private readonly scoreModel: Model<Score>,
     @InjectModel('Tutor') private readonly tutorModel: Model<Tutor>,
     @InjectModel('Subject') private readonly subjectModel: Model<Subject>,
+    @InjectModel('Admin') private readonly adminModel: Model<Admin>,
     private readonly s3Service: S3Service,
   ) {}
 
@@ -26,16 +29,23 @@ export class ScoreService {
   }
 
   async getScoreById(scoreId: string) {
+    console.log('getScoreById', scoreId);
     const res = await this.findScoreById(scoreId);
     return res;
   }
 
-  async getAllPendingScore() {
+  async getAllPendingScore(req) {
+    const admin = await this.adminModel.findById(req.id).lean();
+    console.log(admin);
+    if (!admin) {
+      throw new UnauthorizedException('User is not Authorization as admin');
+    }
     const res = await this.findPendingScore();
     return res;
   }
   private async findScoreById(scoreId: string) {
     let score;
+    console.log('testtest', scoreId);
     try {
       score = await this.scoreModel.findById({ _id: scoreId }).lean();
       if (!score) {
@@ -116,7 +126,12 @@ export class ScoreService {
     subjectId: string,
     status: string,
     adminId: string,
+    user: any,
   ) {
+    const admin = await this.adminModel.find(user.id);
+    if (!admin) {
+      throw new UnauthorizedException('user is not an admin');
+    }
     const score = await this.scoreModel.findOne({
       tutorId: tutorId,
       subjectId: subjectId,
