@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Tutor } from '../models/tutor.model';
 import { Student } from '../models/student.model';
+import { Admin } from '../models/admin.model';
 import * as bcrypt from 'bcrypt';
 import { S3Service } from '@src/services/S3Sevices.service';
 import { ScoreService } from '../score/score.service';
@@ -21,10 +22,29 @@ export class AuthService {
     @InjectModel('Tutor') private readonly tutorModel: Model<Tutor>,
     @InjectModel('Student') private readonly studentModel: Model<Student>,
     @InjectModel('Subject') private readonly subjectModel: Model<Subject>,
+    @InjectModel('Admin') private readonly adminModel: Model<Admin>,
     private readonly s3Service: S3Service,
     private readonly scoreService: ScoreService,
     private readonly jwtService: JwtService,
   ) {}
+  async insertAdmin(firstName, lastName, username, password): Promise<any> {
+    try {
+      const saltOrRounds = 10;
+      const hashed_password = await bcrypt.hash(password, saltOrRounds);
+      const newAdmin = new this.adminModel({
+        firstName: firstName,
+        lastName: lastName,
+        username: username,
+        password: hashed_password,
+      });
+
+      await newAdmin.save();
+      const { password: pass2, ...result } = newAdmin.toObject();
+      return result;
+    } catch (err) {
+      throw err;
+    }
+  }
 
   async insertStudent(
     firstName,
@@ -211,6 +231,8 @@ export class AuthService {
       case 't':
         user = await this.tutorModel.findOne({ username: newUsername }).lean();
         break;
+      case 'a':
+        user = await this.adminModel.findOne({ username: newUsername }).lean();
       default:
         break;
     }
@@ -228,6 +250,7 @@ export class AuthService {
   async signin(body: any) {
     let user;
     let role;
+
     switch (body.username.split(' ')[0]) {
       case 's':
         user = await this.studentModel
@@ -241,6 +264,13 @@ export class AuthService {
           .lean();
         role = 'tutor';
         break;
+
+      case 'a':
+        user = await this.adminModel
+          .findOne({ username: body.username.split(' ')[1] })
+          .lean();
+        role = 'admin';
+        break;
       default:
         throw new ForbiddenException('wrong user type');
         break;
@@ -248,7 +278,7 @@ export class AuthService {
 
     const { password, ...result } = user;
     result.role = role;
-    const payload = { username: user.username, id: user._id };
+    const payload = { username: user.username, id: user._id, role: role };
     return {
       access_token: this.jwtService.sign(payload),
       user: {

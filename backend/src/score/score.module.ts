@@ -6,7 +6,7 @@ import { ScoreSchema } from '../models/score.model';
 import { SubjectSchema } from '../models/subject.model';
 import { TutorSchema } from '../models/tutor.model';
 import { S3Service } from '@src/services/S3Sevices.service';
-
+import { AdminSchema } from '@src/models/admin.model';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -18,6 +18,10 @@ import { S3Service } from '@src/services/S3Sevices.service';
       {
         name: 'Subject',
         schema: SubjectSchema,
+      },
+      {
+        name: 'Admin',
+        schema: AdminSchema,
       },
     ]),
   ],

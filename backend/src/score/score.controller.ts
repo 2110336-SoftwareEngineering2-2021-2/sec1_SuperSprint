@@ -11,6 +11,7 @@ import {
   Delete,
   UseInterceptors,
   Patch,
+  Request,
 } from '@nestjs/common';
 import { ScoreService } from './score.service';
 import { Score } from '../models/score.model';
@@ -26,6 +27,7 @@ import {
   ApiOperation,
   ApiConsumes,
 } from '@nestjs/swagger';
+import { AuthUser } from '@src/auth/auth.decorator';
 @ApiTags('score')
 @ApiBearerAuth()
 @Controller('score')
@@ -228,7 +230,18 @@ export class ScoreController {
 
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
-    summary: 'get score by scoreId ',
+    summary: 'Get all pending scores',
+  })
+  @ApiOkResponse({ type: [Score] })
+  @Get('/getAllPendingScore')
+  async getAllPendingScore(@AuthUser() user: any) {
+    const score = await this.scoreService.getAllPendingScore(user);
+    return { score: score };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: 'Get score by scoreId ',
   })
   @ApiParam({ name: 'scoreId', example: '6236aba956e2c3c18ccb0eed' })
   @ApiOkResponse({
@@ -237,6 +250,50 @@ export class ScoreController {
   @Get('/:scoreId')
   async getScoreById(@Param('scoreId') scoreId: string) {
     const score = await this.scoreService.getScoreById(scoreId);
+    return { score: score };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: 'Approve score which has tutorId and subjectId',
+  })
+  @ApiOkResponse({ type: Score })
+  @Patch('/:tutorId/:subjectId/approve')
+  async approveScore(
+    @Param('tutorId') tutorId: string,
+    @Param('subjectId') subjectId: string,
+    @Body('adminId') adminId: string,
+    @AuthUser() user: any,
+  ) {
+    const score = await this.scoreService.validateScore(
+      tutorId,
+      subjectId,
+      'approve',
+      adminId,
+      user,
+    );
+    return { score: score };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: 'Reject score which has tutorId and subjectId',
+  })
+  @ApiOkResponse({ type: Score })
+  @Patch('/:tutorId/:subjectId/reject')
+  async rejectScore(
+    @Param('tutorId') tutorId: string,
+    @Param('subjectId') subjectId: string,
+    @Body('adminId') adminId: string,
+    @AuthUser() user: any,
+  ) {
+    const score = await this.scoreService.validateScore(
+      tutorId,
+      subjectId,
+      'reject',
+      adminId,
+      user,
+    );
     return { score: score };
   }
 }

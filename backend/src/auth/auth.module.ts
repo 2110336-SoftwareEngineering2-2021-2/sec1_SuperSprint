@@ -14,6 +14,7 @@ import { SubjectModule } from '../subject/subject.module';
 import { ScoreModule } from '../score/score.module';
 import { SubjectService } from '../subject/subject.service';
 import { SubjectSchema } from '../models/subject.model';
+import { AdminSchema } from '../models/admin.model';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { SubjectSchema } from '../models/subject.model';
       { name: 'Student', schema: StudentSchema },
       { name: 'Tutor', schema: TutorSchema },
       { name: 'Subject', schema: SubjectSchema },
+      { name: 'Admin', schema: AdminSchema },
     ]),
     JwtModule.register({
       secret: jwtConstants.secret,
