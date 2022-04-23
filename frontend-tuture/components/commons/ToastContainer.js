@@ -6,23 +6,36 @@ const ToastContainer = dynamic(() =>
   import('react-toastify').then((mod) => mod.ToastContainer)
 );
 
-const contextClass = {
+const shadowContextClass = {
+  success: 'shadow-success/30',
+  error: 'shadow-error/30',
+  info: 'shadow-info/30',
+  warning: 'shadow-warning/30',
+  default: 'shadow-primary/30',
+};
+
+const progressContextClass = {
   success: 'bg-success',
   error: 'bg-error',
   info: 'bg-info',
   warning: 'bg-warning',
-  default: 'bg-base-100',
+  default: 'bg-primary bg-gradient-to-r from-primary to-primary-focus',
 };
 
 export default function Toaster() {
   return (
     <ToastContainer
       toastClassName={({ type }) =>
-        contextClass[type || 'default'] +
-        ' relative flex p-1 min-h-10 rounded-md justify-between overflow-hidden cursor-pointer shadow-lg shadow-primary/30'
+        'bg-base-100 relative flex p-1 min-h-10 rounded-md justify-between overflow-hidden cursor-pointer shadow-lg ' +
+        shadowContextClass[type || 'default']
       }
-      bodyClassName={() => 'text-sm text-base-content font-med block p-3'}
-      progressClassName="!bg-primary !bg-gradient-to-r !from-primary !to-primary-focus"
+      bodyClassName={() =>
+        'text-base-content flex flex-row text-sm font-med block p-3'
+      }
+      progressClassName={({ type }) =>
+        'Toastify__progress-bar Toastify__progress-bar--animated ' +
+        progressContextClass[type || 'default']
+      }
       closeButton={({ closeToast }) => (
         <FontAwesomeIcon
           fixedWidth
