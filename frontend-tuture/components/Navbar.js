@@ -37,9 +37,12 @@ const Navbar = (props) => {
                 size="lg"
               />
             </label>
-            <Link href="/" passHref>
+            <Link
+              href={session?.user?.role !== 'admin' ? '/' : '/admin'}
+              passHref
+            >
               <a className="btn btn-ghost w-0 text-lg font-bold normal-case text-primary-content xs:w-auto sm:text-xl">
-                Tuture
+                {session?.user?.role !== 'admin' ? 'Tuture' : 'Tuture Admin'}
               </a>
             </Link>
           </div>
