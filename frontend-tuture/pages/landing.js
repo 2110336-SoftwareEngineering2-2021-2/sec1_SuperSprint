@@ -19,7 +19,7 @@ function Landing() {
               Platform where who love to teach and study met.
             </p>
             <Link href="/signup" passHref>
-              <button className="btn btn-primary">Get Started</button>
+              <a className="btn btn-primary">Get Started</a>
             </Link>
           </div>
         </div>
