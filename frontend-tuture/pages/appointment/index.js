@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AppointmentCard from '../../components/appointment/AppointmentCard';
 import Layout from '../../components/Layout';
-import { Modal } from '../../components/Modal';
+import Modal from '../../components/Modal';
 import { useSession, getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
