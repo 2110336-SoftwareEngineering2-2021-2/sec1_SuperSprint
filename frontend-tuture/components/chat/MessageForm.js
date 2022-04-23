@@ -7,7 +7,7 @@ import {
   faCalendarAlt,
   faSmile,
 } from '@fortawesome/free-solid-svg-icons';
-import { Modal } from '../Modal';
+import Modal from '../Modal';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import DateTimePicker from 'react-datetime-picker/dist/DateTimePicker';
@@ -159,7 +159,7 @@ export default function MessageForm({ subjectList, chatId }) {
           <input
             type="text"
             placeholder="Enter your message"
-            className="input input-bordered input-primary input-warning w-full max-w-screen-md bg-base-100 md:w-screen"
+            className="input input-bordered input-primary w-full max-w-screen-md bg-base-100 md:w-screen"
           />
           <button
             tabIndex="0"

@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import ScoreEditCard from '../../../components/tutor-score/ScoreEditCard';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { getSession, useSession } from 'next-auth/react';
-import { Modal } from '../../../components/Modal';
+import Modal from '../../../components/Modal';
 import { toast } from 'react-toastify';
 import Tutor from '../../../lib/api/Tutor';
 

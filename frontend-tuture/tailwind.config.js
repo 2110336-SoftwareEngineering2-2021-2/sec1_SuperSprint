@@ -43,9 +43,9 @@ module.exports = {
           'base-300': '#e3e3e3',
           'base-content': '#000000',
           'info': '#2094f3',
-          'success': '#009485',
+          'success': '#36D399',
           'warning': '#ff9900',
-          'error': '#ff5724',
+          'error': '#F87272',
         },
         'default-dark': {
           'primary': '#ffc400',

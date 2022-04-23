@@ -12,15 +12,15 @@ const AnonNavbar = ({ children }) => {
       <div className="navbar top-0 z-50 w-full text-neutral-content shadow-md shadow-primary-focus/25">
         <div className="flex-1">
           <Link href="/" passHref>
-            <button className="btn btn-ghost mx-0 text-lg font-bold normal-case text-primary xs:text-xl sm:mx-4">
+            <a className="btn btn-ghost mx-0 text-lg font-bold normal-case text-primary xs:text-xl sm:mx-4">
               Tuture
-            </button>
+            </a>
           </Link>
           <div></div>
         </div>
 
         <div className="flex flex-none items-center">
-          <label className="swap btn btn-ghost swap-rotate btn-sm sm:btn-md ">
+          <label className="btn swap btn-ghost btn-sm swap-rotate sm:btn-md ">
             <input
               type="checkbox"
               onClick={() =>
