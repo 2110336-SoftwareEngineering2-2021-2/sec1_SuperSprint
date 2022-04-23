@@ -138,10 +138,6 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
 
-  // console.log(chatFeed[0]);
-
-  //chatFeed.length === 0
-
   let nameFeed =
     chatFeed.length === 0
       ? 'Batman'
@@ -174,6 +170,13 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
     const newAppts = await getAppointments(session, chatId);
     setAppts(newAppts);
   }
+
+  useEffect(() => {
+    const interval = setInterval(async () => await reloadAppts(), 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(async () => {
     await reloadAppts();

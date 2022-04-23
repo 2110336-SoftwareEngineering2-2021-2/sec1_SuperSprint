@@ -1,4 +1,4 @@
-import { sidebarData } from './Sidebar';
+import { sidebarData, sidebarAdminData } from './Sidebar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faBell, faSearch } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
@@ -110,7 +110,16 @@ const Navbar = (props) => {
       <div className="drawer-side">
         <label htmlFor="my-drawer" className="drawer-overlay" />
         <ul className="menu w-80 overflow-y-auto bg-base-100 p-4">
-          {sidebarData.map((item, index) => (
+          {session.user.role !== 'admin' ? sidebarData.map((item, index) => (
+            <li key={index}>
+              <Link href={item.link}>
+                <a className="justify-start space-x-5">
+                  <FontAwesomeIcon icon={item.icon} size="sm" fixedWidth />
+                  <h1>{item.name}</h1>
+                </a>
+              </Link>
+            </li>
+          )) : sidebarAdminData.map((item, index) => (
             <li key={index}>
               <Link href={item.link}>
                 <a className="justify-start space-x-5">

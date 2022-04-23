@@ -20,6 +20,7 @@ export default class Tutor {
       const data = await res.json();
 
       return {
+        success: true,
         id: data._id,
         username: data.username,
         e_mail: data.email,
@@ -39,6 +40,7 @@ export default class Tutor {
     } catch (error) {
       console.log(error.stack);
       return {
+        success: false,
         username: 'johndoe',
         e_mail: 'johndoe@gmail.com',
         firstName: 'John',

@@ -102,7 +102,7 @@ function AppointmentCard({
                       {moment(startApptDate).format('D')}
                     </p>{' '}
                     <p className="sm:text-md text-center text-xs">
-                      {moment(startApptDate).format('hh:mm')}
+                      {moment(startApptDate).format('hh:mm a')}
                     </p>
                   </div>
                   <span className="mx-1">-</span>
@@ -114,7 +114,7 @@ function AppointmentCard({
                       {moment(endApptDate).format('D')}
                     </p>{' '}
                     <p className="sm:text-md text-center text-xs">
-                      {moment(endApptDate).format('hh:mm')}
+                      {moment(endApptDate).format('hh:mm a')}
                     </p>
                   </div>
                 </div>

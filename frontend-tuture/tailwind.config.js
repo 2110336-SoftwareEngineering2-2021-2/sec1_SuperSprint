@@ -44,6 +44,7 @@ module.exports = {
           'base-content': '#000000',
           'info': '#2094f3',
           'success': '#36D399',
+          'success-content': '#ffffff',
           'warning': '#ff9900',
           'error': '#F87272',
         },

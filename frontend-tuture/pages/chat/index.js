@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatFeed from '../../components/chat/ChatFeed';
 import ChatList from '../../components/chat/ChatList';
 import Layout from '../../components/Layout';
@@ -7,7 +7,7 @@ import { getSession, useSession } from 'next-auth/react';
 
 function getChatterInfo(chats, chatId) {
   const chat = chats.find((chat) => chat.chatId === chatId);
-  console.log('hey', chat);
+  // console.log('hey', chat);
   return {
     firstName: chat.firstName,
     lastName: chat.lastName,
@@ -76,6 +76,16 @@ export default function Chat({ chatData, subjectList }) {
     setChats(chats);
     // console.log('Decline', chatId);
   }
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const chats = await getChats(session);
+      setChats(chats);
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <Layout title="Chat | Tuture">

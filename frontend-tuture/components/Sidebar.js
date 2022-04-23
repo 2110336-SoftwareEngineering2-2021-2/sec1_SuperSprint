@@ -3,6 +3,7 @@ import {
   faCalendarDay,
   faComment,
   faHistory,
+  faCheckDouble,
 } from '@fortawesome/free-solid-svg-icons';
 
 export const sidebarData = [
@@ -29,5 +30,20 @@ export const sidebarData = [
     icon: faHistory,
     link: '/matching/history',
     permit: ['student', 'tutor'],
+  },
+];
+
+export const sidebarAdminData = [
+  {
+    name: 'Home',
+    icon: faHouseUser,
+    link: '/admin',
+    permit: ['admin'],
+  },
+  {
+    name: 'Score',
+    icon: faCheckDouble,
+    link: '/admin/score',
+    permit: ['admin'],
   },
 ];

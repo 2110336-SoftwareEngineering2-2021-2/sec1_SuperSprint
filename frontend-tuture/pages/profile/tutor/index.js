@@ -140,14 +140,25 @@ async function getTutorScores(session) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  const tutorProfile = await Tutor.getTutorProfile(session, session.user._id);
-  const tutorScores = (await Tutor.getTutorScores(session, session.user._id)).map(
-    (e) => {
-      return { subjectId: e._id, ...e };
-    }
+  const { success, ...tutorProfile } = await Tutor.getTutorProfile(
+    session,
+    session.user._id
   );
+  if(!success) {
+    return {
+      redirect: {
+        destination: '/404',
+        permanent: false,
+      },
+    };
+  }
+
+  const tutorScores = (
+    await Tutor.getTutorScores(session, session.user._id)
+  ).map((e) => {
+    return { subjectId: e._id, ...e };
+  });
   // console.log('test hello', tutorScores);
-  console.log('hey', tutorProfile);
 
   return {
     props: {

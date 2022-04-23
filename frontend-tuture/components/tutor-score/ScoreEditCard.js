@@ -6,6 +6,13 @@ import { useForm } from 'react-hook-form';
 import { faRedo } from '@fortawesome/free-solid-svg-icons';
 import ScoreImageUpload from './ScoreImageUpload';
 
+const indicatorBadgeClass = {
+  approved: 'badge-success',
+  pending: 'badge-info',
+  rejected: 'badge-error ',
+  default: 'badge-primary',
+};
+
 export default function ScoreEditCard({
   scoreData,
   hookFormRegister,
@@ -43,9 +50,18 @@ export default function ScoreEditCard({
         tabIndex={0}
       >
         <div className="inline-flex w-full flex-col justify-between p-4 sm:w-full">
-          <h3 className="w-40 max-w-fit overflow-hidden overflow-ellipsis whitespace-nowrap text-lg font-bold text-base-content transition-colors hover:cursor-pointer hover:text-primary-focus xs:w-52 sm:w-80 sm:text-xl">
-            {scoreData.subjectName} ({scoreData.level})
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="w-40 max-w-fit overflow-hidden overflow-ellipsis whitespace-nowrap text-lg font-bold text-base-content transition-colors hover:cursor-pointer hover:text-primary-focus xs:w-52 sm:w-80 sm:text-xl">
+              {scoreData.subjectName} ({scoreData.level})
+            </h3>
+            <div
+              className={`badge indicator-item ${
+                indicatorBadgeClass[scoreData.status || 'default']
+              }`}
+            >
+              {scoreData.status}
+            </div>
+          </div>
           <div className="divider"></div>
           <div>
             <label className="input-group input-group-sm mb-2">
@@ -96,7 +112,7 @@ export default function ScoreEditCard({
             defaultValue={scoreData.scoreImage}
           />
           <button
-            className="btn btn-circle btn-ghost btn-sm"
+            className="btn btn-ghost btn-circle btn-sm"
             onClick={onDelete}
           >
             <FontAwesomeIcon icon={faRedo} fixedWidth />

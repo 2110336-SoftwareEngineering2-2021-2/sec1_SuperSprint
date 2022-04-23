@@ -38,9 +38,10 @@ export class ScoreService {
     const admin = await this.adminModel.findById(req.id).lean();
     console.log(admin);
     if (!admin) {
-      throw new UnauthorizedException('User is not Authorization as admin');
+      throw new UnauthorizedException('user is not Authorization as admin');
     }
     const res = await this.findPendingScore();
+    res.sort((a, b) => a.updated_at < b.updated_at);
     return res;
   }
   private async findScoreById(scoreId: string) {
@@ -75,10 +76,14 @@ export class ScoreService {
     return score;
   }
 
-  private async findPendingScore(): Promise<[Score]> {
+  private async findPendingScore() {
     let score;
     try {
-      score = await this.scoreModel.find({ status: 'Pending' }).lean();
+      score = await this.scoreModel
+        .find({ status: 'pending' })
+        .populate('subjectId')
+        .populate('tutorId')
+        .lean();
       if (!score) {
         return null;
       }
@@ -128,7 +133,7 @@ export class ScoreService {
     adminId: string,
     user: any,
   ) {
-    const admin = await this.adminModel.find(user.id);
+    const admin = await this.adminModel.findById(user.id);
     if (!admin) {
       throw new UnauthorizedException('user is not an admin');
     }
@@ -197,7 +202,7 @@ export class ScoreService {
       score.currentScore = currentScore || score.currentScore;
       score.maxScore = maxScore || subject.maxScore;
       score.year = year || score.year;
-
+      score.status = 'pending';
       await score.save();
       return { scoreId: score._id };
     } else {
@@ -235,7 +240,7 @@ export class ScoreService {
           .lean(); // score , null {pat  : null , pat2: score}
         // {subject1 : score1, subject2: score2 }
         // console.log(score);
-        if (score && score.status === 'approved') {
+        if (score) {
           // console.log(0);
           res.push({
             subjectId: subject._id,
@@ -244,6 +249,7 @@ export class ScoreService {
             currentScore: score.currentScore,
             maxScore: score.maxScore,
             scoreImage: score.imageUrl,
+            status: score.status,
           });
         } else {
           // console.log(1);

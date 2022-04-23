@@ -131,9 +131,19 @@ export async function getServerSideProps(context) {
   const session = await getSession(context);
   const { query } = context;
 
-  const tutorProfile = await Tutor.getTutorProfile(session, query.tutorId);
+  const {success, ...tutorProfile} = await Tutor.getTutorProfile(session, query.tutorId);
+  if(!success) {
+    return {
+      redirect: {
+        destination: '/404',
+        permanent: false,
+      },
+    };
+  }
+
   const tutorScores = (await Tutor.getTutorScores(session, query.tutorId)).map(
     (e) => {
+      console.log(e);
       return { subjectId: e._id, ...e };
     }
   );

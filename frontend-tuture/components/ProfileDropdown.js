@@ -10,6 +10,7 @@ import { signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import avatarUrl from '../lib/avatarUrl';
+import { useSession } from 'next-auth/react';
 
 function ProfileDropdown({
   firstName,
@@ -18,10 +19,11 @@ function ProfileDropdown({
   profileImg,
   onSignOut,
 }) {
+  const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="dropdown-end dropdown">
+    <div className="dropdown dropdown-end">
       <label tabIndex="0" className="avatar btn btn-ghost btn-circle">
         <div className="w-10 rounded-full xs:w-12">
           <img
@@ -49,14 +51,16 @@ function ProfileDropdown({
             </span>
           </div>
         </li>
-        <li>
-          <Link href="/profile">
-            <a>
-              <FontAwesomeIcon fixedWidth icon={faUser} />
-              View Profile
-            </a>
-          </Link>
-        </li>
+        {session?.user?.role !== 'admin' && (
+          <li>
+            <Link href="/profile">
+              <a>
+                <FontAwesomeIcon fixedWidth icon={faUser} />
+                View Profile
+              </a>
+            </Link>
+          </li>
+        )}
         <li>
           <a
             onClick={() =>
@@ -64,7 +68,7 @@ function ProfileDropdown({
             }
           >
             <label
-              className={`swap-rotate swap ${
+              className={`swap swap-rotate ${
                 theme === 'default' ? 'swap-active' : ''
               }`}
             >

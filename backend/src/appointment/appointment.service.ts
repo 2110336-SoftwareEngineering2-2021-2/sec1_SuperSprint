@@ -51,6 +51,11 @@ export class AppointmentService {
 
   async getAppointments(userType: string, id: string) {
     let appointments;
+    const now = new Date();
+    await this.appointmentModel.updateMany(
+      { startTime: { $lte: now }, status: { $eq: 'offering' } },
+      { $set: { status: 'canceled' } },
+    );
     if (userType === 'student') {
       appointments = await this.appointmentModel
         .find({
@@ -92,6 +97,13 @@ export class AppointmentService {
 
   async getAppointmentsByChat(chatId: string) {
     const chat = await this.chatModel.findById(chatId);
+    const now = new Date();
+
+    await this.appointmentModel.updateMany(
+      { startTime: { $lte: now }, status: { $eq: 'offering' } },
+      { $set: { status: 'canceled' } },
+    );
+
     const appointments = await this.appointmentModel
       .find({
         tutorId: chat.tutorId,
@@ -101,6 +113,7 @@ export class AppointmentService {
       .populate('subjectId')
       .populate('studentId')
       .populate('tutorId');
+
     return {
       message: 'get appointments by chat successfully',
       appointments: appointments,

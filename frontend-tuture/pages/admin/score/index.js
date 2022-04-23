@@ -1,10 +1,11 @@
-import { useSession } from 'next-auth/react';
+import { getSession, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import Layout from '../../../components/Layout';
 import Modal from '../../../components/Modal';
 import Score from '../../../lib/api/admin/Score';
+import moment from 'moment';
 
 const mockScore = {
   tutor: {
@@ -61,7 +62,7 @@ const TableGhost = () =>
     </tr>
   ));
 
-function ValidateScore() {
+export default function ValidateScore() {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [scores, setScores] = useState([]);
@@ -74,10 +75,10 @@ function ValidateScore() {
   async function getAllPendingScore() {
     setLoading(true);
     try {
-      await new Promise((r) => setTimeout(r, 2000));
+      // console.log(session.accessToken);
       const scores = await Score.getAllPendingScore(session);
-      console.log('test');
-      setScores(scores);
+      console.log('test', scores);
+      setScores(scores.score);
     } catch (error) {}
     setLoading(false);
   }
@@ -87,7 +88,7 @@ function ValidateScore() {
   }, []);
 
   async function approveScore(tutorId, subjectId, adminId) {
-    console.log(tutorId, subjectId, adminId);
+    console.log('approve pls', tutorId, subjectId, adminId);
     setModalState({
       message: 'Are you sure you want to approve this score?',
       function: async () => {
@@ -106,12 +107,14 @@ function ValidateScore() {
         } catch (error) {
           console.error(error.message);
         }
+        setModalOpen(false);
       },
     });
+    setModalOpen(true);
   }
 
   async function rejectScore(tutorId, subjectId, adminId) {
-    console.log(tutorId, subjectId, adminId);
+    console.log('approve pls', tutorId, subjectId, adminId);
     setModalState({
       message: 'Are you sure you want to reject this score?',
       function: async () => {
@@ -130,8 +133,10 @@ function ValidateScore() {
         } catch (error) {
           console.error(error.message);
         }
+        setModalOpen(false);
       },
     });
+    setModalOpen(true);
   }
 
   return (
@@ -147,28 +152,29 @@ function ValidateScore() {
                 <th>Score</th>
                 <th>Max Score</th>
                 <th>Score Certificate</th>
+                <th>Requested Date</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {!loading ? (
                 scores.map((score, idx) => (
-                  <tr key={score.tutor.tutorId} className="hover">
+                  <tr key={score._id} className="hover">
                     <th>{idx + 1}</th>
                     <td>
                       <div className="flex items-center gap-3">
                         <div className="avatar">
                           <div className="mask mask-squircle h-12 w-12">
                             <img
-                              src={score.tutor.profileImg}
+                              src={score.tutorId.profileUrl}
                               alt="Tutor Avatar"
                             />
                           </div>
                         </div>
                         <div>
-                          <Link href={`/tutor/${score.tutor.tutorId}`}>
+                          <Link href={`/tutor/${score.tutorId._id}`}>
                             <a className="font-bold">
-                              {score.tutor.firstName} {score.tutor.lastName}
+                              {score.tutorId.firstName} {score.tutorId.lastName}
                             </a>
                           </Link>
                         </div>
@@ -176,17 +182,17 @@ function ValidateScore() {
                     </td>
                     <td>
                       <div className="flex items-center gap-2">
-                        {score.score.subject}
+                        {score.subjectId.title}
                         <span className="badge badge-sm badge-ghost">
-                          {score.score.level}
+                          {score.subjectId.level}
                         </span>
                       </div>
                     </td>
-                    <td>{score.score.score}</td>
-                    <td>{score.score.maxScore}</td>
+                    <td>{score.currentScore}</td>
+                    <td>{score.maxScore}</td>
                     <td>
                       <a
-                        href={score.score.scoreImage}
+                        href={score.imageUrl}
                         target="_blank"
                         rel="noreferrer"
                         className="btn btn-primary btn-xs w-16"
@@ -195,30 +201,35 @@ function ValidateScore() {
                       </a>
                     </td>
                     <td>
+                      {moment(score.updated_at).format(
+                        'DD MMMM YYYY @ hh:mm a'
+                      )}
+                    </td>
+                    <td>
                       <div className="flex flex-col gap-1">
                         <button
                           onClick={() =>
                             approveScore(
-                              score.tutor.tutorId,
-                              score.score.subjectId,
+                              score.tutorId._id,
+                              score.subjectId._id,
                               session.user._id
                             )
                           }
                           className="btn btn-success btn-xs w-16"
                         >
-                          Accept
+                          Approve
                         </button>
                         <button
                           onClick={() =>
                             rejectScore(
-                              score.tutor.tutorId,
-                              score.score.subjectId,
+                              score.tutorId._id,
+                              score.subjectId._id,
                               session.user._id
                             )
                           }
                           className="btn btn-error btn-xs w-16"
                         >
-                          Decline
+                          Reject
                         </button>
                       </div>
                     </td>
@@ -242,8 +253,8 @@ function ValidateScore() {
         onSubmit={modalState.function}
         // onSubmit={() => closeModal()}
         onCancel={() => setModalOpen(false)}
-        submitBtnText="yes"
-        cancelBtnText="no"
+        submitBtnText="confirm"
+        cancelBtnText="cancel"
       >
         <p className="text-sm text-base-content">{modalState.message}</p>
       </Modal>
@@ -251,4 +262,12 @@ function ValidateScore() {
   );
 }
 
-export default ValidateScore;
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  return {
+    props: {
+      session,
+    },
+  };
+}

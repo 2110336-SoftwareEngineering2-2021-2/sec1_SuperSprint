@@ -103,62 +103,73 @@ function TutorProfileEdit(props) {
       );
     }
 
-    try {
-      const options = {
-        method: 'PATCH',
-        mode: 'cors',
-        // credentials: 'same-origin',
-        headers: {
-          Authorization: `Bearer ${session.accessToken}`,
-        },
-        body: formData,
-      };
+    toast.promise(
+      async () => {
+        try {
+          const options = {
+            method: 'PATCH',
+            mode: 'cors',
+            // credentials: 'same-origin',
+            headers: {
+              Authorization: `Bearer ${session.accessToken}`,
+            },
+            body: formData,
+          };
 
-      setLoading(true);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/tutor/${session.user._id}`,
-        options
-      );
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || 'Fetch Error');
-      }
-      setFetchError(null);
-      setLoading(false);
-      toast('Profile Edited!', {
-        onClose: () => {
-          router.push('/profile/tutor');
+          setLoading(true);
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/tutor/${session.user._id}`,
+            options
+          );
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.message || 'Fetch Error');
+          }
+          setFetchError(null);
+          setLoading(false);
+          // router.push('/signin');
+          // router.push('/profile/tutor');
+        } catch (error) {
+          switch (error.message) {
+            case 'duplicate email':
+              setFetchError({
+                location: ['email'],
+                message: error.message,
+              });
+              setFocus('email');
+              break;
+            case 'duplicate username':
+              setFetchError({
+                location: ['username'],
+                message: error.message,
+              });
+              setFocus('username');
+              break;
+            case 'duplicate username and email':
+              setFetchError({
+                location: ['username', 'email'],
+                message: error.message,
+              });
+              setFocus('username');
+              break;
+          }
+        }      
+        setLoading(false);
+      },
+      {
+        pending: 'Editing Profile...',
+        success: {
+          render() {
+            return 'Profile Edited!';
+          },
+          onClose: () => {
+            profileContext.refreshProfile(true);
+            router.push('/profile/tutor');
+          }
         },
-      });
-      await profileContext.refreshProfile(true);
-      // router.push('/signin');
-      // router.push('/profile/tutor');
-    } catch (error) {
-      switch (error.message) {
-        case 'duplicate email':
-          setFetchError({
-            location: ['email'],
-            message: error.message,
-          });
-          setFocus('email');
-          break;
-        case 'duplicate username':
-          setFetchError({
-            location: ['username'],
-            message: error.message,
-          });
-          setFocus('username');
-          break;
-        case 'duplicate username and email':
-          setFetchError({
-            location: ['username', 'email'],
-            message: error.message,
-          });
-          setFocus('username');
-          break;
+        error: 'Error! Please try again later.',
       }
-    }
-    setLoading(false);
+    );
   }
 
   return (
