@@ -2,7 +2,7 @@ export default class Score {
   constructor() {}
 
   static async getAllPendingScore(session) {
-    console.log('token', session.accessToken);
+    // console.log('token', session.accessToken);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/score/getAllPendingScore`,
       {
@@ -11,7 +11,7 @@ export default class Score {
         },
       }
     );
-    console.log('test');
+    // console.log('test');
     if (!res.ok) {
       const temp = await res.json();
       console.error(temp);

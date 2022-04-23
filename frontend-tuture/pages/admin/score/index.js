@@ -88,7 +88,7 @@ export default function ValidateScore() {
   }, []);
 
   async function approveScore(tutorId, subjectId, adminId) {
-    console.log('approve pls', tutorId, subjectId, adminId);
+    // console.log('approve pls', tutorId, subjectId, adminId);
     setModalState({
       message: 'Are you sure you want to approve this score?',
       function: async () => {
@@ -114,7 +114,7 @@ export default function ValidateScore() {
   }
 
   async function rejectScore(tutorId, subjectId, adminId) {
-    console.log('approve pls', tutorId, subjectId, adminId);
+    // console.log('approve pls', tutorId, subjectId, adminId);
     setModalState({
       message: 'Are you sure you want to reject this score?',
       function: async () => {
