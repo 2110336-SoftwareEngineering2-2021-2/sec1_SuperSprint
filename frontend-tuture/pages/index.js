@@ -57,6 +57,14 @@ export async function getServerSideProps(context) {
     };
   }
 
+  if(session.user.role === 'admin') {
+    return {
+      redirect: {
+        destination: '/admin'
+      }
+    }
+  }
+
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/student/recommend`,
