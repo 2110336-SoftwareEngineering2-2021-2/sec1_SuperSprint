@@ -126,6 +126,7 @@ function Matching({ subjects, levels }) {
     newFormVals[idx][event.target.id] = event.target.value;
     setAvailFormVals(newFormVals);
   }
+
   async function validateForm(event) {
     const total = availFormVals.length;
     var notError = true;
@@ -179,7 +180,12 @@ function Matching({ subjects, levels }) {
             levels: event.target.edu_level.value,
             price_min: event.target.price_min.value,
             price_max: event.target.price_max.value,
-            availability: availFormVals,
+            availability: availFormVals.map((e) => {
+              return {
+                avail_time_from: new Date(e.avail_date+'T'+e.avail_time_from),
+                avail_time_to: new Date(e.avail_date+'T'+e.avail_time_to),
+              }
+            }),
           }),
         },
       },

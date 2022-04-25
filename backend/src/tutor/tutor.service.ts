@@ -181,8 +181,8 @@ export class TutorService {
     priceMin: number,
     priceMax: number,
     availabilityStudent: {
-      startDatetime: string;
-      endDatetime: string;
+      avail_time_from: string;
+      avail_time_to: string;
     }[],
   ) {
     // console.log(subjectName, level, priceMin, priceMax, availabilityStudent);
@@ -191,14 +191,14 @@ export class TutorService {
       level,
     );
 
-    // console.log(subject);
+    console.log(availabilityStudent);
 
-    const datetimeFrom = new Date(availabilityStudent[0].startDatetime);
+    const datetimeFrom = new Date(availabilityStudent[0].avail_time_from);
 
     // datetimeFrom.setHours(datetimeFrom.getHours() + 7);
-    const datetimeTo = new Date(availabilityStudent[0].endDatetime);
+    const datetimeTo = new Date(availabilityStudent[0].avail_time_to);
     // datetimeTo.setHours(datetimeTo.getHours() + 7);
-    // console.log(datetimeFrom, datetimeTo);
+    console.log(datetimeFrom, datetimeTo);
 
     const tutors = await this.tutorModel
       .find({

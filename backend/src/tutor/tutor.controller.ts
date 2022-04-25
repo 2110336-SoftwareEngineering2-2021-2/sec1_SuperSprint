@@ -90,8 +90,8 @@ export class TutorController {
     @Body('priceMax') priceMax: number,
     @Body('availabilityStudent')
     availabilityStudent: {
-      startDatetime: string;
-      endDatetime: string;
+      avail_time_from: string;
+      avail_time_to: string;
     }[],
   ) {
     return await this.tutorService.matchTutor(

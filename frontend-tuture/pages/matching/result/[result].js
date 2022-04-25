@@ -19,19 +19,15 @@ export async function getServerSideProps(context) {
   try {
     const { result } = context.query;
     const json = JSON.parse(result);
+    console.log('json here', json);
     const body = JSON.stringify({
       subjectName: json.study_subject,
       level: json.levels,
       priceMin: json.price_min,
       priceMax: json.price_max,
-      availabilityStudent: json.availability.map((e) => {
-        return {
-          availabilityDate: e.avail_date,
-          availabilityTimeFrom: e.avail_time_from,
-          availabilityTimeTo: e.avail_time_to,
-        };
-      }),
+      availabilityStudent: json.availability,
     });
+    
     // console.log(body);
     // console.log(session);
     const res = await fetch(
