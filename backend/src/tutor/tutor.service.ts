@@ -181,32 +181,24 @@ export class TutorService {
     priceMin: number,
     priceMax: number,
     availabilityStudent: {
-      availabilityDate: string;
-      availabilityTimeFrom: string;
-      availabilityTimeTo: string;
+      startDatetime: string;
+      endDatetime: string;
     }[],
   ) {
-    console.log(subjectName, level, priceMin, priceMax, availabilityStudent);
+    // console.log(subjectName, level, priceMin, priceMax, availabilityStudent);
     const subject = await this.subjectService.findByTitleAndLevel(
       subjectName,
       level,
     );
 
-    console.log(subject);
+    // console.log(subject);
 
-    const datetimeFrom = new Date(
-      availabilityStudent[0].availabilityDate +
-        'T' +
-        availabilityStudent[0].availabilityTimeFrom,
-    );
-    datetimeFrom.setHours(datetimeFrom.getHours() + 7);
-    const datetimeTo = new Date(
-      availabilityStudent[0].availabilityDate +
-        'T' +
-        availabilityStudent[0].availabilityTimeTo,
-    );
-    datetimeTo.setHours(datetimeTo.getHours() + 7);
-    console.log(datetimeFrom, datetimeTo);
+    const datetimeFrom = new Date(availabilityStudent[0].startDatetime);
+
+    // datetimeFrom.setHours(datetimeFrom.getHours() + 7);
+    const datetimeTo = new Date(availabilityStudent[0].endDatetime);
+    // datetimeTo.setHours(datetimeTo.getHours() + 7);
+    // console.log(datetimeFrom, datetimeTo);
 
     const tutors = await this.tutorModel
       .find({
@@ -219,7 +211,7 @@ export class TutorService {
       .populate('teachSubject')
       .lean();
 
-    console.log('------------------', datetimeFrom, datetimeTo);
+    console.log('------------------', availabilityStudent);
     //เวลาว่างติวเตอร์ คร่อม เวลาว่างเด็ก
     const tutor_temp = tutors.filter((e) => {
       let oncondition = false;
@@ -310,7 +302,10 @@ export class TutorService {
         existingScore.map(async (s) => {
           // console.log('what is s',s);
           // console.log('what is teachSubject' , teachSubject)
-          if (teachSubject.findIndex((subjectId ) => subjectId == s.subjectId ) === -1) {
+          if (
+            teachSubject.findIndex((subjectId) => subjectId == s.subjectId) ===
+            -1
+          ) {
             await this.scoreSevice.deleteScore(id, s.subjectId);
             // await this.scoreSevice.insertScore(
             //   id,

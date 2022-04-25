@@ -128,6 +128,7 @@ export class AppointmentService {
     startTime: string,
     endTime: string,
   ) {
+    console.log('********', startTime, endTime);
     // check tutor's availability
     // console.log(tutorId);
     const chat = await this.chatModel.findById(chatId);

@@ -57,17 +57,17 @@ export class AuthService {
     image,
     preferSubject,
   ): Promise<any> {
-    console.log(
-      firstName,
-      lastName,
-      email,
-      phone,
-      username,
-      password,
-      gender,
-      image,
-      preferSubject,
-    );
+    // console.log(
+    //   firstName,
+    //   lastName,
+    //   email,
+    //   phone,
+    //   username,
+    //   password,
+    //   gender,
+    //   image,
+    //   preferSubject,
+    // );
     const foundUsername = await this.studentModel
       .findOne({ username: username })
       .lean();
@@ -103,7 +103,7 @@ export class AuthService {
         gender: gender,
         preferSubject: preferSubject,
       });
-      console.log(newStudent);
+      // console.log(newStudent);
       const newS = await newStudent.save();
       const { password, ...result } = newS.toObject();
       return result;
@@ -126,20 +126,20 @@ export class AuthService {
     priceMax,
     dutyTime,
   ): Promise<any> {
-    console.log(
-      firstName,
-      lastName,
-      email,
-      phone,
-      username,
-      password,
-      gender,
-      image,
-      teachSubject,
-      priceMin,
-      priceMax,
-      dutyTime,
-    );
+    // console.log(
+    //   firstName,
+    //   lastName,
+    //   email,
+    //   phone,
+    //   username,
+    //   password,
+    //   gender,
+    //   image,
+    //   teachSubject,
+    //   priceMin,
+    //   priceMax,
+    //   dutyTime,
+    // );
     const foundUsername = await this.tutorModel
       .findOne({ username: username })
       .lean();
@@ -187,7 +187,7 @@ export class AuthService {
         }
 
         newTutor.teachSubject = teachSubject;
-        console.log('teachSubject', teachSubject);
+        // console.log('teachSubject', teachSubject);
         await Promise.all(
           teachSubject.map(async (subjectId) => {
             const subject = await this.subjectModel.findById(subjectId).lean();

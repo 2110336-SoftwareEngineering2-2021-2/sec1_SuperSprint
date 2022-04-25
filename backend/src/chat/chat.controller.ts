@@ -110,7 +110,7 @@ export class ChatController {
   @ApiQuery({ name: 'tutorId', example: '621c818daefa29db6f3e806f' })
   @ApiOkResponse({ type: [Chat] })
   async getChatsTutor(@Query('tutorId') tutorId: string) {
-    console.log(tutorId);
+    // console.log(tutorId);
     return await this.chatService.getChatTutor(tutorId);
   }
 
@@ -121,7 +121,7 @@ export class ChatController {
   @ApiQuery({ name: 'studentId', example: '621c8c3d363377298c2bf8b2' })
   @ApiOkResponse({ type: [Chat] })
   async getChatsStudent(@Query('studentId') studentId: string) {
-    console.log(studentId);
+    // console.log(studentId);
     return await this.chatService.getChatStudent(studentId);
   }
 
@@ -152,7 +152,7 @@ export class ChatController {
     },
   })
   async declineChat(@Param('chatId') chatId: string) {
-    console.log('test', chatId);
+    // console.log('test', chatId);
     await this.chatService.declineChat(chatId);
     return { chatId: chatId };
   }

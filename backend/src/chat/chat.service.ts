@@ -28,7 +28,7 @@ export class ChatService {
     return chat;
   }
   async getChatStudent(studentId: string) {
-    console.log(studentId);
+    // console.log(studentId);
     const chat = await this.chatModel
       .find({ studentId })
       .populate('tutorId')
@@ -54,7 +54,7 @@ export class ChatService {
   async declineChat(chatId: string) {
     // console.log(chatId);
     const chat = await this.chatModel.findById(chatId);
-    console.log(chatId, chat);
+    // console.log(chatId, chat);
     await this.chatModel.deleteOne({ _id: chatId });
     // chat.accepted = false;
     // await chat.save();
@@ -65,7 +65,7 @@ export class ChatService {
       tutorId,
       studentId,
     });
-    console.log(tutorId);
+    // console.log(tutorId);
     await newChat.save();
     return newChat._id;
   }
@@ -75,20 +75,20 @@ export class ChatService {
       tutorId: tutorId,
       studentId: studentId,
     });
-    console.log(chat._id);
+    // console.log(chat._id);
     await this.chatModel.deleteOne({ tutorId: tutorId, studentId: studentId });
     return chat._id;
   }
 
   // PRIVATE -----------------------------------
   private async findChat(tId: string, sId: string): Promise<Chat> {
-    console.log('testid', tId, sId);
+    // console.log('testid', tId, sId);
     let chat;
     try {
       chat = await this.chatModel
         .findOne({ tutorId: tId, studentId: sId })
         .lean();
-      console.log('test', chat);
+      // console.log('test', chat);
       if (!chat) {
         return null;
         // return 0;
