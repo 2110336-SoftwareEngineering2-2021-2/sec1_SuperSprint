@@ -392,7 +392,6 @@ function TutorRegister({ subjects }) {
           </label>
           <PriceRangeForm
             hookFormControl={control}
-            hookFormRegister={register}
             hookFormWatch={watch}
             hookFormSetValue={setValue}
           />

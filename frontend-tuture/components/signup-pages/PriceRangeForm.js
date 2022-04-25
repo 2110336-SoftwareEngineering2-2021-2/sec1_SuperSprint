@@ -3,24 +3,16 @@ import { useState, useEffect } from 'react';
 import { MAX_PRICE, MIN_PRICE } from './Constants';
 import { Controller } from 'react-hook-form';
 
-function PriceRangeForm({
-  hookFormControl,
-  hookFormRegister,
-  hookFormWatch,
-  hookFormSetValue,
-}) {
+function PriceRangeForm({ hookFormControl, hookFormWatch, hookFormSetValue }) {
   function validatePriceRange() {
     let newPriceRange = [
       ...[hookFormWatch('price.min'), hookFormWatch('price.max')],
     ];
-    newPriceRange[0] = Math.min(
-      newPriceRange[1],
-      Math.max(newPriceRange[0], MIN_PRICE)
-    );
-    newPriceRange[1] = Math.max(
-      newPriceRange[0],
-      Math.min(newPriceRange[1], MAX_PRICE)
-    );
+    if (newPriceRange[0] > newPriceRange[1]) {
+      newPriceRange = [newPriceRange[1], newPriceRange[0]];
+    }
+    newPriceRange[0] = Math.max(Math.floor(newPriceRange[0]), MIN_PRICE);
+    newPriceRange[1] = Math.min(Math.floor(newPriceRange[1]), MAX_PRICE);
     hookFormSetValue('price', { min: newPriceRange[0], max: newPriceRange[1] });
   }
 
@@ -48,12 +40,14 @@ function PriceRangeForm({
           </div>
           <div className="my-2 flex w-full items-center justify-between">
             <label
-              className="input-group-xs input-group w-5/12 sm:w-3/12"
+              className="input-group input-group-xs w-5/12 sm:w-3/12"
               htmlFor="price_min"
             >
               <input
                 id="price_min"
-                value={value.min}
+                value={value.min.toLocaleString('fullwide', {
+                  useGrouping: false,
+                })}
                 onChange={(e) =>
                   onChange({ min: e.target.value, max: value.max })
                 }
@@ -62,7 +56,7 @@ function PriceRangeForm({
                   validatePriceRange();
                 }}
                 type="number"
-                className="min-w-2/3 sm:min-w-1/2 input-bordered input-primary input input-sm w-full"
+                className="min-w-2/3 sm:min-w-1/2 input input-bordered input-primary input-sm w-full"
                 min={MIN_PRICE}
                 max={MAX_PRICE}
               />
@@ -70,12 +64,14 @@ function PriceRangeForm({
             </label>
             <span className="select-none">-</span>
             <label
-              className="input-group-xs input-group right-0 w-5/12 sm:w-3/12"
+              className="input-group input-group-xs right-0 w-5/12 sm:w-3/12"
               htmlFor="price_max"
             >
               <input
                 id="price_max"
-                value={value.max}
+                value={value.max.toLocaleString('fullwide', {
+                  useGrouping: false,
+                })}
                 onChange={(e) =>
                   onChange({ min: value.min, max: e.target.value })
                 }
@@ -84,7 +80,7 @@ function PriceRangeForm({
                   validatePriceRange();
                 }}
                 type="number"
-                className="min-w-2/3 sm:min-w-1/2 input-bordered input-primary input input-sm w-full"
+                className="min-w-2/3 sm:min-w-1/2 input input-bordered input-primary input-sm w-full"
                 min={MIN_PRICE}
                 max={MAX_PRICE}
               />

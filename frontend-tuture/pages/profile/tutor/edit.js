@@ -426,7 +426,6 @@ function TutorProfileEdit(props) {
           </label>
           <PriceRangeForm
             hookFormControl={control}
-            hookFormRegister={register}
             hookFormWatch={watch}
             hookFormSetValue={setValue}
             /*defaultValue={[

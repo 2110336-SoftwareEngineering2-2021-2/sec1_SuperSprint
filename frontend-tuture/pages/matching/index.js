@@ -7,6 +7,9 @@ import 'rc-slider/assets/index.css';
 import { useRouter } from 'next/router';
 import * as yup from 'yup';
 import moment from 'moment';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import PriceRangeForm from '../../components/signup-pages/PriceRangeForm';
 
 const { Range } = Slider;
 
@@ -47,85 +50,69 @@ function AvailabilityForm({
           className="input input-bordered input-primary input-sm col-span-5 inline-block sm:w-32"
         />
       </div>
-      {/* <button
-        type="button"
-        className="btn btn-primary xs:btn-sm btn-xs btn-outline mx-2 inline-block w-fit grow-0 rounded-full text-center"
-        onClick={onButtonClick}
-        disabled={lastElement && reactMax}
-      >
-        <FontAwesomeIcon
-          size="sm"
-          icon={lastElement ? faPlus : faMinus}
-          fixedWidth
-        />
-      </button> */}
     </div>
   );
 }
 
-function Matching({ subjects, levels }) {
+function Matching({ subjects }) {
   const [priceRange, setPriceRange] = useState([2000, 4500]);
   const [availFormVals, setAvailFormVals] = useState([
     { avail_date: '', avail_time_from: '', avail_time_to: '' },
   ]);
   const router = useRouter();
   const schema = yup.object().shape({
-    avail_date: yup.date(),
-    avail_time_from: yup.string().required(),
-    avail_time_to: yup
-      .string()
-      .required()
-      .test('is-greater', 'end time should be greater', function (value) {
-        const { avail_time_from } = this.parent;
-        return moment(value, 'HH:mm').isSameOrAfter(
-          moment(avail_time_from, 'HH:mm')
-        );
-      }),
+    study_subject: yup.string().required('Subject is required'),
+    edu_level: yup.string().required('Education level is required'),
+    price: yup.object().shape({
+      min: yup.number('Min price must be contain only number'),
+      max: yup.number('Max price must be contain only number'),
+    }),
+    availability: yup.object().shape({
+      avail_date: yup.string().required('Date is required'),
+      avail_time_from: yup
+        .string()
+        .required('Start time is required')
+        .test(
+          'not-past',
+          'Start time must not be in the past',
+          function (value) {
+            const { avail_date } = this.parent;
+            const currentDate = new Date(avail_date + 'T' + value);
+            console.log(avail_date);
+            console.log(currentDate, '\n', new Date());
+            return new Date() <= currentDate;
+          }
+        ),
+      avail_time_to: yup
+        .string()
+        .required('End time is required')
+        .test('is-greater', 'End time should be greater', function (value) {
+          const { avail_time_from } = this.parent;
+          return moment(value, 'HH:mm').isSameOrAfter(
+            moment(avail_time_from, 'HH:mm')
+          );
+        }),
+    }),
   });
 
-  function setMinPriceRange(event) {
-    let newPriceRange = [...priceRange];
-    newPriceRange[0] = event.target.value;
-    setPriceRange(newPriceRange);
-  }
-
-  function setMaxPriceRange(event) {
-    let newPriceRange = [...priceRange];
-    newPriceRange[1] = event.target.value;
-    setPriceRange(newPriceRange);
-  }
-
-  function validatePriceRange() {
-    let newPriceRange = [...priceRange];
-    newPriceRange[0] = Math.min(
-      newPriceRange[1],
-      Math.max(newPriceRange[0], MIN_PRICE)
-    );
-    newPriceRange[1] = Math.max(
-      newPriceRange[0],
-      Math.min(newPriceRange[1], MAX_PRICE)
-    );
-    setPriceRange(newPriceRange);
-  }
-
-  function addAvailField() {
-    setAvailFormVals([
-      ...availFormVals,
-      { avail_date: '', avail_time_from: '', avail_time_to: '' },
-    ]);
-  }
-
-  function removeAvailField(idx) {
-    let newFormVals = [...availFormVals];
-    newFormVals.splice(idx, 1);
-    setAvailFormVals(newFormVals);
-  }
-
-  function handleAvailFieldChange(idx, event) {
-    let newFormVals = [...availFormVals];
-    newFormVals[idx][event.target.id] = event.target.value;
-    setAvailFormVals(newFormVals);
-  }
+  const {
+    register,
+    control,
+    setValue,
+    setFocus,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    reset,
+  } = useForm({
+    defaultValues: {
+      study_subject: '',
+      edu_level: '',
+      price: { min: 2000, max: 4500 },
+      availability: { avail_date: '', avail_time_from: '', avail_time_to: '' },
+    },
+    resolver: yupResolver(schema),
+  });
 
   async function validateForm(event) {
     const total = availFormVals.length;
@@ -159,39 +146,34 @@ function Matching({ subjects, levels }) {
     }
     return notError;
   }
-  async function submitMatching(event) {
-    event.preventDefault();
-    if (!(await validateForm(event))) {
-      return;
-    }
-    // console.log({
-    //   study_subject: event.target.study_subject.value,
-    //   levels: event.target.edu_level.value,
-    //   price_min: event.target.price_min.value,
-    //   price_max: event.target.price_max.value,
-    //   availability: availFormVals,
-    // });
-    router.push(
-      {
-        pathname: '/matching/result/[result]',
-        query: {
-          result: JSON.stringify({
-            study_subject: event.target.study_subject.value,
-            levels: event.target.edu_level.value,
-            price_min: event.target.price_min.value,
-            price_max: event.target.price_max.value,
-            availability: availFormVals.map((e) => {
-              return {
-                avail_time_from: new Date(e.avail_date+'T'+e.avail_time_from),
-                avail_time_to: new Date(e.avail_date+'T'+e.avail_time_to),
-              }
-            }),
-          }),
-        },
-      },
-      '/matching/result/'
-    );
+
+  async function submitMatching(data) {
+    console.log(data);
+    // router.push(
+    //   {
+    //     pathname: '/matching/result/[result]',
+    //     query: {
+    //       result: JSON.stringify({
+    //         study_subject: data.study_subject.value,
+    //         levels: data.edu_level.value,
+    //         price_min: data.price_min.value,
+    //         price_max: data.price_max.value,
+    //         availability: [
+    //           {
+    //             avail_time_from: new Date(
+    //               e.avail_date + 'T' + e.avail_time_from
+    //             ),
+    //             avail_time_to: new Date(e.avail_date + 'T' + e.avail_time_to),
+    //           },
+    //         ],
+    //       }),
+    //     },
+    //   },
+    //   '/matching/result/'
+    // );
   }
+
+  console.log(errors);
 
   return (
     <Layout title="Matching | Tuture">
@@ -201,7 +183,7 @@ function Matching({ subjects, levels }) {
         <form
           className="w-full max-w-2xl p-2"
           id="matching_form"
-          onSubmit={submitMatching}
+          onSubmit={handleSubmit(submitMatching)}
         >
           <div className="-mx-3 mb-2 flex flex-wrap">
             <div className="relative mb-2 w-full px-3 sm:mb-0 sm:w-1/2">
@@ -213,19 +195,26 @@ function Matching({ subjects, levels }) {
               <div>
                 <select
                   className="select select-bordered select-primary w-full"
-                  id="study_subject"
-                  defaultValue=""
-                  required
+                  {...register('study_subject')}
                 >
                   <option value="" disabled>
                     {' '}
                     Select your subject{' '}
                   </option>
-                  {subjects.map((e, idx) => (
-                    <option key={idx}>{e}</option>
+                  {Object.keys(subjects).map((e, idx) => (
+                    <option key={idx} value={e}>
+                      {e}
+                    </option>
                   ))}
                 </select>
               </div>
+              {errors.study_subject && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.study_subject.message}
+                  </span>
+                </label>
+              )}
               {/* <p className="text-red-500 text-xs italic">
                 Please fill out this field.
               </p> */}
@@ -240,121 +229,115 @@ function Matching({ subjects, levels }) {
               <div className="relative">
                 <select
                   className="select select-bordered select-primary w-full"
-                  id="edu_level"
-                  defaultValue=""
-                  required
+                  {...register('edu_level')}
+                  disabled={watch('study_subject') === ''}
                 >
                   <option value="" disabled>
                     {' '}
                     Select your education level{' '}
                   </option>
-                  {levels.map((e, idx) => (
-                    <option key={idx}>{e}</option>
-                  ))}
+                  {watch('study_subject') !== '' &&
+                    subjects[watch('study_subject')]?.map((e, idx) => (
+                      <option key={idx} value={e.id}>
+                        {e.level}
+                      </option>
+                    ))}
                 </select>
               </div>
+              {errors.edu_level && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.edu_level.message}
+                  </span>
+                </label>
+              )}
             </div>
           </div>
           <div className="divider" />
 
           <div className="m-auto">
             <label htmlFor="price_range" className="label">
-              <span className="label-text">Price Range</span>
+              <span className="label-text">
+                Price Range <span className="label-text text-red-500">*</span>
+              </span>
             </label>
-            <div className="m-auto mb-4 w-11/12">
-              <Range
-                id="price_range"
-                min={MIN_PRICE}
-                max={MAX_PRICE}
-                step={50}
-                value={priceRange}
-                allowCross={false}
-                onChange={(val) => setPriceRange(val)}
-                trackStyle={[{ backgroundColor: '#ffc400' }]}
-                handleStyle={[
-                  { borderColor: '#ffc400' },
-                  { borderColor: '#ffc400' },
-                ]}
-              />
-            </div>
-            <div className="flex w-full items-center justify-between">
-              <label
-                className="input-group input-group-xs w-5/12 sm:w-3/12"
-                htmlFor="price_min"
-              >
-                <input
-                  id="price_min"
-                  type="number"
-                  value={priceRange[0]}
-                  className="min-w-2/3 sm:min-w-1/2 input input-bordered input-primary input-sm w-full"
-                  onChange={(event) => setMinPriceRange(event)}
-                  onBlur={validatePriceRange}
-                  min={MIN_PRICE}
-                  max={MAX_PRICE}
-                />
-                <span>THB</span>
-              </label>
-              <span className="select-none">-</span>
-              <label
-                className="input-group input-group-xs right-0 w-5/12 sm:w-3/12"
-                htmlFor="price_max"
-              >
-                <input
-                  id="price_max"
-                  type="number"
-                  value={priceRange[1]}
-                  className="min-w-2/3 sm:min-w-1/2 input input-bordered input-primary input-sm w-full"
-                  onChange={(event) => setMaxPriceRange(event)}
-                  onBlur={validatePriceRange}
-                  min={MIN_PRICE}
-                  max={MAX_PRICE}
-                />
-                <span>THB</span>
-              </label>
-            </div>
+            <PriceRangeForm
+              hookFormControl={control}
+              hookFormWatch={watch}
+              hookFormSetValue={setValue}
+            />
           </div>
 
           <div className="divider" />
 
           <div className="m-auto w-full">
             <label className="label mb-4">
-              <span className="label-text">Availability (max 1)</span>
+              <span className="label-text">
+                Availability <span className="label-text text-red-500">*</span>
+              </span>
             </label>
             <div className="m-auto w-fit px-2">
-              {/* Slice for shallow copy and reverse, making original array unchanged */}
-              {availFormVals
-                .map((item, idx) => (
-                  <AvailabilityForm
-                    key={idx}
-                    formVal={item}
-                    lastElement={idx === availFormVals.length - 1}
-                    reactMax={availFormVals.length === 1}
-                    onButtonClick={
-                      idx === availFormVals.length - 1
-                        ? addAvailField
-                        : () => removeAvailField(idx)
-                    }
-                    onFieldChange={(event) =>
-                      handleAvailFieldChange(idx, event)
-                    }
+              <div className="m-auto flex w-full items-center sm:m-auto sm:block">
+                <div className="grid grid-cols-11 items-center justify-center gap-2 sm:inline-flex sm:flex-nowrap">
+                  <input
+                    type="date"
+                    {...register('availability.avail_date')}
+                    id="avail_date"
+                    min={new Date().toISOString().split('T')[0]}
+                    className="input input-bordered input-primary input-sm col-span-11 inline-block"
                   />
-                ))
-                .reverse()
-                .reduce((prev, curr, idx) => [
-                  prev,
-                  <div key={idx} className="divider" />,
-                  curr,
-                ])}
+                  <input
+                    type="time"
+                    {...register('availability.avail_time_from')}
+                    id="avail_time_from"
+                    className="input input-bordered input-primary input-sm col-span-5 inline-block sm:w-32"
+                  />
+                  <span className="col-span-1 w-4 text-center">-</span>
+                  <input
+                    type="time"
+                    {...register('availability.avail_time_to')}
+                    id="avail_time_to"
+                    className="input input-bordered input-primary input-sm col-span-5 inline-block sm:w-32"
+                  />
+                </div>
+
+                {errors.availability?.avail_date && (
+                  <label className="label">
+                    <span className="label-text-alt text-error">
+                      {errors.availability?.avail_date.message}
+                    </span>
+                  </label>
+                )}
+                {errors.availability?.avail_time_from && (
+                  <label className="label">
+                    <span className="label-text-alt text-error">
+                      {errors.availability?.avail_time_from.message}
+                    </span>
+                  </label>
+                )}
+                {errors.availability?.avail_time_to && (
+                  <label className="label">
+                    <span className="label-text-alt text-error">
+                      {errors.availability?.avail_time_to.message}
+                    </span>
+                  </label>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="divider" />
-          <div className="flex w-full justify-center">
-            <input
-              type="submit"
-              className="btn btn-primary btn-sm rounded-full"
-              value="Match"
-            />
+          <div className="mx-auto flex w-fit flex-col justify-center gap-1">
+            <input type="submit" className="btn btn-primary" value="Match" />
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={(evt) => {
+                evt.preventDefault();
+                reset();
+              }}
+            >
+              Reset
+            </button>
           </div>
         </form>
       </div>
@@ -365,25 +348,36 @@ function Matching({ subjects, levels }) {
 export async function getServerSideProps(context) {
   try {
     const subjectsRes = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsName`
+      `${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`
     );
     const subjectsData = await subjectsRes.json();
-    const levelsRes = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/subject/getAllLevels`
-    );
-    const levelsData = await levelsRes.json();
 
     return {
       props: {
-        subjects: subjectsData.subjects,
-        levels: levelsData.levels,
+        subjects: subjectsData,
       },
     };
   } catch (error) {
     return {
       props: {
-        subjects: ['Mathmetic', 'Physic', 'Biology', 'English'],
-        levels: ['Middle School', 'High School'],
+        subjects: {
+          Mathmetic: [
+            { level: 'Middle School', id: '293817589231576' },
+            { level: 'High School', id: '2309512231698' },
+          ],
+          Physic: [
+            { level: 'Middle School', id: '293817589231576' },
+            { level: 'High School', id: '2309512231698' },
+          ],
+          Biology: [
+            { level: 'Middle School', id: '293817589231576' },
+            { level: 'High School', id: '2309512231698' },
+          ],
+          English: [
+            { level: 'Middle School', id: '293817589231576' },
+            { level: 'High School', id: '2309512231698' },
+          ],
+        },
       },
     };
   }
