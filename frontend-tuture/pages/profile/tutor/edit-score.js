@@ -3,6 +3,8 @@ import { useState } from 'react';
 import Layout from '../../../components/Layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import ScoreEditCard from '../../../components/tutor-score/ScoreEditCard';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { getSession, useSession } from 'next-auth/react';
@@ -11,6 +13,30 @@ import { toast } from 'react-toastify';
 import Tutor from '../../../lib/api/Tutor';
 
 function EditScore({ scores }) {
+  const schema = yup.lazy((object) => {
+    const newObject = { ...object };
+    for (const [key, value] of Object.entries(object)) {
+      const obj = {
+        currentScore: yup
+          .number()
+          .typeError('Score is required')
+          .required('Score is required')
+          .min(0, 'Score should not be lesser than zero')
+          .max(
+            scores.find((e) => e.subjectId === key).maxScore,
+            'Score should not exceeds maximum score'
+          ),
+      };
+      newObject[key] = yup.object().shape(obj);
+    }
+    return yup.object().shape(newObject);
+  });
+
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
+  const { data: session } = useSession();
   const {
     register,
     handleSubmit,
@@ -25,16 +51,11 @@ function EditScore({ scores }) {
     reset,
   } = useForm({
     defaultValues: formatFormDefaultValue(scores),
+    resolver: yupResolver(schema),
   });
 
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [fetchError, setFetchError] = useState(null);
-  const { data: session } = useSession();
-
   async function submitScore(data) {
-    console.log(data);
+    // console.log(data);
     setLoading(false);
     for (const [key, value] of Object.entries(data)) {
       if (getFieldState(key).isDirty) {
@@ -44,7 +65,7 @@ function EditScore({ scores }) {
         formData.append('score', value.currentScore);
         formData.append('year', value.year);
         formData.append('scoreImage', value.scoreImage.file || '');
-        console.log(key, formData);
+        // console.log(key, formData);
         try {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/score/edit`,
@@ -77,7 +98,7 @@ function EditScore({ scores }) {
   }
 
   async function deleteScore(subjectId) {
-    console.log('del', subjectId);
+    // console.log('del', subjectId);
     toast.promise(
       async () => {
         try {
@@ -111,7 +132,7 @@ function EditScore({ scores }) {
     );
   }
 
-  console.log(errors);
+  // console.log(watch(), errors);
 
   return (
     <Layout title="Edit Score | Tuture">
@@ -129,6 +150,7 @@ function EditScore({ scores }) {
               key={score.subjectId}
               scoreData={score}
               hookFormRegister={register}
+              hookFormSetValue={setValue}
               hookFormControl={control}
               hookFormError={errors}
               onDeleteClick={async () => await deleteScore(score.subjectId)}
@@ -202,7 +224,7 @@ export async function getServerSideProps(context) {
   const session = await getSession(context);
 
   const tutorScores = await Tutor.getTutorScores(session, session.user._id);
-  console.log('test', tutorScores);
+  // console.log('test', tutorScores);
 
   return {
     props: {

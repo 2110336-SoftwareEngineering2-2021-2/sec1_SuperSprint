@@ -16,6 +16,7 @@ const indicatorBadgeClass = {
 export default function ScoreEditCard({
   scoreData,
   hookFormRegister,
+  hookFormSetValue,
   hookFormControl,
   hookFormError,
   onDeleteClick,
@@ -69,19 +70,15 @@ export default function ScoreEditCard({
               <input
                 className="input input-bordered input-primary input-sm w-24 xs:w-32"
                 {...hookFormRegister(`${scoreData.subjectId}.currentScore`, {
-                  max: {
-                    value: scoreData.maxScore,
-                    message: 'Score can not be exceeded max score',
-                  },
-                  min: {
-                    value: 0,
-                    message: 'Score can not be negative number',
+                  onBlur: (event) => {
+                    hookFormSetValue(
+                      `${scoreData.subjectId}.currentScore`,
+                      Math.round(parseFloat(event.target.value) * 100) / 100
+                    );
                   },
                 })}
-                id="score"
                 type="number"
                 placeholder="0"
-                max={scoreData.maxScore}
               />
               <span>/ {scoreData.maxScore}</span>
             </label>
