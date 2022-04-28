@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { toast } from 'react-toastify';
 
 import { tutorRegisterSchema } from '../../components/signup-pages/TutorSchema';
 import AvatarUpload from '../../components/AvatarUpload';
@@ -100,7 +101,7 @@ function TutorRegister({ subjects }) {
         credentials: 'same-origin',
         body: formData,
       };
-      
+
       setLoading(true);
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/signup/tutor`,
@@ -108,10 +109,11 @@ function TutorRegister({ subjects }) {
       );
       if (!res.ok) {
         const err = await res.json();
+        console.error(err.message);
         throw new Error(err.message || 'Fetch Error');
       }
       const res_data = await res.json();
-      // console.log(res_data);
+      console.log(res_data);
       setLoading(false);
       toast('Sign Up Success!', {
         onClose: () => {
@@ -227,10 +229,7 @@ function TutorRegister({ subjects }) {
               <label className="label w-fit" htmlFor="avatar">
                 <span className="label-text">Profile picture </span>
               </label>
-              <AvatarUpload
-                hookFormControl={control}
-                hookFormWatch={watch}
-              />
+              <AvatarUpload hookFormControl={control} hookFormWatch={watch} />
               <p className="text-xs">Click or drop here to upload</p>
             </div>
           </div>
@@ -414,9 +413,10 @@ function TutorRegister({ subjects }) {
           </label>
           <AvailabilityListForm
             hookFormControl={control}
+            hookFormErrors={errors}
             maxAvailability={MAX_AVAILABILITY}
           />
-          {errors.availability && (
+          {errors.availability && errors.availability?.message && (
             <label className="label">
               <span className="label-text-alt text-error">
                 {errors.availability.message}
@@ -427,7 +427,11 @@ function TutorRegister({ subjects }) {
           <div className="divider"></div>
 
           <div className="mx-auto flex w-fit flex-col justify-center gap-1">
-            <button type="submit" className="btn btn-primary">
+            <button
+              disabled={loading}
+              type="submit"
+              className="btn btn-primary"
+            >
               {!loading ? (
                 'Submit'
               ) : (
@@ -435,6 +439,7 @@ function TutorRegister({ subjects }) {
               )}
             </button>
             <button
+              disabled={loading}
               className="btn btn-ghost btn-sm"
               onClick={(evt) => {
                 evt.preventDefault();

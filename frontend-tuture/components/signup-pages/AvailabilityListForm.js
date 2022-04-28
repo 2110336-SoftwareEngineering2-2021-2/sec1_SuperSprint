@@ -5,63 +5,79 @@ import { Controller, useFieldArray } from 'react-hook-form';
 
 function AvailabilityForm({
   hookFormControl,
+  hookFormErrors,
   idx,
   lastElement,
   onButtonClick,
   reactMax,
 }) {
   return (
-    <div
-      className={`flex w-fit flex-wrap items-center gap-2 ${
-        lastElement ? '' : 'mb-4'
-      }`}
-    >
-      <div className="flex w-fit flex-col items-center gap-0 sm:flex-row sm:gap-2">
-        <Controller
-          control={hookFormControl}
-          name={`availability.${idx}.from`}
-          render={({ field: { onChange, value, ref } }) => (
-            <DateTimePicker
-              value={value}
-              ref={ref}
-              minDate={new Date()}
-              format="y-MM-dd hh:mm a"
-              onChange={onChange}
-              strictParsing={true}
-              className="input-bordered input-primary input input-sm w-[15.7rem] md:input-md md:w-[16.7rem]"
-            />
-          )}
-        />
-        <span>-</span>
-        <Controller
-          control={hookFormControl}
-          name={`availability.${idx}.to`}
-          render={({ field: { onChange, value, ref } }) => (
-            <DateTimePicker
-              value={value}
-              ref={ref}
-              minDate={new Date()}
-              format="y-MM-dd hh:mm a"
-              onChange={onChange}
-              strictParsing={true}
-              className="input-bordered input-primary input input-sm w-[15.7rem] md:input-md md:w-[16.7rem]"
-            />
-          )}
-        />
+    <div className={`${lastElement ? '' : 'mb-4'}`}>
+      <div
+        className={`flex w-fit flex-wrap items-center gap-2`}
+      >
+        <div className="flex w-fit flex-col items-center gap-0 sm:flex-row sm:gap-2">
+          <Controller
+            control={hookFormControl}
+            name={`availability.${idx}.from`}
+            render={({ field: { onChange, value, ref } }) => (
+              <DateTimePicker
+                value={value}
+                ref={ref}
+                minDate={new Date()}
+                format="y-MM-dd hh:mm a"
+                onChange={onChange}
+                strictParsing={true}
+                className="input input-bordered input-primary input-sm w-[15.7rem] md:input-md md:w-[16.7rem]"
+              />
+            )}
+          />
+          <span>-</span>
+          <Controller
+            control={hookFormControl}
+            name={`availability.${idx}.to`}
+            render={({ field: { onChange, value, ref } }) => (
+              <DateTimePicker
+                value={value}
+                ref={ref}
+                minDate={new Date()}
+                format="y-MM-dd hh:mm a"
+                onChange={onChange}
+                strictParsing={true}
+                className="input input-bordered input-primary input-sm w-[15.7rem] md:input-md md:w-[16.7rem]"
+              />
+            )}
+          />
+        </div>
+
+        <button
+          type="button"
+          className="btn btn-outline btn-primary btn-xs inline-block w-fit grow-0 rounded-full text-center xs:btn-sm"
+          onClick={onButtonClick}
+          disabled={lastElement && reactMax}
+        >
+          <FontAwesomeIcon
+            size="sm"
+            icon={lastElement ? faPlus : faMinus}
+            fixedWidth
+          />
+        </button>
       </div>
 
-      <button
-        type="button"
-        className="btn-outline btn btn-primary btn-xs inline-block w-fit grow-0 rounded-full text-center xs:btn-sm"
-        onClick={onButtonClick}
-        disabled={lastElement && reactMax}
-      >
-        <FontAwesomeIcon
-          size="sm"
-          icon={lastElement ? faPlus : faMinus}
-          fixedWidth
-        />
-      </button>
+      {hookFormErrors?.availability && hookFormErrors?.availability[idx]?.from && (
+        <label className="label">
+          <span className="label-text-alt text-error">
+            {hookFormErrors?.availability[idx]?.from.message}
+          </span>
+        </label>
+      )}
+      {hookFormErrors?.availability && hookFormErrors?.availability[idx]?.to && (
+        <label className="label">
+          <span className="label-text-alt text-error">
+            {hookFormErrors?.availability[idx]?.to.message}
+          </span>
+        </label>
+      )}
     </div>
   );
 }
@@ -70,6 +86,7 @@ const defaultState = { from: null, to: null };
 
 function AvailabilityListForm({
   hookFormControl,
+  hookFormErrors,
   maxAvailability,
 }) {
   const { fields, append, remove, replace } = useFieldArray({
@@ -91,6 +108,7 @@ function AvailabilityListForm({
         <AvailabilityForm
           key={field.id}
           hookFormControl={hookFormControl}
+          hookFormErrors={hookFormErrors}
           hookFormField={field}
           idx={idx}
           lastElement={idx === fields.length - 1}

@@ -88,21 +88,21 @@ function StudentRegister({ subjects }) {
             location: ['email'],
             message: error.message,
           });
-          setFocus('email')
+          setFocus('email');
           break;
         case 'duplicate username':
           setFetchError({
             location: ['username'],
             message: error.message,
           });
-          setFocus('username')
+          setFocus('username');
           break;
         case 'duplicate username and email':
           setFetchError({
             location: ['username', 'email'],
             message: error.message,
           });
-          setFocus('username')
+          setFocus('username');
           break;
       }
     }
@@ -188,10 +188,7 @@ function StudentRegister({ subjects }) {
               <label className="label w-fit" htmlFor="avatar">
                 <span className="label-text">Profile picture </span>
               </label>
-              <AvatarUpload
-                hookFormControl={control}
-                hookFormWatch={watch}
-              />
+              <AvatarUpload hookFormControl={control} hookFormWatch={watch} />
               <p className="text-center text-xs">
                 Click or drop here to upload
               </p>
@@ -348,7 +345,11 @@ function StudentRegister({ subjects }) {
           <div className="divider"></div>
 
           <div className="mx-auto flex w-fit flex-col justify-center gap-1">
-            <button type="submit" className="btn btn-primary">
+            <button
+              disabled={loading}
+              type="submit"
+              className="btn btn-primary"
+            >
               {!loading ? (
                 'Submit'
               ) : (
@@ -356,6 +357,7 @@ function StudentRegister({ subjects }) {
               )}
             </button>
             <button
+              disabled={loading}
               className="btn btn-ghost btn-sm"
               onClick={(evt) => {
                 evt.preventDefault();

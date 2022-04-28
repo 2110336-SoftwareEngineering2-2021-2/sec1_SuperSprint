@@ -136,11 +136,15 @@ export const tutorRegisterSchema = yup.object().shape({
         from: yup
           .date()
           .typeError('Type error : from')
-          .nullable(true),
-        to: yup
-          .date()
-          .typeError('Type error : to')
           .nullable(true)
+          .test(
+            'not-past',
+            'Start time must not be in the past',
+            function (value) {
+              return new Date() <= value;
+            }
+          ),
+        to: yup.date().typeError('Type error : to').nullable(true),
       })
     )
     .test(
