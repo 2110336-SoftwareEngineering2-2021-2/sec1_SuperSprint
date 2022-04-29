@@ -5,6 +5,7 @@ import Modal from '../../components/Modal';
 import { useSession, getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
+import Chat from '../../lib/api/Chat';
 
 const APPO_STATUS = {
   offering: {
@@ -42,16 +43,7 @@ export default function StudentAppointment({ fetchedAppts }) {
     toast.promise(
       async () => {
         try {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/chat?tutorId=${tutorId}&studentId=${studentId}`
-          );
-          if (!res.ok) {
-            const test = await res.json();
-            console.log(test);
-            throw new Error('Fetch Error');
-          }
-          const data = await res.json();
-          console.log(data);
+          const data = await Chat.getChat(session, tutorId, studentId)
           //go to chat room
           router.push(`/chat?chatId=${data._id}`);
         } catch (error) {

@@ -72,7 +72,6 @@ async function getAppointments(session, chatId) {
     return data.appointments.map((appt) => {
       if (session.user.role === 'tutor') {
         const temp = { ...appt };
-        console.log(temp);
         temp.userData = temp.studentId;
         temp.firstName = temp.userData.firstName;
         temp.lastName = temp.userData.lastName;
@@ -100,7 +99,6 @@ async function getAppointments(session, chatId) {
         };
       } else if (session.user.role === 'student') {
         const temp = { ...appt };
-        console.log(temp);
         temp.userData = temp.tutorId;
         temp.firstName = temp.userData.firstName;
         temp.lastName = temp.userData.lastName;
@@ -136,7 +134,7 @@ async function getAppointments(session, chatId) {
 
 export default function ChatFeed({ subjectList, chatId, chatFeed }) {
   const { data: session } = useSession();
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   let nameFeed =
     chatFeed.length === 0
@@ -168,11 +166,12 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
 
   async function reloadAppts() {
     const newAppts = await getAppointments(session, chatId);
+    // console.log(newAppts);
     setAppts(newAppts);
   }
 
   useEffect(() => {
-    const interval = setInterval(async () => await reloadAppts(), 1000);
+    const interval = setInterval(async () => await reloadAppts(), 2000);
     return () => {
       clearInterval(interval);
     };
@@ -228,20 +227,15 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
         <OtherMessage {...otherData1} />
         <SelfMessage {...selfData} />
         <OtherMessage {...otherData2} />
-        {!loading ? (
-          appts.map((appt) => (
-            <ChatAppointmentCard
-              {...appt}
-              canAccept={session.user.role === 'student'}
-              onAccept={onAccept}
-              onDecline={onDecline}
-            />
-          ))
-        ) : (
-          <p>
-            <FontAwesomeIcon fixedWidth icon={faSpinner} spin />
-          </p>
-        )}
+        {appts.map((appt) => (
+          <ChatAppointmentCard
+            key={appt.apptId}
+            {...appt}
+            canAccept={session.user.role === 'student'}
+            onAccept={onAccept}
+            onDecline={onDecline}
+          />
+        ))}
       </div>
       <div className="sticky bottom-0 mx-auto h-max w-full bg-base-200">
         <MessageForm subjectList={subjectList} chatId={chatId} />

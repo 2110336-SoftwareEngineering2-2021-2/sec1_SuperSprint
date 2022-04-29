@@ -8,7 +8,7 @@ export async function middleware(req, ev) {
   // console.log('session in middleware: ', session);
 
   if(!session || !session.user) {
-    url.pathname = '/login'
+    url.pathname = '/signin'
     return NextResponse.redirect(url);
   }
 
