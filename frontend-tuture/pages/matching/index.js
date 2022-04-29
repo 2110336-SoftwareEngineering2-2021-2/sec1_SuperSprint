@@ -148,29 +148,35 @@ function Matching({ subjects }) {
   }
 
   async function submitMatching(data) {
-    console.log(data);
-    // router.push(
-    //   {
-    //     pathname: '/matching/result/[result]',
-    //     query: {
-    //       result: JSON.stringify({
-    //         study_subject: data.study_subject.value,
-    //         levels: data.edu_level.value,
-    //         price_min: data.price_min.value,
-    //         price_max: data.price_max.value,
-    //         availability: [
-    //           {
-    //             avail_time_from: new Date(
-    //               e.avail_date + 'T' + e.avail_time_from
-    //             ),
-    //             avail_time_to: new Date(e.avail_date + 'T' + e.avail_time_to),
-    //           },
-    //         ],
-    //       }),
-    //     },
-    //   },
-    //   '/matching/result/'
-    // );
+    // console.log(data);
+    router.push(
+      {
+        pathname: '/matching/result/[result]',
+        query: {
+          result: JSON.stringify({
+            study_subject: data.study_subject,
+            levels: data.edu_level,
+            price_min: data.price.min,
+            price_max: data.price.max,
+            availability: [
+              {
+                avail_time_from: new Date(
+                  data.availability.avail_date +
+                    'T' +
+                    data.availability.avail_time_from
+                ),
+                avail_time_to: new Date(
+                  data.availability.avail_date +
+                    'T' +
+                    data.availability.avail_time_to
+                ),
+              },
+            ],
+          }),
+        },
+      },
+      '/matching/result/'
+    );
   }
 
   console.log(errors);
