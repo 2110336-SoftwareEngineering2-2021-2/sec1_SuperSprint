@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ChatTitle from './ChatTitle';
 import MessageForm from './MessageForm';
 import OtherMessage from './OtherMessage';
 import SelfMessage from './SelfMessage';
 import { useSession } from 'next-auth/react';
 import ChatAppointmentCard from './ChatAppointmentCard';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const selfData = {
   name: 'Batman',
@@ -63,9 +61,8 @@ async function getAppointments(session, chatId) {
       }
     );
     if (!res.ok) {
-      const test = await res.json();
-      console.log(test);
-      throw new Error('Fetch error');
+      const err = await res.json();
+      throw new Error(err.message);
     }
     const data = await res.json();
 
@@ -84,6 +81,7 @@ async function getAppointments(session, chatId) {
         temp.levels = [...new Set(temp.levels)];
         return {
           apptId: temp._id,
+          chatId: chatId,
           firstName: temp.firstName,
           lastName: temp.lastName,
           subjects: temp.subjects,
@@ -111,6 +109,7 @@ async function getAppointments(session, chatId) {
         temp.levels = [...new Set(temp.levels)];
         return {
           apptId: temp._id,
+          chatId: chatId,
           firstName: temp.firstName,
           lastName: temp.lastName,
           subjects: temp.subjects,
@@ -127,13 +126,16 @@ async function getAppointments(session, chatId) {
       }
     });
   } catch (error) {
-    console.log(error.stack);
+    console.error(error);
     return [];
   }
 }
 
 export default function ChatFeed({ subjectList, chatId, chatFeed }) {
   const { data: session } = useSession();
+  
+  const passedChatId = useRef()
+  passedChatId.current = chatId
   // const [loading, setLoading] = useState(false);
 
   let nameFeed =
@@ -164,21 +166,21 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
 
   const [appts, setAppts] = useState([]);
 
-  async function reloadAppts() {
-    const newAppts = await getAppointments(session, chatId);
+  async function reloadAppts(fetchChatId) {
+    const newAppts = (await getAppointments(session, fetchChatId)).filter(appt => passedChatId.current === appt.chatId);
     // console.log(newAppts);
     setAppts(newAppts);
   }
 
   useEffect(() => {
-    const interval = setInterval(async () => await reloadAppts(), 2000);
+    const interval = setInterval(async () => await reloadAppts(passedChatId.current), 2000);
     return () => {
       clearInterval(interval);
     };
   }, []);
 
   useEffect(async () => {
-    await reloadAppts();
+    await reloadAppts(passedChatId.current);
   }, [chatId]);
 
   async function onAccept(apptId) {
