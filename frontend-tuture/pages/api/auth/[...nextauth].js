@@ -21,25 +21,43 @@ export default nextAuth({
         // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/signin`,
-          {
-            method: 'POST',
-            // mode: 'cors',
-            // credentials: 'same-origin',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              username: credentials.username,
-              password: credentials.password,
-            }),
-          }
-        );
-        const user = await res.json();
+        console.log(credentials);
+        console.log(process.env.NEXT_PUBLIC_API_URL);
+        console.log(process.env.NEXTAUTH_URL);
+        console.log(process.env.NEXTAUTH_SECRET);
+        var user;
+        var res;
+        try {
+          res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/auth/signin`,
+            {
+              method: 'POST',
+              // mode: 'cors',
+              // credentials: 'same-origin',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                username: credentials.username,
+                password: credentials.password,
+              }),
+            }
+          );
+          user = await res.json();
+        } catch (error) {
+          console.log("NOOOO");
+          console.log(error.message);
+        }
+        
+        console.log("PLSSSSS");
+        console.log(user);
+        console.log(res.ok);
 
         // If no error and we have user data, return it
         if (res.ok && user) {
           // console.log(user);
           return user;
+        }
+        if (!res.ok){
+          console.log(user);
         }
         // console.log(user);
         return null;

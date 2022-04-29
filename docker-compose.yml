@@ -1,0 +1,89 @@
+version: '3.3'
+
+services:
+  frontend:
+    container_name: frontend_container
+    build: ./frontend-tuture
+    ports: 
+      - 3000:3000
+    environment:
+      - NEXTAUTH_URL = http://localhost:3000
+      - NEXT_PUBLIC_API_URL = http://backend:1112
+      # - NEXT_PUBLIC_API_URL = http://localhost:1112
+      - NEXTAUTH_SECRET = BRUH_MOMENT
+
+    # links:
+    #   - "backend"
+    depends_on:
+      - backend
+    networks:
+      - network-backend
+    restart: unless-stopped
+
+  backend:
+    container_name: backend
+    build: ./backend
+    ports: 
+      - 1112:1112
+    environment:
+      - MONGO_DB_URI = mongodb+srv://botercup:6231358221@tuture.krcke.mongodb.net/test?retryWrites=true&w=majority
+      - PORT = 1112
+      - AWS_S3_ACCESS_KEY = AKIA2X35WQ6F74OH7VFH
+      - AWS_S3_KEY_SECRET = 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
+      - REGION = ap-southeast-1
+      - AWS_S3_BUCKET = tuture
+      - JWT_SECRET=PHU
+    restart: unless-stopped
+    links:
+      - mongo
+    networks:
+      - network-backend
+
+    #depends_on: mongodb
+
+  mongodb:
+    image : mongo:latest
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=botercup
+      - MONGO_INITDB_ROOT_PASSWORD=6231358221
+      - MONGO_INITDB_DATABASE=test
+      - MONGO_INITDB_USERNAME=botercup
+      - MONGO_INITDB_PASSWORD=6231358221
+    ports:
+      - 27017:27017
+    volumes:
+      # - ./init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh
+      - ./db:/data/db
+  #   # volumes:
+  #   #   - ./data:/data/db
+  #   # networks:
+  #   #   - nesjs-network
+  #   restart: always
+    networks:
+      - network-backend
+
+networks:
+  network-backend:
+
+#   prod:
+#     container_name: nestjs_api_prod
+#     image: nestjs-api-prod:1.0.0
+#     build:
+#       context: .
+#       dockerfile: ./Dockerfile
+#     command: npm run start:prod
+#     ports:
+#       - 3000:3000
+#       - 9229:9229
+#     networks:
+#       - nesjs-network
+#     depends_on:
+#       - mongodb
+#     volumes:
+#       - .:/usr/src/app
+#       - /usr/src/app/node_modules
+#     restart: unless-stopped
+# networks:
+#     nesjs-network:
+#       driver: bridge
