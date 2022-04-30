@@ -13,6 +13,7 @@
     "paths": {
       "@src/*": ["src/*"]
     },
+    "types": ["node", "jest"],
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
@@ -20,5 +21,6 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "include": ["src/**/*", "test/**/*"]
 }

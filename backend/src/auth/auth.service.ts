@@ -9,7 +9,7 @@ import { Tutor } from '../models/tutor.model';
 import { Student } from '../models/student.model';
 import { Admin } from '../models/admin.model';
 import * as bcrypt from 'bcrypt';
-import { S3Service } from '@src/services/S3Sevices.service';
+import { S3Service } from '../services/S3Sevices.service';
 import { ScoreService } from '../score/score.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigurationServicePlaceholders } from 'aws-sdk/lib/config_service_placeholders';
@@ -244,7 +244,6 @@ export class AuthService {
       }
     }
     return null;
-    // console.log(pass);
   }
 
   async signin(body: any) {
@@ -271,11 +270,7 @@ export class AuthService {
           .lean();
         role = 'admin';
         break;
-      default:
-        throw new ForbiddenException('wrong user type');
-        break;
     }
-
     const { password, ...result } = user;
     result.role = role;
     const payload = { username: user.username, id: user._id, role: role };
