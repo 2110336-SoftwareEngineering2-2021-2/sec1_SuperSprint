@@ -40,13 +40,18 @@ export default function StudentAppointment({ fetchedAppts }) {
   }
 
   async function onChatClick(studentId, tutorId) {
+    console.log("YAYY");
     toast.promise(
       async () => {
         try {
           const data = await Chat.getChat(session, tutorId, studentId)
+          console.log(data);
+          console.log("Success1");
           //go to chat room
           router.push(`/chat?chatId=${data._id}`);
+          console.log("Success2");
         } catch (error) {
+          console.log("Noo");
           console.error(error);
         }
       },

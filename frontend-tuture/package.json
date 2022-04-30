@@ -6,7 +6,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write \"pages/**/*.js\" \"components/**/*.js\" \"hooks/**/*.js\""
+    "format": "prettier --write \"pages/**/*.js\" \"components/**/*.js\" \"hooks/**/*.js\"",
+    "production": "next build && next start"
   },
   "dependencies": {
     "@dicebear/avatars": "^4.10.2",
