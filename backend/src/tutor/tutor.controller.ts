@@ -169,6 +169,10 @@ export class TutorController {
       newDutyTime = JSON.parse(dutyTime);
     }
 
+    if (!Array.isArray(teachSubject)) {
+      teachSubject = [teachSubject];
+    }
+
     return this.tutorService.updateTutor(
       id,
       firstName,
