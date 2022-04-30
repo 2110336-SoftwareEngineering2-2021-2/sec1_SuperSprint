@@ -27,24 +27,24 @@ export class AuthService {
     private readonly scoreService: ScoreService,
     private readonly jwtService: JwtService,
   ) {}
-  async insertAdmin(firstName, lastName, username, password): Promise<any> {
-    try {
-      const saltOrRounds = 10;
-      const hashed_password = await bcrypt.hash(password, saltOrRounds);
-      const newAdmin = new this.adminModel({
-        firstName: firstName,
-        lastName: lastName,
-        username: username,
-        password: hashed_password,
-      });
+  // async insertAdmin(firstName, lastName, username, password): Promise<any> {
+  //   try {
+  //     const saltOrRounds = 10;
+  //     const hashed_password = await bcrypt.hash(password, saltOrRounds);
+  //     const newAdmin = new this.adminModel({
+  //       firstName: firstName,
+  //       lastName: lastName,
+  //       username: username,
+  //       password: hashed_password,
+  //     });
 
-      await newAdmin.save();
-      const { password: pass2, ...result } = newAdmin.toObject();
-      return result;
-    } catch (err) {
-      throw err;
-    }
-  }
+  //     await newAdmin.save();
+  //     const { password: pass2, ...result } = newAdmin.toObject();
+  //     return result;
+  //   } catch (err) {
+  //     throw err;
+  //   }
+  // }
 
   async insertStudent(
     firstName,
