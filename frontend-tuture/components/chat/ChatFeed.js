@@ -184,7 +184,7 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
   }, [chatId]);
 
   async function onAccept(apptId) {
-    setLoading(true);
+    // setLoading(true);
     const result = await fetch(
       `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/appointment/student/accept/${apptId}`,
       {
@@ -195,12 +195,12 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
         },
       }
     );
-    await reloadAppts();
-    setLoading(false);
+    await reloadAppts(passedChatId.current);
+    // setLoading(false);
   }
 
   async function onDecline(apptId) {
-    setLoading(true);
+    // setLoading(true);
     const result = await fetch(
       `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/appointment/${apptId}`,
       {
@@ -211,8 +211,8 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
         },
       }
     );
-    await reloadAppts();
-    setLoading(false);
+    await reloadAppts(passedChatId.current);
+    // setLoading(false);
   }
 
   return (
