@@ -27,7 +27,7 @@ import {
   ApiOperation,
   ApiConsumes,
 } from '@nestjs/swagger';
-import { AuthUser } from '@src/auth/auth.decorator';
+import { AuthUser } from '../auth/auth.decorator';
 @ApiTags('score')
 @ApiBearerAuth()
 @Controller('score')

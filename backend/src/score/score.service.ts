@@ -10,8 +10,8 @@ import { Model } from 'mongoose';
 import { Tutor } from '../models/tutor.model';
 import { Score } from '../models/score.model';
 import { Subject } from '../models/subject.model';
-import { S3Service } from '@src/services/S3Sevices.service';
-import { Admin } from '@src/models/admin.model';
+import { S3Service } from '../services/S3Sevices.service';
+import { Admin } from '../models/admin.model';
 
 @Injectable()
 export class ScoreService {
