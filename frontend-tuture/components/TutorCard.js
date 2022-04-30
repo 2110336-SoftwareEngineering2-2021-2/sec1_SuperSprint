@@ -62,11 +62,11 @@ export default function TutorCard({
           </h3>
           <p className="cursor-default text-sm text-base-content text-opacity-80 selection:bg-primary sm:text-base">
             <FontAwesomeIcon size="sm" icon={faBookOpen} fixedWidth />{' '}
-            {subjects.join(', ')}
+            {[...(new Set(subjects))].join(', ')}
           </p>
           <p className="cursor-default text-sm text-base-content text-opacity-80 selection:bg-primary sm:text-base">
             <FontAwesomeIcon size="sm" icon={faGraduationCap} fixedWidth />{' '}
-            {levels.join(', ')}
+            {[...(new Set(levels))].join(', ')}
           </p>
           <p className="cursor-default text-sm text-base-content text-opacity-80 selection:bg-primary sm:text-base">
             <FontAwesomeIcon size="sm" icon={faDollarSign} fixedWidth />{' '}
