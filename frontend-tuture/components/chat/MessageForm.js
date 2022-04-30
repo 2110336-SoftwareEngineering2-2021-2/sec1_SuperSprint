@@ -81,7 +81,7 @@ export default function MessageForm({ subjectList, chatId }) {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/appointment`,
+        `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/appointment`,
         {
           method: 'POST',
           mode: 'cors',

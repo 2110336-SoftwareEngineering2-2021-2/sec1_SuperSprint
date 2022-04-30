@@ -60,8 +60,8 @@ export default function TutorProfilePage({ tutorProfile, scores }) {
 async function getTutorProfile(session, tutorId) {
   try {
     const res = await fetch(
-      // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
-      `${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${tutorId}`,
+      // `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${tutorId}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
@@ -114,8 +114,8 @@ async function getTutorProfile(session, tutorId) {
 async function getTutorScores(session) {
   try {
     const res = await fetch(
-      // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
-      `${process.env.NEXT_PUBLIC_API_URL}/tutor/score?id=${session.user._id}`,
+      // `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/tutor/score?id=${session.user._id}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,

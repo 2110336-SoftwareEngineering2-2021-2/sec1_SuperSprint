@@ -18,7 +18,7 @@ export async function getServerSideProps(context) {
 
   const session = await getSession(context);
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tutor/search`, {
+    const res = await fetch(`${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/tutor/search`, {
       method: 'POST',
       mode: 'cors',
       credentials: 'same-origin',

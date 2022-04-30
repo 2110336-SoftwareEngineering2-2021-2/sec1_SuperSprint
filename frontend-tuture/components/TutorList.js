@@ -33,7 +33,7 @@ const SORT_OPTION = [
 
 async function chooseTutor(session, tutorId) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/request`, {
+    const res = await fetch(`${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/chat/request`, {
       method: 'POST',
       mode: 'cors',
       credentials: 'same-origin',

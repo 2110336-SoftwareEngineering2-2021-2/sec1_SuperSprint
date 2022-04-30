@@ -25,12 +25,12 @@ export const sidebarData = [
     link: '/appointment',
     permit: ['student', 'tutor'],
   },
-  {
-    name: 'Match History',
-    icon: faHistory,
-    link: '/matching/history',
-    permit: ['student', 'tutor'],
-  },
+  // {
+  //   name: 'Match History',
+  //   icon: faHistory,
+  //   link: '/matching/history',
+  //   permit: ['student', 'tutor'],
+  // },
 ];
 
 export const sidebarAdminData = [

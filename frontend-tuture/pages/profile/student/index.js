@@ -34,7 +34,7 @@ export async function getServerSideProps(context) {
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/student/getById?id=${session.user._id}`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/student/getById?id=${session.user._id}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,

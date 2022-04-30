@@ -354,7 +354,7 @@ function Matching({ subjects }) {
 export async function getServerSideProps(context) {
   try {
     const subjectsRes = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`
     );
     const subjectsData = await subjectsRes.json();
 

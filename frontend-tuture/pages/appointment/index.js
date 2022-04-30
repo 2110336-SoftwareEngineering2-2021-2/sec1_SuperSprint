@@ -103,7 +103,7 @@ export default function StudentAppointment({ fetchedAppts }) {
   async function acceptAppointment(apptId) {
     //accept appointment
     const result = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/appointment/student/accept/${apptId}`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/appointment/student/accept/${apptId}`,
       {
         method: 'PATCH',
         headers: {
@@ -127,7 +127,7 @@ export default function StudentAppointment({ fetchedAppts }) {
   async function cancelAppointment(apptId) {
     //cancel appointment
     const result = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/appointment/${apptId}`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/appointment/${apptId}`,
       {
         method: 'DELETE',
         headers: {
@@ -221,8 +221,8 @@ export default function StudentAppointment({ fetchedAppts }) {
 async function getAppointments(session) {
   try {
     const res = await fetch(
-      // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
-      `${process.env.NEXT_PUBLIC_API_URL}/appointment/${session.user.role}/${session.user._id}`,
+      // `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/appointment/${session.user.role}/${session.user._id}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,

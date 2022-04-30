@@ -4,7 +4,7 @@ export default class Score {
   static async getAllPendingScore(session) {
     // console.log('token', session.accessToken);
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/score/getAllPendingScore`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/score/getAllPendingScore`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
@@ -23,7 +23,7 @@ export default class Score {
 
   static async approveScore(session, tutorId, subjectId, adminId) {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/score/${tutorId}/${subjectId}/approve`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/score/${tutorId}/${subjectId}/approve`,
       {
         method: 'PATCH',
         mode: 'cors',
@@ -43,7 +43,7 @@ export default class Score {
 
   static async rejectScore(session, tutorId, subjectId, adminId) {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/score/${tutorId}/${subjectId}/reject`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/score/${tutorId}/${subjectId}/reject`,
       {
         method: 'PATCH',
         mode: 'cors',

@@ -78,14 +78,14 @@ function ProfileDropdown({
             Current Theme: {theme === 'default' ? 'Light' : 'Dark'}
           </a>
         </li>
-        <li>
+        {/* <li>
           <Link href="/setting">
             <a>
               <FontAwesomeIcon fixedWidth icon={faCog} />
               Setting
             </a>
           </Link>
-        </li>
+        </li> */}
         <li>
           <a
             onClick={() => {

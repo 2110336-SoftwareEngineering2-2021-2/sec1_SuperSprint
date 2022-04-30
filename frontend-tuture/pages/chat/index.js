@@ -27,7 +27,7 @@ export default function Chat({ chatData, subjectList }) {
   async function onAccept(chatId) {
     if (session.user.role === 'tutor') {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/chat/tutorAcceptChat/${chatId}`,
+        `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/chat/tutorAcceptChat/${chatId}`,
         {
           method: 'POST',
           mode: 'cors',
@@ -53,7 +53,7 @@ export default function Chat({ chatData, subjectList }) {
 
   async function onDecline(chatId) {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/chat/declineChat/${chatId}`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/chat/declineChat/${chatId}`,
       {
         method: 'POST',
         mode: 'cors',
@@ -123,7 +123,7 @@ async function getChats(session) {
   else if (session.user.role === 'tutor') route = 'getChatsTutor?tutorId=';
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/chat/${route}${session.user._id}`,
+    `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/chat/${route}${session.user._id}`,
     {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
@@ -185,7 +185,7 @@ export async function getServerSideProps(context) {
   var subjectList;
   try {
     const subjectsRes = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`,
       {
         timeout: 2000,
       }
