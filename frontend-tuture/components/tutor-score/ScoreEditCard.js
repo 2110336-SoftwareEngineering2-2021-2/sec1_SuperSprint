@@ -73,7 +73,7 @@ export default function ScoreEditCard({
                   onBlur: (event) => {
                     hookFormSetValue(
                       `${scoreData.subjectId}.currentScore`,
-                      Math.round(parseFloat(event.target.value) * 100) / 100
+                      Math.round(parseFloat(event.target.value) * 10000) / 10000
                     );
                   },
                 })}
