@@ -27,7 +27,7 @@ export function NavbarProfileProvider({ session, children }) {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/${session.user.role}/getById?id=${session.user._id}`,
+        `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/${session.user.role}/getById?id=${session.user._id}`,
         {
           headers: {
             Authorization: `Bearer ${session.accessToken}`,

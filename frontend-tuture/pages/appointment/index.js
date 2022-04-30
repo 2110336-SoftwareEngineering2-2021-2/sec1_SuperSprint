@@ -40,18 +40,13 @@ export default function StudentAppointment({ fetchedAppts }) {
   }
 
   async function onChatClick(studentId, tutorId) {
-    console.log("YAYY");
     toast.promise(
       async () => {
         try {
           const data = await Chat.getChat(session, tutorId, studentId)
-          console.log(data);
-          console.log("Success1");
           //go to chat room
           router.push(`/chat?chatId=${data._id}`);
-          console.log("Success2");
         } catch (error) {
-          console.log("Noo");
           console.error(error);
         }
       },
@@ -108,7 +103,7 @@ export default function StudentAppointment({ fetchedAppts }) {
   async function acceptAppointment(apptId) {
     //accept appointment
     const result = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/appointment/student/accept/${apptId}`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/appointment/student/accept/${apptId}`,
       {
         method: 'PATCH',
         headers: {
@@ -132,7 +127,7 @@ export default function StudentAppointment({ fetchedAppts }) {
   async function cancelAppointment(apptId) {
     //cancel appointment
     const result = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/appointment/${apptId}`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/appointment/${apptId}`,
       {
         method: 'DELETE',
         headers: {
@@ -226,8 +221,8 @@ export default function StudentAppointment({ fetchedAppts }) {
 async function getAppointments(session) {
   try {
     const res = await fetch(
-      // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
-      `${process.env.NEXT_PUBLIC_API_URL}/appointment/${session.user.role}/${session.user._id}`,
+      // `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/appointment/${session.user.role}/${session.user._id}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,

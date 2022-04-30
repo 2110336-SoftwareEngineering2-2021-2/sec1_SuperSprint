@@ -6,8 +6,8 @@ export default class Tutor {
   static async getTutorProfile(session, tutorId) {
     try {
       const res = await fetch(
-        // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
-        `${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${tutorId}`,
+        // `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
+        `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${tutorId}`,
         {
           headers: {
             Authorization: `Bearer ${session.accessToken}`,
@@ -62,8 +62,8 @@ export default class Tutor {
   static async getTutorScores(session, tutorId) {
     try {
       const res = await fetch(
-        // `${process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
-        `${process.env.NEXT_PUBLIC_API_URL}/tutor/score?id=${tutorId}`,
+        // `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/subject/getSubjects`
+        `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/tutor/score?id=${tutorId}`,
         {
           headers: {
             Authorization: `Bearer ${session.accessToken}`,

@@ -118,7 +118,7 @@ function TutorProfileEdit(props) {
 
           setLoading(true);
           const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/tutor/${session.user._id}`,
+            `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/tutor/${session.user._id}`,
             options
           );
           if (!res.ok) {
@@ -502,7 +502,7 @@ export async function getServerSideProps(context) {
   var subjects;
   try {
     const subjectsRes = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
@@ -542,7 +542,7 @@ export async function getServerSideProps(context) {
   var profileData;
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${session.user._id}`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/tutor/getById?id=${session.user._id}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,

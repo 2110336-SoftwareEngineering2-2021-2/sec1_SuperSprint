@@ -53,7 +53,7 @@ const selfData = {
 async function getAppointments(session, chatId) {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/appointment/chat/${chatId}`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/appointment/chat/${chatId}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
@@ -186,7 +186,7 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
   async function onAccept(apptId) {
     setLoading(true);
     const result = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/appointment/student/accept/${apptId}`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/appointment/student/accept/${apptId}`,
       {
         method: 'PATCH',
         headers: {
@@ -202,7 +202,7 @@ export default function ChatFeed({ subjectList, chatId, chatFeed }) {
   async function onDecline(apptId) {
     setLoading(true);
     const result = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/appointment/${apptId}`,
+      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/appointment/${apptId}`,
       {
         method: 'DELETE',
         headers: {

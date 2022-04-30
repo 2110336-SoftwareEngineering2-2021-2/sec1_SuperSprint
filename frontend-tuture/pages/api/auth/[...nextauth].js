@@ -22,7 +22,7 @@ export default nextAuth({
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/signin`,
+          `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/auth/signin`,
           {
             method: 'POST',
             // mode: 'cors',
