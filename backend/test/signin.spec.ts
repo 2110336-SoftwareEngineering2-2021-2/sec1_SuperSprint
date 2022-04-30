@@ -145,24 +145,24 @@ describe('TC2 test validate signin', () => {
   });
 
   it('TC2-11 signin right admin username with right admin password as a student should be null', async () => {
-    const username = 's bow';
-    const password = '12345';
+    const username = 's ADMIN001';
+    const password = 'ABCdef123!';
     const resultValidated = await authService.validate(username, password);
 
     expect(resultValidated).toBeNull();
   });
 
   it('TC2-12 signin right admin username with right admin password as a tutor should be null', async () => {
-    const username = 't bow';
-    const password = '12345';
+    const username = 't ADMIN001';
+    const password = 'ABCdef123!';
     const resultValidated = await authService.validate(username, password);
 
     expect(resultValidated).toBeNull();
   });
 
   it('TC2-13 signin right admin username with right admin password as a admin should have jwt token', async () => {
-    const username = 'a bow';
-    const password = '12345';
+    const username = 'a ADMIN001';
+    const password = 'ABCdef123!';
     const resultValidated = await authService.validate(username, password);
 
     expect(resultValidated).toHaveProperty('username');

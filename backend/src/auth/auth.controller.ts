@@ -152,20 +152,20 @@ export class AuthController {
     );
   }
 
-  @Post('/createAdmin')
-  addAdmin(
-    @Body('firstName') firstName: string,
-    @Body('lastName') lastName: string,
-    @Body('username') username: string,
-    @Body('password') password: string,
-  ) {
-    return this.authService.insertAdmin(
-      firstName,
-      lastName,
-      username,
-      password,
-    );
-  }
+  // @Post('/createAdmin')
+  // addAdmin(
+  //   @Body('firstName') firstName: string,
+  //   @Body('lastName') lastName: string,
+  //   @Body('username') username: string,
+  //   @Body('password') password: string,
+  // ) {
+  //   return this.authService.insertAdmin(
+  //     firstName,
+  //     lastName,
+  //     username,
+  //     password,
+  //   );
+  // }
 
   @UseGuards(AuthGuard('local'))
   @Post('signin')

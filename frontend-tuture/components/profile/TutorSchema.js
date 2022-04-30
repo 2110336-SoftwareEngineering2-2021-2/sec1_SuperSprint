@@ -141,7 +141,17 @@ export const tutorEditSchema = yup.object().shape({
     .array()
     .of(
       yup.object({
-        from: yup.date().typeError('Type error : from').nullable(true),
+        from: yup
+          .date()
+          .typeError('Type error : from')
+          .nullable(true)
+          .test(
+            'not-past',
+            'Start time must not be in the past',
+            function (value) {
+              return new Date() <= value;
+            }
+          ),
         to: yup.date().typeError('Type error : to').nullable(true),
       })
     )

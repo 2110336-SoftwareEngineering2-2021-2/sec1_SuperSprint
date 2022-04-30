@@ -409,7 +409,7 @@ function TutorRegister({ subjects }) {
             </label>
           )}
           <label className="label" htmlFor="availability">
-            <span className="label-text">Availability (max 10)</span>
+            <span className="label-text">Availability <span className="label-text text-red-500">*</span> (max 10) </span>
           </label>
           <AvailabilityListForm
             hookFormControl={control}
