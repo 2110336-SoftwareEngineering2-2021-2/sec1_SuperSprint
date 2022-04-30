@@ -33,7 +33,7 @@ export const ScoreSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ['pending', 'approved', 'rejected'],
+      enum: ['empty', 'pending', 'approved', 'rejected'],
     },
     validator: {
       type: Schema.Types.ObjectId,

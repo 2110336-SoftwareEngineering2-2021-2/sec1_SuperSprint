@@ -2,11 +2,12 @@ import Link from 'next/link';
 import getPastelBgClass from '../../lib/getPastelBgClass';
 
 const indicatorBadgeClass = {
-  'approved': 'badge-success',
-  'pending': 'badge-info',
-  'rejected': 'badge-error ',
-  'default': 'badge-primary'
-}
+  approved: 'badge-success',
+  pending: 'badge-info',
+  rejected: 'badge-error ',
+  empty: 'badge-accent',
+  default: 'badge-primary',
+};
 
 function TutorScorePanel({ scores, isOwner }) {
   console.log(scores);
@@ -21,7 +22,11 @@ function TutorScorePanel({ scores, isOwner }) {
         .map((score, idx) => (
           <div className="indicator">
             {isOwner && score.status && (
-              <span className={`badge indicator-item ${indicatorBadgeClass[score.status || 'default']}`}>
+              <span
+                className={`badge indicator-item ${
+                  indicatorBadgeClass[score.status || 'default']
+                }`}
+              >
                 {score.status}
               </span>
             )}

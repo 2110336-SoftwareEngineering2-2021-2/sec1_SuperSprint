@@ -10,6 +10,7 @@ const indicatorBadgeClass = {
   approved: 'badge-success',
   pending: 'badge-info',
   rejected: 'badge-error ',
+  empty: 'badge-accent',
   default: 'badge-primary',
 };
 
