@@ -176,8 +176,7 @@ export class TutorService {
   }
 
   async matchTutor(
-    subjectName: string,
-    level: string,
+    subjectId: string,
     priceMin: number,
     priceMax: number,
     availabilityStudent: {
@@ -186,10 +185,10 @@ export class TutorService {
     }[],
   ) {
     // console.log(subjectName, level, priceMin, priceMax, availabilityStudent);
-    const subject = await this.subjectService.findByTitleAndLevel(
-      subjectName,
-      level,
-    );
+    // const subject = await this.subjectService.findByTitleAndLevel(
+    //   subjectName,
+    //   level,
+    // );
 
     console.log(availabilityStudent);
 
@@ -203,7 +202,7 @@ export class TutorService {
     const tutors = await this.tutorModel
       .find({
         $and: [
-          { teachSubject: { $in: [subject._id] } },
+          { teachSubject: { $in: [subjectId] } },
           { priceMin: { $gte: priceMin } }, //ราคาเด็ก ครอบ ราคาติวเตอร์
           { priceMax: { $lte: priceMax } },
         ],
@@ -239,7 +238,7 @@ export class TutorService {
 
     const tutor_send = await Promise.all(
       tutor_temp.map(async (e) => {
-        const score = await this.calculateCredibility(e, subject._id);
+        const score = await this.calculateCredibility(e, subjectId);
         const { password, ...result } = e;
         return { ...result, score };
       }),

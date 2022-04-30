@@ -21,8 +21,7 @@ export async function getServerSideProps(context) {
     const json = JSON.parse(result);
     console.log('json here', json);
     const body = JSON.stringify({
-      subjectName: json.study_subject,
-      level: json.levels,
+      subjectId: json.subjectId,
       priceMin: json.price_min,
       priceMax: json.price_max,
       availabilityStudent: json.availability,
@@ -44,6 +43,8 @@ export async function getServerSideProps(context) {
       }
     );
     const data = await res.json();
+
+    console.log(data);
 
     const tutors = data.tutorList.map((item) => {
       return {

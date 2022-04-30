@@ -154,8 +154,8 @@ function Matching({ subjects }) {
         pathname: '/matching/result/[result]',
         query: {
           result: JSON.stringify({
-            study_subject: data.study_subject,
-            levels: data.edu_level,
+            // study_subject: data.study_subject,
+            subjectId: data.edu_level,
             price_min: data.price.min,
             price_max: data.price.max,
             availability: [

@@ -64,8 +64,7 @@ export class TutorController {
   @ApiBody({
     schema: {
       properties: {
-        subjectName: { type: 'string', example: 'mathematics' },
-        level: { type: 'string', example: 'highschool' },
+        subjectId: { type: 'string', example: '6204f74398648fc94382135f' },
         priceMin: { type: 'number', example: '100' },
         priceMax: { type: 'number', example: '200' },
         availabilityStudent: {
@@ -84,8 +83,7 @@ export class TutorController {
   })
   @ApiOkResponse({ type: [Tutor] })
   async matchTutor(
-    @Body('subjectName') subjectName: string,
-    @Body('level') level: string,
+    @Body('subjectId') subjectId: string,
     @Body('priceMin') priceMin: number,
     @Body('priceMax') priceMax: number,
     @Body('availabilityStudent')
@@ -95,8 +93,7 @@ export class TutorController {
     }[],
   ) {
     return await this.tutorService.matchTutor(
-      subjectName,
-      level,
+      subjectId,
       priceMin,
       priceMax,
       availabilityStudent,
