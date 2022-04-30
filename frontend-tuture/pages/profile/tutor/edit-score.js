@@ -68,7 +68,9 @@ function EditScore({ scores }) {
         // console.log(key, formData);
         try {
           const res = await fetch(
-            `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/score/edit`,
+            `${
+              process.env.API_URL || process.env.NEXT_PUBLIC_API_URL
+            }/score/edit`,
             {
               method: 'PATCH',
               mode: 'cors',
@@ -103,7 +105,9 @@ function EditScore({ scores }) {
       async () => {
         try {
           const res = await fetch(
-            `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/score/delete`,
+            `${
+              process.env.API_URL || process.env.NEXT_PUBLIC_API_URL
+            }/score/delete`,
             {
               method: 'DELETE',
               mode: 'cors',

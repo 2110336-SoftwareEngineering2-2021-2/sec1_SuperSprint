@@ -107,7 +107,7 @@ export class ScoreService {
         imageUrl = await this.s3Service.uploadFile(tutorId + subjectId, image);
       } else {
         imageUrl =
-          'https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg';
+          'https://scontent.fbkk8-4.fna.fbcdn.net/v/t1.15752-9/279085896_661343618302272_560877022376206098_n.png?_nc_cat=100&ccb=1-5&_nc_sid=ae9488&_nc_ohc=2p4Jv8c6BZUAX8fAflZ&_nc_ht=scontent.fbkk8-4.fna&oh=03_AVJbPvf9MBpRGVeTi4eu-AWvVYpD7Nln3bBTppSpHf4MPQ&oe=629248E9';
       }
     } catch (err) {
       throw err;
@@ -172,7 +172,7 @@ export class ScoreService {
     score.status = 'empty';
     // score.imageUrl = null;
     score.imageUrl =
-      'https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg';
+      'https://scontent.fbkk8-4.fna.fbcdn.net/v/t1.15752-9/279085896_661343618302272_560877022376206098_n.png?_nc_cat=100&ccb=1-5&_nc_sid=ae9488&_nc_ohc=2p4Jv8c6BZUAX8fAflZ&_nc_ht=scontent.fbkk8-4.fna&oh=03_AVJbPvf9MBpRGVeTi4eu-AWvVYpD7Nln3bBTppSpHf4MPQ&oe=629248E9';
     await score.save();
     await this.s3Service.deleteFile(imageUrl);
 
