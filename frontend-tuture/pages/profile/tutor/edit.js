@@ -615,6 +615,9 @@ export async function getServerSideProps(context) {
     };
   }
 
+  if (profileData.subjects.length === 0)
+    profileData.subjects = [{ subject: '', level: '' }];
+
   return {
     props: { profileData, subjects, session },
   };

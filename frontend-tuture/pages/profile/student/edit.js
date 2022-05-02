@@ -74,7 +74,9 @@ function StudentProfileEdit(props) {
       };
       setLoading(true);
       const res = await fetch(
-        `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/student/${session.user._id}`,
+        `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/student/${
+          session.user._id
+        }`,
         options
       );
       if (!res.ok) {
@@ -398,7 +400,9 @@ export async function getServerSideProps(context) {
   var subjects;
   try {
     const subjectsRes = await fetch(
-      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/subject/getAllSubjectsLevel`
+      `${
+        process.env.API_URL || process.env.NEXT_PUBLIC_API_URL
+      }/subject/getAllSubjectsLevel`
     );
     if (!subjectsRes.ok) {
       const temp = await subjectsRes.json();
@@ -432,7 +436,9 @@ export async function getServerSideProps(context) {
   var profileData;
   try {
     const res = await fetch(
-      `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL}/student/getById?id=${session.user._id}`,
+      `${
+        process.env.API_URL || process.env.NEXT_PUBLIC_API_URL
+      }/student/getById?id=${session.user._id}`,
       { headers: { Authorization: `Bearer ${session.accessToken}` } }
     );
     if (!res.ok) {
@@ -481,6 +487,9 @@ export async function getServerSideProps(context) {
       ],
     };
   }
+
+  if (profileData.subjects.length === 0)
+    profileData.subjects = [{ subject: '', level: '' }];
 
   return {
     props: { profileData, subjects, session },
