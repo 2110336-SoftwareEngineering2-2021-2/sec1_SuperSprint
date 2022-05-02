@@ -124,6 +124,10 @@ export class StudentController {
     @Body('gender') gender: string,
     @Body('preferSubject') preferSubject: Array<string>,
   ) {
+    if (!Array.isArray(preferSubject)) {
+      preferSubject = [preferSubject];
+    }
+
     return this.studentService.updateStudent(
       id,
       firstName,
